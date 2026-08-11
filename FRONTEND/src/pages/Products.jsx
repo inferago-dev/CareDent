@@ -31,29 +31,32 @@ export default function Products({ onOpenQuoteModal }) {
     <div className="min-h-screen bg-white text-slate-800">
 
       {/* HEADER */}
-      <section className="bg-slate-50 border-b border-slate-200 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <span className="block text-xs uppercase tracking-widest text-slate-400 mb-2">
+      <section className="relative overflow-hidden bg-blue-950 text-white py-24">
+        {/* Background glow effects */}
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left">
+          <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-4 font-bold">
             Catalogue
           </span>
-          <h1 className="text-3xl sm:text-4xl tracking-tighter font-medium text-slate-900">
+          <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium text-white">
             {query ? `Search results for "${query}"` : 'Dental Chairs & Clinical Equipment'}
           </h1>
-          <p className="text-slate-500 text-sm mt-3 max-w-xl">
+          <p className="text-slate-400 text-base mt-4 max-w-2xl">
             {totalResults} {totalResults === 1 ? 'result' : 'products'} · Gamma series chairs and Woodpecker
             clinical equipment, installed and supported pan-India.
           </p>
 
           {/* Category chips */}
-          <div className="flex flex-wrap gap-2 mt-8">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-10">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`text-sm font-medium px-4 py-2 rounded-full border transition-all active:scale-95 ${
+                className={`text-sm font-medium px-5 py-2.5 rounded-full border transition-all active:scale-95 ${
                   activeCategory === cat
-                    ? 'bg-slate-900 text-white border-slate-900'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+                    ? 'bg-cyan-600 text-white border-cyan-600 shadow-lg shadow-cyan-600/30'
+                    : 'bg-white/5 text-slate-300 border-white/10 hover:border-white/25 hover:bg-white/10'
                 }`}
               >
                 {cat}

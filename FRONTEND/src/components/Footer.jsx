@@ -2,18 +2,21 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
+import useParallax from '../hooks/useParallax';
 
 export default function Footer() {
+  const parallaxRef = useParallax(0.05);
+
   return (
-    <footer className="bg-blue-950 text-slate-300 pt-20 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="relative z-10 bg-blue-950 text-slate-300 pt-12 pb-8">
+      <div ref={parallaxRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 will-change-transform">
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-12 border-b border-white/10">
 
           {/* Brand */}
           <div className="lg:col-span-5 space-y-4">
             <Link to="/" className="flex items-center shrink-0">
-              <img src="/Logo.png" alt="CareDent" className="h-9 w-auto object-contain" />
+              <img src="/Logo_White.png" alt="CareDent" className="h-9 w-auto object-contain" />
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
               Dental equipment sales, installation, and technical support led by

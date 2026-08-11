@@ -24,7 +24,7 @@ export default function Login() {
         {/* Brand Header */}
         <div className="text-center space-y-3">
           <Link to="/" className="inline-block">
-            <img src="/Logo.png" alt="CareDent" className="h-9 mx-auto w-auto object-contain" />
+            <img src="/Logo_White.png" alt="CareDent" className="h-9 mx-auto w-auto object-contain" />
           </Link>
           <div>
             <h2 className="text-xl tracking-tight font-medium">Sign in to your account</h2>

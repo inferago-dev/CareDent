@@ -7,7 +7,7 @@ import { DENTAL_CHAIRS } from '../data/products';
 import useMountedTransition from '../hooks/useMountedTransition';
 
 export default function Navbar({ onOpenQuoteModal }) {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -58,14 +58,16 @@ export default function Navbar({ onOpenQuoteModal }) {
     <>
       {/* Main Header Navbar */}
       <header
-        className="sticky top-0 z-40 bg-blue-950 duration-300
-          "
+        className={`fixed w-full top-0 z-40 backdrop-blur-lg transition-all duration-300 ${scrolled
+          ? 'bg-blue-950/80 border-b border-white/10 shadow-lg shadow-blue-950/20'
+          : 'bg-transparent'
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center shrink-0">
-              <img src="/Logo.png" alt="CareDent" className="h-9 w-auto object-contain" />
+              <img src="/Logo_White.png" alt="CareDent" className="h-9 w-auto object-contain" />
             </Link>
 
             {/* Desktop Navigation Links */}

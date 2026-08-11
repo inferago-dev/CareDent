@@ -31,10 +31,13 @@ export default function About({ onOpenQuoteModal }) {
     <div className="min-h-screen bg-white text-slate-800">
 
       {/* INTRO BAND */}
-      <section className="bg-blue-950 text-white py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
+        {/* Background glow effects */}
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
+        
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Reveal>
-            <span className="block text-xs uppercase tracking-widest text-slate-400 mb-6">
+            <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               About Care Dent
             </span>
             <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1]">
@@ -55,12 +58,16 @@ export default function About({ onOpenQuoteModal }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             <Reveal className="lg:col-span-6">
-              <div className="relative aspect-[4/5] bg-slate-100 rounded-3xl overflow-hidden border border-slate-200">
-                <img
-                  src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1000&q=80"
-                  alt="Care Dent technician servicing a dental chair"
-                  className="w-full h-full object-cover"
-                />
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 to-transparent rounded-[2.5rem] transform -translate-x-4 translate-y-4" />
+                <div className="relative aspect-[4/5] bg-slate-100 rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-2xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1000&q=80"
+                    alt="Care Dent technician servicing a dental chair"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent mix-blend-multiply" />
+                </div>
               </div>
             </Reveal>
 
@@ -135,10 +142,13 @@ export default function About({ onOpenQuoteModal }) {
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-blue-950 text-white text-center">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <section className="relative overflow-hidden py-24 bg-blue-950 text-white text-center">
+        {/* Background glow effects */}
+        <div className="absolute bottom-0 left-1/2 w-[600px] h-[400px] bg-cyan-500/15 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-x-1/2 translate-y-1/2" />
+        
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <Reveal>
-            <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium leading-[1.1]">
+            <h2 className="text-3xl sm:text-5xl tracking-tighter font-medium leading-[1.1]">
               Ready to work with Care Dent?
             </h2>
           </Reveal>

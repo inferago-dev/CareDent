@@ -9,10 +9,6 @@ import Hero from './components/Hero';
 import CustomCursor from './components/CustomCursor';
 
 import Home from './pages/Home';
-import About from './pages/About';
-import Products from './pages/Products';
-import Services from './pages/Services';
-import TrackOrder from './pages/TrackOrder';
 import ProductDetails from './pages/ProductDetails';
 import Portal from './pages/Portal';
 import Contact from './pages/Contact';
@@ -40,11 +36,7 @@ function MainLayout() {
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Home onOpenQuoteModal={handleOpenQuoteModal} />} />
-          <Route path="/about" element={<About onOpenQuoteModal={handleOpenQuoteModal} />} />
-          <Route path="/products" element={<Products onOpenQuoteModal={handleOpenQuoteModal} />} />
           <Route path="/products/:slug" element={<ProductDetails onOpenQuoteModal={handleOpenQuoteModal} />} />
-          <Route path="/services" element={<Services onOpenQuoteModal={handleOpenQuoteModal} />} />
-          <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/portal/*" element={<Portal />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />

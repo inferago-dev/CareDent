@@ -19,22 +19,28 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
-        {/* Header Breadcrumb & Title */}
-        <div className="text-center max-w-2xl mx-auto space-y-3">
-          <span className="text-xs font-bold text-cyan-600 uppercase tracking-widest bg-cyan-50 px-3 py-1 rounded-full border border-cyan-200">
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+
+      {/* HEADER */}
+      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
+        {/* Background glow effects */}
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
+
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <span className="block text-xs font-bold text-cyan-400 uppercase tracking-widest mb-4">
             GET IN TOUCH
           </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-6">
             Contact Care Dent
           </h1>
-          <p className="text-slate-600 text-base">
+          <p className="text-slate-400 text-base leading-relaxed max-w-2xl mx-auto">
             Reach out to Mr. Sivakumar and our sales/support team in Mugalivakkam, Chennai.
           </p>
         </div>
+      </section>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 py-16">
+        
         {/* 2-COLUMN LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
