@@ -26,7 +26,7 @@ export default function FlagshipModelsSection({ onOpenQuoteModal }) {
   const CHAIRS = chairs.slice(0, 3);
 
   return (
-    <section className="relative lg:sticky lg:top-0 z-5 snap-start snap-always py-20 bg-white overflow-hidden lg:h-screen lg:flex lg:items-center">
+    <section className="relative z-5 py-20 bg-white overflow-hidden">
       <div ref={parallaxRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 will-change-transform w-full">
 
         {/* Header row */}

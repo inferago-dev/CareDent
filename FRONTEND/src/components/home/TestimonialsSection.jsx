@@ -66,7 +66,7 @@ export default function TestimonialsSection() {
   const t = TESTIMONIALS[displayedTestimonial];
 
   return (
-    <section className="relative lg:sticky lg:top-0 z-4 snap-start snap-always py-16 bg-white overflow-hidden lg:h-screen lg:flex lg:items-center">
+    <section className="relative z-4 py-16 bg-white overflow-hidden">
       <div ref={parallaxRef} className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center will-change-transform w-full">
         <Reveal>
           <span className="block text-xs uppercase tracking-widest text-slate-400 mb-2">

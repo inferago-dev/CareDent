@@ -16,7 +16,12 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-5 space-y-4">
             <Link to="/" className="flex items-center shrink-0">
-              <img src="/Logo_White.png" alt="CareDent" className="h-9 w-auto object-contain" />
+              <img
+                src="/Logo_White_Lockup.png"
+                alt="Care Dent - We care for your precious equipments"
+                width="507" height="640"
+                className="h-20 w-auto object-contain"
+              />
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
               Dental equipment sales, installation, and technical support led by

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { ArrowUpRight, ArrowRight, Search } from 'lucide-react';
 import Reveal from '../components/Reveal';
@@ -28,6 +28,23 @@ export default function Products({ onOpenQuoteModal }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
   const category = (searchParams.get('category') || 'all').toLowerCase();
+
+  const [term, setTerm] = useState(query);
+
+  // Keep the box in sync when the URL changes from elsewhere (back button, links).
+  useEffect(() => { setTerm(query); }, [query]);
+
+  // Debounce typing into the URL so every keystroke isn't a request or a history entry.
+  useEffect(() => {
+    if (term === query) return undefined;
+    const t = setTimeout(() => {
+      const next = new URLSearchParams(searchParams);
+      if (term.trim()) next.set('q', term.trim());
+      else next.delete('q');
+      setSearchParams(next, { replace: true });
+    }, 350);
+    return () => clearTimeout(t);
+  }, [term, query, searchParams, setSearchParams]);
 
   const { data, loading, error } = useFetch(
     (signal) => catalogApi.list({ q: query || undefined, category: category !== 'all' ? category : undefined }, { signal }),
@@ -81,7 +98,20 @@ export default function Products({ onOpenQuoteModal }) {
             Woodpecker clinical equipment, installed and supported pan-India.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-10">
+          {/* Catalogue search */}
+          <div className="relative mt-10 max-w-lg mx-auto sm:mx-0">
+            <Search className="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="search"
+              value={term}
+              onChange={(e) => setTerm(e.target.value)}
+              placeholder="Search chairs, X-ray units, autoclaves, scalers…"
+              aria-label="Search the catalogue"
+              className="w-full pl-11 pr-4 py-3.5 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-500 focus:border-cyan-400 focus:bg-white/10 outline-none transition-colors"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-6">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
@@ -95,14 +125,6 @@ export default function Products({ onOpenQuoteModal }) {
                 {cat.label}
               </button>
             ))}
-            {query && (
-              <button
-                onClick={() => setSearchParams(category === 'all' ? {} : { category }, { replace: true })}
-                className="text-sm font-medium px-5 py-2.5 rounded-full border border-white/10 bg-white/5 text-slate-300 hover:border-white/25 transition-all"
-              >
-                Clear search ×
-              </button>
-            )}
           </div>
         </div>
       </section>

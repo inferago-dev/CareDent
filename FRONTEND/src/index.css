@@ -4,10 +4,6 @@ html {
     scroll-behavior: smooth;
 }
 
-* {
-    cursor: none !important;
-}
-
 /* ================================
    Trusted-by marquee
 ================================ */

@@ -12,7 +12,7 @@ const BRANDS = [
 
 export default function TrustedBySection() {
   return (
-    <section className="relative lg:sticky lg:top-0 z-2 snap-start snap-always bg-white py-10 border-b border-slate-200">
+    <section className="relative z-2 bg-white py-10 border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <Reveal>
           <p className="text-xs uppercase tracking-widest text-slate-400 mb-6">

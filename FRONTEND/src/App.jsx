@@ -8,7 +8,6 @@ import Footer from './components/Footer';
 import FloatingActions from './components/FloatingActions';
 import QuoteModal from './components/QuoteModal';
 import Hero from './components/Hero';
-import CustomCursor from './components/CustomCursor';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -45,7 +44,6 @@ function MainLayout() {
 
   return (
     <div className="flex flex-col min-h-screen inter-regular selection:bg-cyan-500 selection:text-white">
-      <CustomCursor />
       {!isBare && <Navbar onOpenQuoteModal={handleOpenQuoteModal} />}
       {showHero && <Hero onOpenQuoteModal={handleOpenQuoteModal} />}
 

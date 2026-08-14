@@ -19,7 +19,7 @@ export default function Hero({ onOpenQuoteModal }) {
     return () => observer.disconnect();
   }, []);
   return (
-    <section className="relative lg:sticky lg:top-0 z-1 snap-start snap-always overflow-hidden text-white bg-blue-950 pt-28 pb-10 lg:pt-16 lg:pb-0 lg:h-screen lg:flex lg:items-center">
+    <section className="relative lg:sticky lg:top-0 z-1 overflow-hidden text-white bg-blue-950 pt-28 pb-10 lg:pt-16 lg:pb-0 lg:h-screen lg:flex lg:items-center">
       {/* Concentric circles pattern */}
       <svg
         className={`absolute -right-72 top-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[1200px] sm:h-[1200px] pointer-events-none transition-opacity duration-500 mask-[linear-gradient(to_right,transparent,black_40%)] ${isBlurVisible ? 'opacity-100' : 'opacity-0'}`}

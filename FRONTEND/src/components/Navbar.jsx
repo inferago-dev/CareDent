@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Search, User, ArrowRight, Menu, X, ChevronDown,
+  User, ArrowRight, Menu, X, ChevronDown,
 } from 'lucide-react';
 import useCatalogue from '../hooks/useCatalogue';
 import useMountedTransition from '../hooks/useMountedTransition';
@@ -10,8 +10,6 @@ export default function Navbar({ onOpenQuoteModal }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const { chairs } = useCatalogue();
 
   const location = useLocation();
@@ -19,7 +17,6 @@ export default function Navbar({ onOpenQuoteModal }) {
 
   const shouldRenderMegaMenu = useMountedTransition(megaMenuOpen, 150);
   const shouldRenderMobileMenu = useMountedTransition(mobileMenuOpen, 200);
-  const shouldRenderSearch = useMountedTransition(searchOpen, 200);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -31,17 +28,7 @@ export default function Navbar({ onOpenQuoteModal }) {
   useEffect(() => {
     setMobileMenuOpen(false);
     setMegaMenuOpen(false);
-    setSearchOpen(false);
   }, [location.pathname]);
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchOpen(false);
-      setSearchQuery('');
-    }
-  };
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -68,7 +55,12 @@ export default function Navbar({ onOpenQuoteModal }) {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center shrink-0">
-              <img src="/Logo_White.png" alt="CareDent" className="h-9 w-auto object-contain" />
+              <img
+                src="/Logo_White_Badge.png"
+                alt="Care Dent"
+                width="494" height="512"
+                className="h-12 sm:h-14 w-auto object-contain"
+              />
             </Link>
 
             {/* Desktop Navigation Links */}
@@ -151,14 +143,6 @@ export default function Navbar({ onOpenQuoteModal }) {
 
             {/* Header Right Actions */}
             <div className="hidden lg:flex items-center gap-6">
-              <button
-                onClick={() => setSearchOpen(!searchOpen)}
-                className="text-slate-200 hover:text-cyan-400 transition-colors"
-                title="Search products"
-                aria-label="Search"
-              >
-                <Search className="w-[18px] h-[18px]" />
-              </button>
 
               <Link
                 to="/login"
@@ -181,13 +165,6 @@ export default function Navbar({ onOpenQuoteModal }) {
 
             {/* Mobile Actions */}
             <div className="flex lg:hidden items-center gap-1">
-              <button
-                onClick={() => setSearchOpen(!searchOpen)}
-                className="p-2 text-slate-200 hover:text-cyan-400"
-                aria-label="Search"
-              >
-                <Search className="w-5 h-5" />
-              </button>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="p-2 text-slate-200 hover:text-cyan-400 transition-transform duration-200"
@@ -243,79 +220,6 @@ export default function Navbar({ onOpenQuoteModal }) {
         )}
       </header>
 
-      {/* Global Quick Search Modal */}
-      {shouldRenderSearch && (
-        <div
-          className={`fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-start justify-center pt-24 px-4 ${searchOpen ? 'animate-fade-in' : 'animate-fade-out'}`}
-          onClick={() => setSearchOpen(false)}
-        >
-          <div
-            className={`bg-blue-950/95 backdrop-blur-xl w-full max-w-2xl rounded-2xl border border-white/10 shadow-xl overflow-hidden ${searchOpen ? 'animate-drop-in' : 'animate-drop-out'}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <form onSubmit={handleSearchSubmit} className="flex items-center gap-3 px-5 py-4 border-b border-white/10">
-              <Search className="w-5 h-5 text-slate-500" />
-              <input
-                type="text"
-                placeholder="Search Gamma chairs, X-Ray units, Autoclaves, Scalers…"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                autoFocus
-                className="w-full text-[15px] text-white placeholder:text-slate-500 bg-transparent focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => setSearchOpen(false)}
-                className="p-1 text-slate-500 hover:text-slate-300"
-                aria-label="Close search"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </form>
-
-            <div className="p-5 max-h-80 overflow-y-auto">
-              <div className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-3">
-                Popular Searches
-              </div>
-              <div className="flex flex-wrap gap-2 mb-6">
-                {['Gamma Premium', 'Gamma Overhanging', 'X-Ray Units', 'Woodpecker Scaler', 'Autoclave', 'Oil-Free Compressor'].map((term) => (
-                  <button
-                    key={term}
-                    onClick={() => {
-                      setSearchQuery(term);
-                      navigate(`/products?q=${encodeURIComponent(term)}`);
-                      setSearchOpen(false);
-                    }}
-                    className="text-xs text-slate-300 hover:text-cyan-400 border border-white/15 hover:border-cyan-400 rounded-full px-3 py-1.5 transition-colors"
-                  >
-                    {term}
-                  </button>
-                ))}
-              </div>
-
-              <div className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-3">
-                Quick Models
-              </div>
-              <div className="space-y-1">
-                {DENTAL_CHAIRS.map((chair) => (
-                  <Link
-                    key={chair._id || chair.id}
-                    to={`/products/${chair.slug}`}
-                    onClick={() => setSearchOpen(false)}
-                    className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors"
-                  >
-                    <div>
-                      <span className="text-sm font-medium text-white">{chair.name}</span>
-                      <span className="text-xs text-slate-500 ml-2">— {chair.tagline}</span>
-                    </div>
-                    <span className="text-xs font-medium text-cyan-400">View →</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
