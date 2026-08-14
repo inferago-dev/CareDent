@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Star, ChevronRight } from 'lucide-react';
-import { DENTAL_CHAIRS } from '../../data/products';
+import useCatalogue from '../../hooks/useCatalogue';
 import Reveal from '../Reveal';
 import useParallax from '../../hooks/useParallax';
 
-const CHAIRS = DENTAL_CHAIRS.slice(0, 3);
 
 function StarRating({ rating }) {
   return (
@@ -23,6 +22,8 @@ function StarRating({ rating }) {
 
 export default function FlagshipModelsSection({ onOpenQuoteModal }) {
   const parallaxRef = useParallax(0.04);
+  const { chairs } = useCatalogue();
+  const CHAIRS = chairs.slice(0, 3);
 
   return (
     <section className="relative lg:sticky lg:top-0 z-5 snap-start snap-always py-20 bg-white overflow-hidden lg:h-screen lg:flex lg:items-center">

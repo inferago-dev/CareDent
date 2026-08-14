@@ -66,14 +66,14 @@ export default function Products({ onOpenQuoteModal }) {
     <div className="min-h-screen bg-white text-slate-800">
 
       {/* HEADER */}
-      <section className="relative overflow-hidden bg-blue-950 text-white py-24">
+      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left">
-          <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-4 font-bold">
+          <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
             Catalogue
           </span>
-          <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium text-white">
+          <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1] text-white">
             {query ? `Search results for "${query}"` : 'Dental Chairs & Clinical Equipment'}
           </h1>
           <p className="text-slate-400 text-base mt-4 max-w-2xl">

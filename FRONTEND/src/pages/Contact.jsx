@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+
 import { MapPin, Phone, Mail, Clock, MessageSquare, Send, CheckCircle2, Stethoscope, AlertCircle } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import { publicApi } from '../lib/api';
@@ -62,7 +62,7 @@ export default function Contact() {
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="block text-xs font-bold text-cyan-400 uppercase tracking-widest mb-4">
+          <span className="block text-xs font-bold text-cyan-400 uppercase tracking-widest mb-6">
             GET IN TOUCH
           </span>
           <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1] text-white mb-6">

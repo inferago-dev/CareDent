@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, CheckCircle2, Send, Stethoscope, AlertCircle } from 'lucide-react';
-import { DENTAL_CHAIRS, OTHER_EQUIPMENT } from '../data/products';
+import useCatalogue from '../hooks/useCatalogue';
 import useMountedTransition from '../hooks/useMountedTransition';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +12,7 @@ const EMPTY = {
 
 export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
   const { user } = useAuth();
+  const { chairs, equipment } = useCatalogue();
   const [submitted, setSubmitted] = useState(null);
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -147,10 +148,10 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
                 <label className="text-xs font-bold text-slate-700 uppercase">Selected Equipment *</label>
                 <select required value={formData.product} onChange={set('product')} disabled={submitting} className={inputClass}>
                   <optgroup label="Dental Chairs">
-                    {DENTAL_CHAIRS.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
+                    {chairs.map((c) => <option key={c._id || c.id} value={c.name}>{c.name}</option>)}
                   </optgroup>
                   <optgroup label="Other Equipment">
-                    {OTHER_EQUIPMENT.map((e) => <option key={e.id} value={e.name}>{e.name}</option>)}
+                    {equipment.map((p) => <option key={p._id || p.id} value={p.name}>{p.name}</option>)}
                   </optgroup>
                   <option value="Annual Maintenance Contract (AMC)">Annual Maintenance Contract (AMC)</option>
                   <option value="Complete Clinic Setup">Complete Clinic Setup</option>

@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Search, User, ArrowRight, Menu, X, ChevronDown,
 } from 'lucide-react';
-import { DENTAL_CHAIRS } from '../data/products';
+import useCatalogue from '../hooks/useCatalogue';
 import useMountedTransition from '../hooks/useMountedTransition';
 
 export default function Navbar({ onOpenQuoteModal }) {
@@ -12,6 +12,7 @@ export default function Navbar({ onOpenQuoteModal }) {
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { chairs } = useCatalogue();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -99,9 +100,9 @@ export default function Navbar({ onOpenQuoteModal }) {
                           <div>
                             <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-4">Popular Models</h4>
                             <div className="space-y-3">
-                              {DENTAL_CHAIRS.slice(0, 4).map(chair => (
+                              {chairs.slice(0, 4).map(chair => (
                                 <Link
-                                  key={chair.id}
+                                  key={chair._id || chair.id}
                                   to={`/products/${chair.slug}`}
                                   className="group/item flex items-center justify-between transition-colors"
                                   onClick={() => setMegaMenuOpen(false)}
@@ -298,7 +299,7 @@ export default function Navbar({ onOpenQuoteModal }) {
               <div className="space-y-1">
                 {DENTAL_CHAIRS.map((chair) => (
                   <Link
-                    key={chair.id}
+                    key={chair._id || chair.id}
                     to={`/products/${chair.slug}`}
                     onClick={() => setSearchOpen(false)}
                     className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors"

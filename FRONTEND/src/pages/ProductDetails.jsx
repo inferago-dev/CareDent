@@ -50,8 +50,14 @@ export default function ProductDetails({ onOpenQuoteModal }) {
 
   useEffect(() => { setSelectedImage(gallery[0] || null); }, [slug, gallery[0]]);
 
+  // Dark background: the navbar is fixed and transparent until you scroll, so
+  // a white panel at the top of the page would make its white logo invisible.
   if (loading) {
-    return <div className="min-h-[60vh] flex items-center justify-center"><LoadingBlock label="Loading product…" /></div>;
+    return (
+      <div className="min-h-screen bg-blue-950 flex items-center justify-center">
+        <LoadingBlock label="Loading product…" dark />
+      </div>
+    );
   }
   if (!product) return <NotFound />;
 
@@ -60,26 +66,33 @@ export default function ProductDetails({ onOpenQuoteModal }) {
   const hasBrochure = product.brochureUrl && product.brochureUrl !== '#';
 
   return (
-    <div className="min-h-screen bg-white text-slate-800 py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <div className="min-h-screen bg-white text-slate-800">
 
-        {/* Breadcrumbs */}
-        <div className="flex items-center justify-between">
-          <div className="text-xs text-slate-500 flex items-center gap-2 min-w-0">
-            <Link to="/" className="hover:text-cyan-600">Home</Link>
-            <span>/</span>
-            <Link to="/products" className="hover:text-cyan-600">Products</Link>
-            <span>/</span>
-            <span className="font-semibold text-slate-800 truncate">{product.name}</span>
+      {/* Dark breadcrumb band. Every other public page opens on blue-950; the
+          navbar is fixed and transparent until scroll, so this page needs the
+          same dark top or the white logo and nav links vanish against white. */}
+      <section className="relative overflow-hidden bg-blue-950 text-white pt-28 pb-10">
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+          <div className="text-xs text-slate-400 flex items-center gap-2 min-w-0">
+            <Link to="/" className="hover:text-cyan-400 transition-colors">Home</Link>
+            <span className="text-slate-600">/</span>
+            <Link to="/products" className="hover:text-cyan-400 transition-colors">Products</Link>
+            <span className="text-slate-600">/</span>
+            <span className="font-semibold text-white truncate">{product.name}</span>
           </div>
           <button
             onClick={() => navigate('/products')}
-            className="text-xs font-semibold text-slate-600 hover:text-cyan-600 flex items-center gap-1 shrink-0"
+            className="text-xs font-semibold text-slate-300 hover:text-cyan-400 flex items-center gap-1 shrink-0 transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
-            <span>Back to Products</span>
+            <span className="hidden sm:inline">Back to Products</span>
           </button>
         </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 py-12">
 
         {/* GALLERY + INFO */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden p-6 lg:p-10">
