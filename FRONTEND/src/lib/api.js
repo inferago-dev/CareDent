@@ -127,6 +127,9 @@ export const portalApi = {
 export const adminApi = {
   dashboard: (opts) => api.get('/admin/dashboard', opts),
 
+  inventory: (params, opts) => api.get(`/admin/inventory${qs(params)}`, opts),
+  adjustStock: (id, data) => api.patch(`/admin/inventory/${id}`, data),
+
   products: (params, opts) => api.get(`/admin/products${qs(params)}`, opts),
   createProduct: (data) => api.post('/admin/products', data),
   updateProduct: (id, data) => api.patch(`/admin/products/${id}`, data),

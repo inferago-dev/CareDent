@@ -188,3 +188,18 @@ export const invoicePaymentSchema = z.object({
   amountPaid: z.coerce.number().min(0),
   paymentMethod: z.enum(['Cash', 'UPI', 'Bank Transfer', 'Cheque', 'Card', 'Other']).optional(),
 });
+
+/* ---------------- inventory ---------------- */
+export const stockAdjustSchema = z
+  .object({
+    delta: z.coerce.number().int().optional(),
+    stock: z.coerce.number().int().min(0).optional(),
+    lowStockThreshold: z.coerce.number().int().min(0).optional(),
+    reorderQuantity: z.coerce.number().int().min(0).optional(),
+    note: z.string().trim().max(200).optional(),
+  })
+  .refine(
+    (v) => v.delta !== undefined || v.stock !== undefined ||
+           v.lowStockThreshold !== undefined || v.reorderQuantity !== undefined,
+    { message: 'Send a delta, an absolute stock count, or a threshold to update' }
+  );

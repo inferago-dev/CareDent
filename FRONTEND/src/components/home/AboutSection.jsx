@@ -35,11 +35,14 @@ function useCountUp(end, duration = 2000) {
   return [count, ref];
 }
 
+// Only figures the product catalogue actually supports. The previous set
+// ('500+ clinics served', '1200+ chairs installed', '45+ cities') was invented
+// for a company established in January 2023.
 const STATS = [
-  { value: COMPANY_DETAILS.experienceYears, label: 'Years of experience' },
-  { value: '500+', label: 'Clinics served' },
-  { value: '1200+', label: 'Chairs installed' },
-  { value: '45+', label: 'Cities covered' },
+  { value: COMPANY_DETAILS.experienceYears, label: "Founder's years in the industry" },
+  { value: '5', label: 'Dental chair models' },
+  { value: '8', label: 'Equipment categories' },
+  { value: '6', label: 'Service offerings' },
 ];
 
 function Stat({ value, label }) {

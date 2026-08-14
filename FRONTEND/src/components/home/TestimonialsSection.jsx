@@ -1,142 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import React from 'react';
+import { ShieldCheck, Package, Wrench } from 'lucide-react';
 import Reveal from '../Reveal';
 import useParallax from '../../hooks/useParallax';
+import { COMPANY_DETAILS } from '../../data/products';
 
-const TESTIMONIALS = [
+/**
+ * "Why Choose CARE DENT" — transcribed from the official product catalogue.
+ *
+ * This replaced a testimonial carousel that quoted three named doctors and
+ * clinics who do not exist. Reference clinics are offered on request instead,
+ * so nothing here claims an endorsement we cannot stand behind.
+ */
+const REASONS = [
   {
-    quote: "Care Dent provided exceptional installation for our 4-chair clinic in Chennai. The Gamma Overhanging model's legroom and Woodpecker scaler integration are world-class.",
-    author: "Dr. A. Ramesh, MDS",
-    clinic: "Ramesh Multispecialty Dental Center",
-    city: "Chennai"
+    icon: ShieldCheck,
+    title: `${COMPANY_DETAILS.experienceYears} years of industry leadership`,
+    body: `Guided by ${COMPANY_DETAILS.founder}'s deep industry expertise and a profound understanding of dental clinical needs, built across three decades at leading dental companies.`,
   },
   {
-    quote: "Sivakumar sir's 30+ years of technical experience is evident in every interaction. Quick breakdown response and transparent AMC service.",
-    author: "Dr. Meenakshi Sundaram",
-    clinic: "Smile Care Hospital",
-    city: "Coimbatore"
+    icon: Package,
+    title: 'Comprehensive portfolio',
+    body: 'From advanced over-hanging dental chairs to portable X-ray units, autoclaves, compressors and clinical essentials — sourced from top-tier manufacturers.',
   },
   {
-    quote: "The Gamma Premium chair ergonomics reduced my lower back strain significantly. Highly recommend Care Dent for any dentist upgrading their practice.",
-    author: "Dr. Priya Varma",
-    clinic: "Varma Dental & Implant Studio",
-    city: "Bangalore"
-  }
+    icon: Wrench,
+    title: 'Expert technical support',
+    body: 'A dedicated team of service engineers ensuring flawless installation and rapid-response maintenance, so a breakdown never becomes a lost patient day.',
+  },
 ];
 
-const AUTOPLAY_INTERVAL = 4000;
-const TRANSITION_MS = 1000;
-
 export default function TestimonialsSection() {
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [displayedTestimonial, setDisplayedTestimonial] = useState(0);
   const parallaxRef = useParallax(0.05);
-  const len = TESTIMONIALS.length;
-
-  const goTo = (index, dir = 1) => {
-    const next = ((index % len) + len) % len;
-    if (next === currentTestimonial) return;
-    setDirection(dir);
-    setIsAnimating(true);
-    setCurrentTestimonial(next);
-  };
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setDirection(1);
-      setIsAnimating(true);
-      setCurrentTestimonial((prev) => (prev + 1) % len);
-    }, AUTOPLAY_INTERVAL);
-    return () => clearInterval(id);
-  }, [len]);
-
-  // Swap the displayed content only after the exit animation finishes,
-  // so we're always animating a single card in/out rather than stacking cards.
-  useEffect(() => {
-    if (!isAnimating) return;
-    const t = setTimeout(() => {
-      setDisplayedTestimonial(currentTestimonial);
-      setIsAnimating(false);
-    }, TRANSITION_MS / 2);
-    return () => clearTimeout(t);
-  }, [currentTestimonial, isAnimating]);
-
-  const t = TESTIMONIALS[displayedTestimonial];
 
   return (
-    <section className="relative z-4 py-16 bg-white overflow-hidden">
-      <div ref={parallaxRef} className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center will-change-transform w-full">
-        <Reveal>
-          <span className="block text-xs uppercase tracking-widest text-slate-400 mb-2">
-            Testimonials
-          </span>
-          <h3 className="text-3xl sm:text-4xl tracking-tighter font-semibold text-blue-950 mb-6">
-            What leading dentists say
-          </h3>
+    <section className="relative z-4 py-24 bg-white overflow-hidden">
+      <div ref={parallaxRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 will-change-transform w-full">
+
+        <div className="max-w-2xl">
+          <Reveal>
+            <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-4 font-bold">
+              Why Care Dent
+            </span>
+          </Reveal>
+          <Reveal delay={80} variant="blur">
+            <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium text-blue-950 leading-[1.1]">
+              Bridging advanced technology and clinical practice
+            </h2>
+          </Reveal>
+          <Reveal delay={140}>
+            <p className="text-slate-500 mt-4 leading-relaxed">
+              We don&apos;t just sell products. We offer complete, end-to-end technical support,
+              precision installation and dependable maintenance — whether you are setting up a
+              new practice or upgrading an existing one.
+            </p>
+          </Reveal>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
+          {REASONS.map((r, idx) => {
+            const Icon = r.icon;
+            return (
+              <Reveal key={r.title} delay={idx * 110} variant="scale">
+                <div className="group h-full bg-white border border-slate-200 rounded-2xl p-7 space-y-4 hover:border-cyan-200 hover:shadow-xl hover:shadow-cyan-900/5 transition-all duration-500">
+                  <div className="w-11 h-11 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center group-hover:bg-cyan-600 group-hover:text-white transition-colors duration-500">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-medium text-slate-900 leading-snug">{r.title}</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">{r.body}</p>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
+
+        <Reveal delay={200}>
+          <p className="text-xs text-slate-400 mt-10">
+            Reference clinics available on request — call {COMPANY_DETAILS.phoneNumbers[0]}.
+          </p>
         </Reveal>
 
-        <div className="flex gap-1 justify-center mb-2">
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-          ))}
-        </div>
-
-        <div className="relative min-h-40 sm:min-h-40 flex items-center justify-center">
-          <div
-            key={displayedTestimonial}
-            className="w-full max-w-lg transition-all ease-in-out"
-            style={{
-              transitionDuration: `${TRANSITION_MS}ms`,
-              opacity: isAnimating ? 0 : 1,
-              transform: isAnimating
-                ? `translateY(${direction > 0 ? '20px' : '-20px'}) scale(0.95)`
-                : 'translateY(0) scale(1)',
-            }}
-          >
-            <div className="bg-white border border-slate-200 p-4 sm:p-8">
-              <p className="text-xl sm:text-2xl text-slate-800 font-playfair italic leading-relaxed tracking-tight">
-                {t.quote}
-              </p>
-              <div className="mt-6">
-                <div className="text-slate-900 text-base font-medium">{t.author}</div>
-                <div className="text-sm text-slate-500 mt-1">{t.clinic} · {t.city}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation — plain, understated */}
-        <div className="flex items-center justify-center gap-8 mt-8 pt-6 border-t border-slate-100">
-          <button
-            onClick={() => goTo(currentTestimonial - 1, -1)}
-            aria-label="Previous testimonial"
-            className="text-slate-300 hover:text-slate-900 transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-
-          <div className="flex items-center gap-2">
-            {TESTIMONIALS.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => goTo(idx, idx > currentTestimonial ? 1 : -1)}
-                aria-label={`Show testimonial ${idx + 1}`}
-                className={`h-1 rounded-full transition-all duration-300 ${currentTestimonial === idx ? 'w-5 bg-slate-900' : 'w-1 bg-slate-300 hover:bg-slate-400'
-                  }`}
-              />
-            ))}
-          </div>
-
-          <button
-            onClick={() => goTo(currentTestimonial + 1, 1)}
-            aria-label="Next testimonial"
-            className="text-slate-300 hover:text-slate-900 transition-colors"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
       </div>
     </section>
   );

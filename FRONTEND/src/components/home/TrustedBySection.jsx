@@ -1,13 +1,18 @@
 import React from 'react';
-import { Stethoscope, Building2 } from 'lucide-react';
 import Reveal from '../Reveal';
 
+/**
+ * The equipment brands Care Dent actually supplies and services, taken from
+ * the product catalogue. This deliberately does NOT claim client relationships
+ * with named hospitals or chains - only brands we stock.
+ */
 const BRANDS = [
-  { icon: Stethoscope, name: 'Apollo Dental' },
-  { icon: Building2, name: 'Saveetha Dental College' },
-  { icon: Stethoscope, name: 'SmileCare Clinics' },
-  { icon: Building2, name: 'SRM Dental Hospital' },
-  { icon: Stethoscope, name: 'Clove Dental Partners' },
+  'Woodpecker',
+  'Saeyang Marathon',
+  'Dryco Suction',
+  'Gamma Series',
+  'Beta Series',
+  'Alpha Series',
 ];
 
 export default function TrustedBySection() {
@@ -16,21 +21,19 @@ export default function TrustedBySection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <Reveal>
           <p className="text-xs uppercase tracking-widest text-slate-400 mb-6">
-            Trusted by 500+ clinics and hospitals nationwide
+            Equipment we supply, install and service
           </p>
         </Reveal>
       </div>
 
-      <div
-        className="relative overflow-hidden text-slate-500 mask-[linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
-      >
+      <div className="relative overflow-hidden text-slate-500 mask-[linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
         <div className="flex w-max animate-marquee">
-          {[...BRANDS, ...BRANDS].map(({ icon: Icon, name }, idx) => (
+          {[...BRANDS, ...BRANDS].map((name, idx) => (
             <span
               key={`${name}-${idx}`}
-              className="inline-flex items-center gap-2 text-sm whitespace-nowrap px-8"
+              className="inline-flex items-center text-sm font-medium whitespace-nowrap px-8 tracking-tight"
             >
-              <Icon className="w-4 h-4 shrink-0" /> {name}
+              {name}
             </span>
           ))}
         </div>

@@ -4,6 +4,7 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { nextReference } from '../utils/reference.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
 import { sendMail, detailsTable } from '../utils/mailer.js';
+import { applyStockForOrder } from './inventory.controller.js';
 
 /** Public tracking - returns only what is safe to show without signing in. */
 export const trackOrder = asyncHandler(async (req, res) => {
@@ -76,6 +77,8 @@ export const adminGetOrder = asyncHandler(async (req, res) => {
 export const adminCreateOrder = asyncHandler(async (req, res) => {
   const reference = await nextReference('order', 'ORD-');
   const order = await Order.create({ ...req.body, reference });
+  await applyStockForOrder(order, null);
+  await order.save();
 
   if (order.email) {
     sendMail({
@@ -97,6 +100,7 @@ export const adminUpdateOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
   if (!order) throw ApiError.notFound('Order not found');
 
+  const previousStatus = order.status;
   const { status, note, ...rest } = req.body;
   Object.assign(order, rest);
 
@@ -108,6 +112,7 @@ export const adminUpdateOrder = asyncHandler(async (req, res) => {
     order.timeline.push({ status: order.status, note });
   }
 
+  await applyStockForOrder(order, previousStatus);
   await order.save();
   res.json({ success: true, data: order });
 });

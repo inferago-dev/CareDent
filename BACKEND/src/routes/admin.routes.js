@@ -11,9 +11,11 @@ import * as invoice from '../controllers/invoice.controller.js';
 import * as contact from '../controllers/contact.controller.js';
 import * as document from '../controllers/document.controller.js';
 import * as service from '../controllers/service.controller.js';
+import * as inventory from '../controllers/inventory.controller.js';
 import {
   productSchema, productUpdateSchema, quotationUpdateSchema, orderSchema,
   orderUpdateSchema, ticketUpdateSchema, invoiceSchema, invoicePaymentSchema,
+  stockAdjustSchema,
 } from '../validators/schemas.js';
 
 const router = Router();
@@ -33,6 +35,10 @@ router.post('/products', validate({ body: productSchema }), product.createProduc
 router.patch('/products/:id', validate({ body: productUpdateSchema }), product.updateProduct);
 router.delete('/products/:id', product.deleteProduct);
 router.post('/products/:id/images', upload.array('images', 8), product.uploadProductImages);
+
+/* inventory & stock */
+router.get('/inventory', inventory.listInventory);
+router.patch('/inventory/:id', validate({ body: stockAdjustSchema }), inventory.adjustStock);
 
 /* quotations */
 router.get('/quotations', quotation.adminListQuotations);

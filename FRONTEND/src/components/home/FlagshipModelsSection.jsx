@@ -1,24 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Star, ChevronRight } from 'lucide-react';
+import { ArrowUpRight, ChevronRight } from 'lucide-react';
 import useCatalogue from '../../hooks/useCatalogue';
 import Reveal from '../Reveal';
 import useParallax from '../../hooks/useParallax';
 
-
-function StarRating({ rating }) {
-  return (
-    <div className="flex items-center gap-1">
-      {[...Array(5)].map((_, i) => (
-        <Star
-          key={i}
-          className={`w-3 h-3 ${i < Math.floor(rating) ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`}
-        />
-      ))}
-      <span className="text-xs text-slate-500 ml-1 font-medium">{rating}</span>
-    </div>
-  );
-}
 
 export default function FlagshipModelsSection({ onOpenQuoteModal }) {
   const parallaxRef = useParallax(0.04);
@@ -94,7 +80,6 @@ export default function FlagshipModelsSection({ onOpenQuoteModal }) {
                   {/* Rating + tagline */}
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-xs text-slate-500 leading-snug flex-1 line-clamp-2">{chair.tagline}</p>
-                    <StarRating rating={chair.rating} />
                   </div>
 
                   {/* Feature Chips */}

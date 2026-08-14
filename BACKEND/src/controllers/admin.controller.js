@@ -5,6 +5,7 @@ import Quotation from '../models/Quotation.js';
 import ServiceTicket from '../models/ServiceTicket.js';
 import Invoice from '../models/Invoice.js';
 import ContactMessage from '../models/ContactMessage.js';
+import { LOW_STOCK_EXPR } from './inventory.controller.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
@@ -19,6 +20,7 @@ export const dashboard = asyncHandler(async (_req, res) => {
     customers, products, ordersTotal, ordersOpen,
     quotesNew, ticketsOpen, messagesNew,
     revenueAgg, recentOrders, recentQuotes, recentTickets, monthlyAgg,
+    lowStockItems, outOfStockCount,
   ] = await Promise.all([
     User.countDocuments({ role: 'customer', isActive: true }),
     Product.countDocuments({ isActive: true }),
@@ -40,6 +42,10 @@ export const dashboard = asyncHandler(async (_req, res) => {
       { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, count: { $sum: 1 }, value: { $sum: '$totalAmount' } } },
       { $sort: { _id: 1 } },
     ]),
+    Product.find({ isActive: true, stock: { $gt: 0 }, ...LOW_STOCK_EXPR })
+      .sort({ stock: 1 }).limit(8)
+      .select('name slug stock lowStockThreshold reorderQuantity').lean(),
+    Product.countDocuments({ isActive: true, stock: { $lte: 0 } }),
   ]);
 
   res.json({
@@ -55,10 +61,13 @@ export const dashboard = asyncHandler(async (_req, res) => {
         messagesNew,
         revenueCollected: revenueAgg[0]?.collected || 0,
         revenueBilled: revenueAgg[0]?.billed || 0,
+        lowStock: lowStockItems.length,
+        outOfStock: outOfStockCount,
       },
       recentOrders,
       recentQuotes,
       recentTickets,
+      lowStockItems,
       last30Days: monthlyAgg,
     },
   });

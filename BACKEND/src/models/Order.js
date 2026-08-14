@@ -57,6 +57,10 @@ const orderSchema = new mongoose.Schema(
     installationDate: { type: Date },
     assignedEngineer: { type: String, trim: true },
     notes: { type: String, trim: true },
+
+    // True once this order's items have been taken out of stock. Guards against
+    // double-deducting when a status is changed back and forth.
+    stockDeducted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
