@@ -54,7 +54,7 @@ export default function CtaSection({ onOpenQuoteModal }) {
                 onClick={() => onOpenQuoteModal()}
                 className="inline-flex items-center gap-2 rounded-full bg-white text-blue-950 font-medium text-sm px-3 ps-5 py-2.5 hover:bg-cyan-50 transition-colors"
               >
-                <span className="text-md uppercase font-semibold tracking-tight">Get A Quotation</span>
+                <span>Get A Quotation</span>
                 <ArrowRight className="w-8 h-8 rounded-full bg-blue-950 p-2 text-white" />
               </button>
             </div>

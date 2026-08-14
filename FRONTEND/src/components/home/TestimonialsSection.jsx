@@ -69,7 +69,7 @@ export default function TestimonialsSection() {
     <section className="relative lg:sticky lg:top-0 z-4 snap-start snap-always py-16 bg-white overflow-hidden lg:h-screen lg:flex lg:items-center">
       <div ref={parallaxRef} className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center will-change-transform w-full">
         <Reveal>
-          <span className="block text-sm uppercase  text-slate-500 mb-2">
+          <span className="block text-xs uppercase tracking-widest text-slate-400 mb-2">
             Testimonials
           </span>
           <h3 className="text-3xl sm:text-4xl tracking-tighter font-semibold text-blue-950 mb-6">

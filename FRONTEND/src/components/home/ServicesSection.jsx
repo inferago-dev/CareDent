@@ -32,7 +32,7 @@ export default function ServicesSection() {
 
         {/* Label */}
         <Reveal>
-          <span className="block text-sm uppercase tracking-normal text-slate-400 mb-10 font-medium">
+          <span className="block text-xs uppercase tracking-widest text-slate-400 mb-10 font-medium">
             Services & Support
           </span>
         </Reveal>
@@ -46,9 +46,9 @@ export default function ServicesSection() {
               const Icon = ICONS[s.id];
               return (
                 <Reveal key={s.id} delay={idx * 60}>
-                  <div className="group relative flex flex-col justify-between h-full min-h-[160px] rounded-2xl bg-neutral-300 hover:bg-neutral-400/50 transition-all duration-300 cursor-default p-5 overflow-hidden">
+                  <div className="group relative flex flex-col justify-between h-full min-h-[160px] rounded-2xl bg-slate-200 hover:bg-slate-300/50 transition-all duration-300 cursor-default p-5 overflow-hidden">
                     {/* large faded index */}
-                    <span className="absolute -bottom-3 -right-1 text-[5rem] font-bold text-neutral-400/20 group-hover:text-neutral-400/60 leading-none select-none transition-colors duration-300 pointer-events-none">
+                    <span className="absolute -bottom-3 -right-1 text-[5rem] font-bold text-slate-400/20 group-hover:text-slate-400/60 leading-none select-none transition-colors duration-300 pointer-events-none">
                       {String(idx + 1).padStart(2, '0')}
                     </span>
 
@@ -93,7 +93,7 @@ export default function ServicesSection() {
 
               {/* Large statement text */}
               <div className="relative z-10">
-                <p className="text-sm uppercase tracking-tight text-cyan-600 font-medium mb-6">
+                <p className="text-xs uppercase tracking-widest text-cyan-400 font-medium mb-6">
                   Care Dent Promise
                 </p>
                 <h2 className="text-4xl sm:text-5xl font-medium tracking-tighter leading-[1.05]">
@@ -106,11 +106,11 @@ export default function ServicesSection() {
               <div className="relative z-10 mt-10 grid grid-cols-2 gap-4 border-t border-white/10 pt-8">
                 <div>
                   <p className="text-3xl font-medium tracking-tighter">30+</p>
-                  <p className="text-xs text-slate-400 mt-1">Years of experience</p>
+                  <p className="text-xs text-white/40 uppercase tracking-wide mt-1">Years of experience</p>
                 </div>
                 <div>
                   <p className="text-3xl font-medium tracking-tighter">6</p>
-                  <p className="text-xs text-slate-400 mt-1">Service categories</p>
+                  <p className="text-xs text-white/40 uppercase tracking-wide mt-1">Service categories</p>
                 </div>
               </div>
 

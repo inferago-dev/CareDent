@@ -26,7 +26,7 @@ export default function Footer() {
               href={`https://wa.me/${COMPANY_DETAILS.whatsappNumber}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-block text-sm text-cyan-400 border-b border-cyan-400/40 hover:border-cyan-400 transition-colors"
+              className="inline-block text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
             >
               Message us on WhatsApp
             </a>

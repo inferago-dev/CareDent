@@ -1,0 +1,49 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+
+/**
+ * Small data-fetching hook for the API client.
+ *
+ *   const { data, loading, error, reload } = useFetch(
+ *     (signal) => catalogApi.list({ q }, { signal }),
+ *     [q]
+ *   );
+ *
+ * Aborts the in-flight request when deps change or the component unmounts,
+ * so a slow response can never overwrite a newer one.
+ */
+export default function useFetch(fetcher, deps = [], { enabled = true, initialData = null } = {}) {
+  const [data, setData] = useState(initialData);
+  const [loading, setLoading] = useState(enabled);
+  const [error, setError] = useState(null);
+  const [nonce, setNonce] = useState(0);
+
+  const fetcherRef = useRef(fetcher);
+  fetcherRef.current = fetcher;
+
+  useEffect(() => {
+    if (!enabled) {
+      setLoading(false);
+      return undefined;
+    }
+    const controller = new AbortController();
+    let active = true;
+
+    setLoading(true);
+    setError(null);
+
+    Promise.resolve(fetcherRef.current(controller.signal))
+      .then((res) => { if (active) setData(res); })
+      .catch((err) => { if (active && err.name !== 'AbortError') setError(err); })
+      .finally(() => { if (active) setLoading(false); });
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps, enabled, nonce]);
+
+  const reload = useCallback(() => setNonce((n) => n + 1), []);
+
+  return { data, loading, error, reload, setData };
+}

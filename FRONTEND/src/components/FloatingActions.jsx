@@ -30,7 +30,7 @@ export default function FloatingActions() {
       {shouldRenderScrollTop && (
         <button
           onClick={scrollToTop}
-          className={`w-11 h-11 bg-slate-900/90 hover:bg-slate-900 text-white rounded-full flex items-center justify-center shadow-lg border border-slate-700 transition-all transform hover:scale-105 active:scale-95 ${showScrollTop ? 'animate-pop-in' : 'animate-pop-out'}`}
+          className={`w-11 h-11 bg-blue-950/90 hover:bg-blue-950 text-white rounded-full flex items-center justify-center shadow-lg border border-white/10 transition-all transform hover:scale-105 active:scale-95 ${showScrollTop ? 'animate-pop-in' : 'animate-pop-out'}`}
           title="Back to Top"
           aria-label="Back to Top"
         >

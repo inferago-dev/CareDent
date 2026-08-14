@@ -10,12 +10,8 @@ export const DENTAL_CHAIRS = [
     rating: 4.9,
     reviewsCount: 38,
     description: "Designed for ultimate operator efficiency and maximum legroom under the patient bed. Features a 6-program memory system, over-the-patient delivery tray, integrated optic scaler, square ceramic bowl box unit, and plush memory foam upholstery.",
-    heroImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1000&q=80"
-    ],
+    heroImage: "/products/gamma-overhanging.jpg",
+    images: ["/products/gamma-overhanging.jpg"],
     keyDifferentiators: [
       "6 Programs electrically operated position memory system",
       "Over-hanging (over-the-patient) continental tray delivery system",
@@ -47,12 +43,8 @@ export const DENTAL_CHAIRS = [
     rating: 4.8,
     reviewsCount: 52,
     description: "The gold standard in clinical versatility. Equipped with 6 programmable positioning memories, imported cavity holders, non-optic ultrasonic scaler, premium memory foam seating, and high-intensity LED clinical light.",
-    heroImage: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1000&q=80"
-    ],
+    heroImage: "/products/gamma-premium.jpg",
+    images: ["/products/gamma-premium.jpg"],
     keyDifferentiators: [
       "6 Program memory electrically operated mechanism",
       "Woodpecker Non-Optic ultrasonic scaler with 5 tips",
@@ -84,12 +76,8 @@ export const DENTAL_CHAIRS = [
     rating: 4.7,
     reviewsCount: 29,
     description: "Built for high-volume practices requiring dependable 6-program motorization, hanging cord trolley delivery, non-optic ultrasonic scaler, ceramic or tempered glass spittoon bowl, and smooth quiet operation.",
-    heroImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1000&q=80"
-    ],
+    heroImage: "/products/gamma.jpg",
+    images: ["/products/gamma.jpg"],
     keyDifferentiators: [
       "6 Programs electrically operated system",
       "Woodpecker Non-Optic ultrasonic scaler",
@@ -121,11 +109,8 @@ export const DENTAL_CHAIRS = [
     rating: 4.7,
     reviewsCount: 41,
     description: "Streamlined 4-program dental chair featuring non-touch 4-LED illumination, porcelain or glass bowl, non-optic ultrasonic scaler, and sturdy stainless steel tray assembly for routine and complex procedures alike.",
-    heroImage: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1000&q=80"
-    ],
+    heroImage: "/products/beta.jpg",
+    images: ["/products/beta.jpg"],
     keyDifferentiators: [
       "4 Program electrically operated position system",
       "4 LED non-touch proximity sensor light",
@@ -157,11 +142,8 @@ export const DENTAL_CHAIRS = [
     rating: 4.6,
     reviewsCount: 22,
     description: "Simple, robust, and intuitive electrical operation with dual hand + foot controls. Features zero-program quick positioning, LED non-touch light, porcelain/glass spittoon, and Woodpecker scaler.",
-    heroImage: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1000&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1000&q=80"
-    ],
+    heroImage: "/products/alpha.jpg",
+    images: ["/products/alpha.jpg"],
     keyDifferentiators: [
       "ZERO program (manual electrical adjustment via hand + foot controls)",
       "LED light with non-touch sensor activation",
@@ -187,67 +169,75 @@ export const DENTAL_CHAIRS = [
 export const OTHER_EQUIPMENT = [
   {
     id: "x-ray-units",
+    slug: "portable-x-ray-units",
     name: "X-Ray Units",
     category: "Radiology",
     brand: "Woodpecker",
     description: "High-frequency portable & wall-mounted dental X-Ray machines with low radiation leakage.",
-    image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80"
+    image: "/products/x-ray-units.jpg"
   },
   {
     id: "autoclaves",
+    slug: "autoclaves-sterilization",
     name: "Autoclaves & Sterilization",
     category: "Sterilization",
     brand: "Woodpecker",
     description: "Class B vacuum autoclaves ensuring 100% infection control and rapid cycle times.",
-    image: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=600&q=80"
+    image: "/products/autoclaves.jpg"
   },
   {
     id: "led-curing-lights",
+    slug: "led-curing-lights",
     name: "LED Curing Lights",
     category: "Restorative",
     brand: "Woodpecker",
     description: "Broad-spectrum high power cordless LED curing lamps with fast 1-second mode.",
-    image: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=600&q=80"
+    image: "/products/curing-light.jpg"
   },
   {
     id: "scalers",
+    slug: "ultrasonic-scalers",
     name: "Ultrasonic Scalers",
     category: "Prophylaxis",
     brand: "Woodpecker",
     description: "Optic and Non-Optic piezo ultrasonic scalers with detachable autoclavable handpieces.",
-    image: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=600&q=80"
+    image: "/products/scaler.jpg"
   },
   {
     id: "compressors",
+    slug: "oil-free-air-compressors",
     name: "Oil-Free Air Compressors",
     category: "Utility",
     brand: "Care Dent Premium",
     description: "Ultra-quiet, medical grade oil-free air compressors with internal tank coating.",
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80"
+    image: "/products/compressor.jpg"
   },
   {
     id: "micromotors",
+    slug: "dental-micromotors",
     name: "Dental Micromotors",
     category: "Endodontics",
     brand: "Saeyang Marathon",
     description: "High torque brushless micromotors for prosthetic and surgical applications.",
-    image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=600&q=80"
+    image: "/products/micromotor.jpg"
   },
   {
     id: "dental-stools",
+    slug: "ergonomic-dental-stools",
     name: "Ergonomic Dental Stools",
     category: "Furniture",
     brand: "Care Dent",
     description: "Doctor & assistant stools with 3D adjustable armrests and back support.",
-    image: "https://images.unsplash.com/photo-1580481072645-022f9a6d83d0?auto=format&fit=crop&w=600&q=80"
+    image: "/products/stools.jpg"
   },
   {
     id: "accessories",
+    slug: "handpieces-accessories",
     name: "Handpieces & Accessories",
     category: "Accessories",
     brand: "Saeyang / Woodpecker",
     description: "High-speed LED Airotors, contra-angle handpieces, and maintenance oils.",
-    image: "https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=600&q=80"
+    image: "/products/handpiece.jpg"
   }
 ];
 

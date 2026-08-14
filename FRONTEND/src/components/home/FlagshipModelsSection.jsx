@@ -32,7 +32,7 @@ export default function FlagshipModelsSection({ onOpenQuoteModal }) {
         <Reveal>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
             <div>
-              <span className="block text-sm uppercase text-slate-500 mb-3 font-medium">
+              <span className="block text-xs uppercase tracking-widest text-slate-400 mb-3 font-medium">
                 Flagship Models
               </span>
               <h2 className="text-3xl sm:text-4xl font-semibold tracking-tighter text-blue-950 leading-[1.1]">
@@ -52,7 +52,7 @@ export default function FlagshipModelsSection({ onOpenQuoteModal }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {CHAIRS.map((chair, idx) => (
             <Reveal key={chair.id} delay={idx * 100}>
-              <div className="group relative flex flex-col rounded-[1.5rem] bg-white border border-slate-100  hover:shadow-blue-950/10 hover:-translate-y-1.5 overflow-hidden transition-all duration-500 h-full cursor-pointer">
+              <div className="group relative flex flex-col rounded-3xl bg-white border border-slate-100 hover:shadow-blue-950/10 hover:-translate-y-1.5 overflow-hidden transition-all duration-500 h-full cursor-pointer">
 
                 {/* Image area */}
                 <div className="relative h-52 overflow-hidden bg-slate-100">

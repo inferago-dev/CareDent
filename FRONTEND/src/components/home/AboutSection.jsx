@@ -49,7 +49,7 @@ function Stat({ value, label }) {
       <span className="text-5xl sm:text-6xl font-medium tracking-tighter text-white leading-none">
         {display || value}
       </span>
-      <span className="text-xs text-white/40 uppercase tracking-normal mt-2">{label}</span>
+      <span className="text-xs text-white/40 uppercase tracking-wide mt-2">{label}</span>
     </div>
   );
 }
@@ -93,7 +93,7 @@ export default function AboutSection() {
             {/* Top: header row */}
             <div className="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6 px-10 pt-10 pb-0">
               <div>
-                <span className="block text-sm uppercase tracking-normal text-cyan-600 font-medium mb-3">
+                <span className="block text-xs uppercase tracking-widest text-cyan-400 font-medium mb-3">
                   About Care Dent
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-medium tracking-tighter text-white leading-[1.1] max-w-md">
@@ -102,7 +102,7 @@ export default function AboutSection() {
               </div>
               <Link
                 to="/about"
-                className="inline-flex items-center uppercase tracking-tight gap-1.5 text-sm font-medium text-cyan-600 border-b border-cyan-400/40 hover:border-cyan-600 pb-0.5 transition-colors shrink-0 mb-2"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors shrink-0 mb-2"
               >
                 Our Story <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>

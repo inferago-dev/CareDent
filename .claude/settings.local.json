@@ -3,7 +3,8 @@
     "allow": [
       "Bash(sleep 4 && cat /tmp/vite_dev2.log)",
       "Read(//tmp/**)",
-      "Bash(curl -s \"http://localhost:5173/src/pages/Home.jsx\")"
+      "Bash(curl -s \"http://localhost:5173/src/pages/Home.jsx\")",
+      "Bash('/c/Program Files/Google/Chrome/Application/chrome.exe' --headless=new --disable-gpu --enable-unsafe-swiftshader --use-gl=angle --use-angle=swiftshader --window-size=1400,1000 --screenshot=/c/Users/karth/AppData/Local/Temp/claude/c--Users-karth-CareDent/e4059eef-e930-4770-b006-d126f49cc4fd/scratchpad/hero-rot1.png --virtual-time-budget=6000 http://localhost:5174/)"
     ]
   }
 }

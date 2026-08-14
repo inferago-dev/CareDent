@@ -160,10 +160,10 @@ export default function About({ onOpenQuoteModal }) {
           <Reveal delay={200}>
             <button
               onClick={() => onOpenQuoteModal && onOpenQuoteModal()}
-              className="inline-flex items-center gap-2 rounded-full bg-white text-blue-950 font-medium text-sm px-7 py-3.5 hover:bg-cyan-50 transition-all active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-full bg-white text-blue-950 font-medium text-sm px-3 ps-7 py-3.5 hover:bg-cyan-50 transition-all active:scale-[0.98]"
             >
               <span>Request Official Quotation</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-8 h-8 bg-blue-950 p-2 text-white rounded-full" />
             </button>
           </Reveal>
         </div>

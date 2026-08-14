@@ -5,6 +5,9 @@ import {
 } from 'lucide-react';
 import { SERVICES_LIST, COMPANY_DETAILS } from '../data/products';
 import Reveal from '../components/Reveal';
+import ServiceRequestForm from '../components/ServiceRequestForm';
+import useFetch from '../hooks/useFetch';
+import { catalogApi } from '../lib/api';
 
 const ICONS = { Wrench, ShieldCheck, Calendar, Activity, PhoneCall, ClipboardCheck };
 
@@ -16,6 +19,11 @@ const AMC_INCLUSIONS = [
 ];
 
 export default function Services({ onOpenQuoteModal }) {
+  // Services are editable from the admin content manager; fall back to the
+  // bundled list if the API is unreachable so the page is never empty.
+  const { data } = useFetch((signal) => catalogApi.services({ signal }), []);
+  const services = data?.data?.length ? data.data : SERVICES_LIST;
+
   return (
     <div className="min-h-screen bg-white text-slate-800">
 
@@ -46,10 +54,10 @@ export default function Services({ onOpenQuoteModal }) {
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVICES_LIST.map((service, idx) => {
+            {services.map((service, idx) => {
               const Icon = ICONS[service.iconName] || Wrench;
               return (
-                <Reveal key={service.id} delay={idx * 80} y={24}>
+                <Reveal key={service._id || service.key || service.id} delay={idx * 80} y={24}>
                   <div className="group h-full bg-white border border-slate-200 rounded-2xl p-7 space-y-5 hover:border-cyan-200 hover:shadow-xl hover:shadow-cyan-900/5 transition-all duration-500">
                     <div className="flex items-center justify-between">
                       <div className="w-11 h-11 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center group-hover:bg-cyan-600 group-hover:text-white transition-colors duration-500">
@@ -103,17 +111,17 @@ export default function Services({ onOpenQuoteModal }) {
             </div>
 
             <Reveal delay={220} className="lg:col-span-5">
-              <div className="bg-white/5 border border-white/15 rounded-2xl p-8 text-center space-y-5">
+              <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-8 text-center space-y-5">
                 <div className="text-xs uppercase tracking-widest text-slate-400">Get Started</div>
                 <p className="text-sm text-slate-300 leading-relaxed">
                   Talk to {COMPANY_DETAILS.founder} directly about an AMC plan tailored to your clinic.
                 </p>
                 <button
                   onClick={() => onOpenQuoteModal && onOpenQuoteModal()}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-sm px-6 py-3 transition-all active:scale-[0.98]"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-sm pl-6 pr-3 py-3 transition-all active:scale-[0.98]"
                 >
                   <span>Request AMC Quotation</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-8 h-8 bg-white/15 p-2 text-white rounded-full" />
                 </button>
                 <a
                   href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`}
@@ -124,6 +132,28 @@ export default function Services({ onOpenQuoteModal }) {
               </div>
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      {/* BOOK A SERVICE VISIT */}
+      <section id="book-service" className="py-24">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <div className="text-center mb-10">
+              <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-3 font-bold">
+                Already a customer?
+              </span>
+              <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium text-slate-900">
+                Log a service request
+              </h2>
+              <p className="text-slate-500 text-base mt-3 max-w-xl mx-auto">
+                You will get a reference number straight away, and an engineer will call to confirm the visit.
+              </p>
+            </div>
+          </Reveal>
+          <Reveal delay={100}>
+            <ServiceRequestForm />
+          </Reveal>
         </div>
       </section>
 
