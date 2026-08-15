@@ -5,7 +5,7 @@ import { parsePaging, pageMeta } from '../utils/pagination.js';
 import { sendMail, detailsTable, replyEmail } from '../utils/mailer.js';
 
 export const createMessage = asyncHandler(async (req, res) => {
-  const message = await ContactMessage.create(req.body);
+  const message = await ContactMessage.create({ ...req.body, user: req.user?._id });
 
   sendMail({
     subject: `Website enquiry from ${message.name}`,

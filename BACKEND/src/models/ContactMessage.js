@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 const contactSchema = new mongoose.Schema(
   {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
     name: { type: String, required: [true, 'Name is required'], trim: true },
     email: { type: String, required: [true, 'Email is required'], lowercase: true, trim: true },
     phone: { type: String, trim: true },

@@ -10,6 +10,10 @@ import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
 
+// Escape regex metacharacters in free-text search input (see the same fix
+// in quotation.controller.js for why this matters).
+const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const OPEN_TICKETS = ['Open', 'Acknowledged', 'Engineer Assigned', 'Pending Parts', 'In Progress'];
 const OPEN_ORDERS = ['Pending Confirmation', 'Confirmed', 'Processing', 'Pending Dispatch', 'Dispatched', 'Installation Scheduled'];
 
@@ -77,7 +81,7 @@ export const listCustomers = asyncHandler(async (req, res) => {
   const { page, limit, skip } = parsePaging(req.query);
   const filter = { role: 'customer' };
   if (req.query.q) {
-    const rx = new RegExp(req.query.q, 'i');
+    const rx = new RegExp(escapeRegex(req.query.q), 'i');
     filter.$or = [{ name: rx }, { email: rx }, { clinicName: rx }, { phone: rx }];
   }
 
@@ -92,14 +96,15 @@ export const getCustomer = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id).lean();
   if (!user) throw ApiError.notFound('Customer not found');
 
-  const [orders, quotations, tickets, invoices] = await Promise.all([
+  const [orders, quotations, tickets, invoices, messages] = await Promise.all([
     Order.find({ user: user._id }).sort({ createdAt: -1 }).lean(),
     Quotation.find({ user: user._id }).sort({ createdAt: -1 }).lean(),
     ServiceTicket.find({ user: user._id }).sort({ createdAt: -1 }).lean(),
     Invoice.find({ user: user._id }).sort({ issuedOn: -1 }).lean(),
+    ContactMessage.find({ user: user._id }).sort({ createdAt: -1 }).lean(),
   ]);
 
-  res.json({ success: true, data: { user, orders, quotations, tickets, invoices } });
+  res.json({ success: true, data: { user, orders, quotations, tickets, invoices, messages } });
 });
 
 export const setCustomerActive = asyncHandler(async (req, res) => {
@@ -108,6 +113,26 @@ export const setCustomerActive = asyncHandler(async (req, res) => {
     { isActive: Boolean(req.body.isActive) },
     { new: true }
   );
+  if (!user) throw ApiError.notFound('Customer not found');
+  res.json({ success: true, data: user.toPublic() });
+});
+
+/**
+ * Lets admin (support staff) update a customer's contact details on their
+ * behalf - e.g. after a phone call asking to correct a clinic address.
+ * Deliberately excludes email and password: those stay customer-controlled
+ * so support can never silently take over a login.
+ */
+export const adminUpdateCustomer = asyncHandler(async (req, res) => {
+  const { name, phone, clinicName, city, address } = req.body;
+  const patch = {};
+  if (name !== undefined) patch.name = name;
+  if (phone !== undefined) patch.phone = phone;
+  if (clinicName !== undefined) patch.clinicName = clinicName;
+  if (city !== undefined) patch.city = city;
+  if (address !== undefined) patch.address = address;
+
+  const user = await User.findByIdAndUpdate(req.params.id, patch, { new: true, runValidators: true });
   if (!user) throw ApiError.notFound('Customer not found');
   res.json({ success: true, data: user.toPublic() });
 });

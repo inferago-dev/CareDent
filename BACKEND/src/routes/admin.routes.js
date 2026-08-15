@@ -15,7 +15,7 @@ import * as inventory from '../controllers/inventory.controller.js';
 import {
   productSchema, productUpdateSchema, quotationUpdateSchema, orderSchema,
   orderUpdateSchema, ticketUpdateSchema, invoiceSchema, invoicePaymentSchema,
-  stockAdjustSchema, replySchema,
+  stockAdjustSchema, replySchema, updateMeSchema,
 } from '../validators/schemas.js';
 
 const router = Router();
@@ -27,6 +27,7 @@ router.get('/dashboard', admin.dashboard);
 /* customers */
 router.get('/customers', admin.listCustomers);
 router.get('/customers/:id', admin.getCustomer);
+router.patch('/customers/:id', validate({ body: updateMeSchema }), admin.adminUpdateCustomer);
 router.patch('/customers/:id/active', admin.setCustomerActive);
 
 /* products */

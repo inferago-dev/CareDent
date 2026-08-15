@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ShoppingBag, FileText, Wrench, Download, User, LogOut,
-  FileDown, RefreshCw, ExternalLink,
+  FileDown, RefreshCw, ExternalLink, Mail, Check,
 } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import { useAuth } from '../context/AuthContext';
 import useFetch from '../hooks/useFetch';
-import { portalApi, BASE_URL } from '../lib/api';
+import { portalApi, authApi, BASE_URL } from '../lib/api';
 import {
-  LoadingBlock, ErrorBlock, EmptyBlock, StatusPill, formatCurrency, formatDate,
+  LoadingBlock, ErrorBlock, EmptyBlock, StatusPill, FieldError, formatCurrency, formatDate,
 } from '../components/ui';
 
 const FILE_ROOT = BASE_URL.replace(/\/api$/, '');
@@ -33,14 +33,17 @@ export default function Portal() {
   const tickets = d?.tickets || [];
   const invoices = d?.invoices || [];
   const documents = d?.documents || [];
+  const messages = d?.messages || [];
   const stats = d?.stats;
 
   const TABS = [
     { id: 'orders', label: 'My Orders', icon: ShoppingBag, count: orders.length },
     { id: 'quotations', label: 'Quotations', icon: FileText, count: quotations.length },
     { id: 'service', label: 'Service Requests', icon: Wrench, count: tickets.length },
+    { id: 'messages', label: 'My Enquiries', icon: Mail, count: messages.length },
     { id: 'invoices', label: 'Invoices', icon: FileDown, count: invoices.length },
     { id: 'downloads', label: 'Downloads', icon: Download, count: documents.length },
+    { id: 'account', label: 'My Account', icon: User },
   ];
 
   return (
@@ -60,14 +63,18 @@ export default function Portal() {
           </div>
         </Link>
 
-        <div className="p-3.5 bg-white/5 rounded-xl border border-white/10 space-y-1 text-xs">
+        <button
+          onClick={() => setActiveTab('account')}
+          className="w-full text-left p-3.5 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 space-y-1 text-xs transition-colors"
+          title="Manage your account"
+        >
           <div className="font-bold text-white flex items-center gap-1.5">
             <User className="w-3.5 h-3.5 text-cyan-400" />
             <span className="truncate">{user?.name}</span>
           </div>
           <div className="text-slate-400 truncate">{user?.email}</div>
           {user?.phone && <div className="text-cyan-300 font-mono text-[10px]">{user.phone}</div>}
-        </div>
+        </button>
 
         <nav className="space-y-1 text-sm font-semibold">
           {TABS.map((item) => {
@@ -87,11 +94,13 @@ export default function Portal() {
                   <Icon className="w-4 h-4" />
                   <span>{item.label}</span>
                 </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                  active ? 'bg-white text-cyan-700' : 'bg-white/10 text-slate-400'
-                }`}>
-                  {item.count}
-                </span>
+                {item.count !== undefined && (
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    active ? 'bg-white text-cyan-700' : 'bg-white/10 text-slate-400'
+                  }`}>
+                    {item.count}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -232,6 +241,39 @@ export default function Portal() {
                 </Section>
               )}
 
+              {activeTab === 'messages' && (
+                <Section title="Your enquiries" action={<Link to="/contact" className="text-xs font-bold text-cyan-600 hover:underline">+ New enquiry</Link>}>
+                  {messages.length === 0 ? (
+                    <EmptyBlock title="No enquiries yet" description="Messages you send from the Contact page will appear here, along with our reply." action={<Link to="/contact" className="text-sm font-medium text-cyan-700 hover:underline">Contact Care Dent</Link>} />
+                  ) : (
+                    <div className="space-y-4">
+                      {messages.map((m) => (
+                        <div key={m._id} className="border border-slate-200 rounded-2xl p-5 space-y-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <div>
+                              <div className="text-sm font-bold text-slate-900">{m.subject || 'General Enquiry'}</div>
+                              <div className="text-xs text-slate-500 mt-0.5">{formatDate(m.createdAt)}</div>
+                            </div>
+                            <StatusPill status={m.status} />
+                          </div>
+                          <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{m.message}</p>
+                          {m.adminReply?.message && (
+                            <div className="bg-cyan-50 border border-cyan-100 rounded-xl p-4 space-y-1">
+                              <div className="text-[11px] font-bold uppercase tracking-wide text-cyan-700">
+                                Care Dent replied · {formatDate(m.adminReply.sentAt)}
+                              </div>
+                              <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{m.adminReply.message}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Section>
+              )}
+
+              {activeTab === 'account' && <AccountSettings user={user} />}
+
               {activeTab === 'downloads' && (
                 <Section title="Manuals &amp; documents">
                   {documents.length === 0 ? (
@@ -286,6 +328,162 @@ function Section({ title, action, children }) {
         {action}
       </div>
       {children}
+    </div>
+  );
+}
+
+function AccountSettings({ user }) {
+  const { updateProfile } = useAuth();
+  const inputClass =
+    'w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:bg-slate-50 disabled:text-slate-500';
+
+  const [form, setForm] = useState({
+    name: user?.name || '',
+    phone: user?.phone || '',
+    clinicName: user?.clinicName || '',
+    city: user?.city || '',
+    address: user?.address || '',
+  });
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const saveProfile = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    setFieldErrors({});
+    setSaved(false);
+    try {
+      await updateProfile(form);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      setError(err.message);
+      setFieldErrors(err.fieldErrors || {});
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const [pw, setPw] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwSaved, setPwSaved] = useState(false);
+  const [pwError, setPwError] = useState(null);
+  const [pwFieldErrors, setPwFieldErrors] = useState({});
+
+  const changePassword = async (e) => {
+    e.preventDefault();
+    setPwError(null);
+    setPwFieldErrors({});
+    setPwSaved(false);
+    if (pw.newPassword !== pw.confirmPassword) {
+      setPwError('New password and confirmation do not match.');
+      return;
+    }
+    setPwSaving(true);
+    try {
+      await authApi.changePassword({ currentPassword: pw.currentPassword, newPassword: pw.newPassword });
+      setPw({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setPwSaved(true);
+      setTimeout(() => setPwSaved(false), 3000);
+    } catch (err) {
+      setPwError(err.message);
+      setPwFieldErrors(err.fieldErrors || {});
+    } finally {
+      setPwSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-10">
+      <Section title="Profile details">
+        <form onSubmit={saveProfile} className="space-y-4 max-w-xl">
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Name</label>
+              <input className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <FieldError message={fieldErrors.name} />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Email</label>
+              <input className={inputClass} value={user?.email || ''} disabled title="Contact Care Dent to change your email" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Phone</label>
+              <input className={inputClass} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <FieldError message={fieldErrors.phone} />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Clinic name</label>
+              <input className={inputClass} value={form.clinicName} onChange={(e) => setForm({ ...form, clinicName: e.target.value })} />
+              <FieldError message={fieldErrors.clinicName} />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">City</label>
+              <input className={inputClass} value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
+              <FieldError message={fieldErrors.city} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Clinic address</label>
+            <textarea rows={2} className={inputClass} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+            <FieldError message={fieldErrors.address} />
+          </div>
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              type="submit"
+              disabled={saving}
+              className="inline-flex items-center gap-2 rounded-full bg-blue-950 hover:bg-cyan-700 text-white text-sm font-semibold px-5 py-2.5 transition-colors disabled:opacity-50"
+            >
+              {saving ? 'Saving…' : 'Save changes'}
+            </button>
+            {saved && (
+              <span className="text-sm text-emerald-600 font-medium inline-flex items-center gap-1">
+                <Check className="w-4 h-4" /> Saved
+              </span>
+            )}
+          </div>
+        </form>
+      </Section>
+
+      <Section title="Change password">
+        <form onSubmit={changePassword} className="space-y-4 max-w-xl">
+          {pwError && <p className="text-sm text-red-600">{pwError}</p>}
+          <div>
+            <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Current password</label>
+            <input type="password" className={inputClass} value={pw.currentPassword} onChange={(e) => setPw({ ...pw, currentPassword: e.target.value })} />
+            <FieldError message={pwFieldErrors.currentPassword} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">New password</label>
+              <input type="password" className={inputClass} value={pw.newPassword} onChange={(e) => setPw({ ...pw, newPassword: e.target.value })} />
+              <FieldError message={pwFieldErrors.newPassword} />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Confirm new password</label>
+              <input type="password" className={inputClass} value={pw.confirmPassword} onChange={(e) => setPw({ ...pw, confirmPassword: e.target.value })} />
+            </div>
+          </div>
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              type="submit"
+              disabled={pwSaving}
+              className="inline-flex items-center gap-2 rounded-full bg-blue-950 hover:bg-cyan-700 text-white text-sm font-semibold px-5 py-2.5 transition-colors disabled:opacity-50"
+            >
+              {pwSaving ? 'Updating…' : 'Update password'}
+            </button>
+            {pwSaved && (
+              <span className="text-sm text-emerald-600 font-medium inline-flex items-center gap-1">
+                <Check className="w-4 h-4" /> Updated
+              </span>
+            )}
+          </div>
+        </form>
+      </Section>
     </div>
   );
 }

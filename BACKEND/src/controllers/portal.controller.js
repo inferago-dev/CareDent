@@ -3,18 +3,20 @@ import Quotation from '../models/Quotation.js';
 import ServiceTicket from '../models/ServiceTicket.js';
 import Invoice from '../models/Invoice.js';
 import Document from '../models/Document.js';
+import ContactMessage from '../models/ContactMessage.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 /** Single call that powers the whole customer portal, so the UI does not waterfall. */
 export const overview = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
-  const [orders, quotations, tickets, invoices, documents] = await Promise.all([
+  const [orders, quotations, tickets, invoices, documents, messages] = await Promise.all([
     Order.find({ user: userId }).sort({ createdAt: -1 }).limit(50).lean(),
     Quotation.find({ user: userId }).sort({ createdAt: -1 }).limit(50).lean(),
     ServiceTicket.find({ user: userId }).sort({ createdAt: -1 }).limit(50).lean(),
     Invoice.find({ user: userId, status: { $ne: 'Draft' } }).sort({ issuedOn: -1 }).limit(50).lean(),
     Document.find({ $or: [{ user: userId }, { isPublic: true }] }).sort({ createdAt: -1 }).limit(50).lean(),
+    ContactMessage.find({ user: userId }).sort({ createdAt: -1 }).limit(50).lean(),
   ]);
 
   const outstanding = invoices
@@ -36,6 +38,7 @@ export const overview = asyncHandler(async (req, res) => {
       tickets,
       invoices,
       documents,
+      messages,
     },
   });
 });

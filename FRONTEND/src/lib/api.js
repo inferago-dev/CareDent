@@ -157,6 +157,7 @@ export const adminApi = {
 
   customers: (params, opts) => api.get(`/admin/customers${qs(params)}`, opts),
   customer: (id, opts) => api.get(`/admin/customers/${id}`, opts),
+  updateCustomer: (id, data) => api.patch(`/admin/customers/${id}`, data),
   setCustomerActive: (id, isActive) => api.patch(`/admin/customers/${id}/active`, { isActive }),
 
   messages: (params, opts) => api.get(`/admin/messages${qs(params)}`, opts),

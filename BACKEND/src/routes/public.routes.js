@@ -27,7 +27,7 @@ router.get('/documents', document.publicDocuments);
 router.post('/quotations', formLimiter, optionalAuth, validate({ body: quotationSchema }), quotation.createQuotation);
 router.get('/quotations/track/:reference', quotation.trackQuotation);
 
-router.post('/contact', formLimiter, validate({ body: contactSchema }), contact.createMessage);
+router.post('/contact', formLimiter, optionalAuth, validate({ body: contactSchema }), contact.createMessage);
 
 router.post('/service-requests', formLimiter, optionalAuth, validate({ body: ticketSchema }), ticket.createTicket);
 router.get('/service-requests/track/:reference', ticket.trackTicket);
