@@ -143,6 +143,7 @@ export const adminApi = {
 
   quotations: (params, opts) => api.get(`/admin/quotations${qs(params)}`, opts),
   updateQuotation: (id, data) => api.patch(`/admin/quotations/${id}`, data),
+  replyQuotation: (id, message) => api.post(`/admin/quotations/${id}/reply`, { message }),
   deleteQuotation: (id) => api.del(`/admin/quotations/${id}`),
 
   serviceRequests: (params, opts) => api.get(`/admin/service-requests${qs(params)}`, opts),
@@ -160,6 +161,7 @@ export const adminApi = {
 
   messages: (params, opts) => api.get(`/admin/messages${qs(params)}`, opts),
   updateMessage: (id, data) => api.patch(`/admin/messages/${id}`, data),
+  replyMessage: (id, message) => api.post(`/admin/messages/${id}/reply`, { message }),
   deleteMessage: (id) => api.del(`/admin/messages/${id}`),
 
   documents: (opts) => api.get('/admin/documents', opts),

@@ -11,6 +11,33 @@ import { notFoundHandler, errorHandler } from './middleware/error.js';
 import { env, isProd } from './config/env.js';
 import { UPLOAD_ROOT } from './middleware/upload.js';
 
+// Strips keys starting with "$" or containing "." from any user-controlled
+// object (body/query/params) so a request can never inject a Mongo operator
+// (e.g. { email: { "$gt": "" } }) into a query.
+function stripOperators(obj) {
+  if (Array.isArray(obj)) {
+    obj.forEach(stripOperators);
+    return obj;
+  }
+  if (obj && typeof obj === 'object') {
+    for (const key of Object.keys(obj)) {
+      if (key.startsWith('$') || key.includes('.')) {
+        delete obj[key];
+        continue;
+      }
+      stripOperators(obj[key]);
+    }
+  }
+  return obj;
+}
+
+function mongoSanitize(req, _res, next) {
+  if (req.body) stripOperators(req.body);
+  if (req.query) stripOperators(req.query);
+  if (req.params) stripOperators(req.params);
+  next();
+}
+
 const app = express();
 
 app.set('trust proxy', 1);
@@ -32,6 +59,7 @@ app.use(
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(mongoSanitize);
 app.use(morgan(isProd ? 'combined' : 'dev'));
 
 app.use(

@@ -62,6 +62,11 @@ export const quotationUpdateSchema = z.object({
   adminNotes: z.string().trim().max(2000).optional(),
 });
 
+/* ---------------- admin reply (contact + quotation) ---------------- */
+export const replySchema = z.object({
+  message: trimmed(2, 4000, 'Reply'),
+});
+
 /* ---------------- contact ---------------- */
 export const contactSchema = z.object({
   name: trimmed(2, 120, 'Name'),

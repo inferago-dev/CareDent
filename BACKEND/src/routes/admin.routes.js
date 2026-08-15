@@ -15,7 +15,7 @@ import * as inventory from '../controllers/inventory.controller.js';
 import {
   productSchema, productUpdateSchema, quotationUpdateSchema, orderSchema,
   orderUpdateSchema, ticketUpdateSchema, invoiceSchema, invoicePaymentSchema,
-  stockAdjustSchema,
+  stockAdjustSchema, replySchema,
 } from '../validators/schemas.js';
 
 const router = Router();
@@ -44,6 +44,7 @@ router.patch('/inventory/:id', validate({ body: stockAdjustSchema }), inventory.
 router.get('/quotations', quotation.adminListQuotations);
 router.get('/quotations/:id', quotation.adminGetQuotation);
 router.patch('/quotations/:id', validate({ body: quotationUpdateSchema }), quotation.adminUpdateQuotation);
+router.post('/quotations/:id/reply', validate({ body: replySchema }), quotation.adminReplyQuotation);
 router.delete('/quotations/:id', quotation.adminDeleteQuotation);
 
 /* orders */
@@ -68,6 +69,7 @@ router.delete('/invoices/:id', invoice.adminDeleteInvoice);
 /* contact messages */
 router.get('/messages', contact.adminListMessages);
 router.patch('/messages/:id', contact.adminUpdateMessage);
+router.post('/messages/:id/reply', validate({ body: replySchema }), contact.adminReplyMessage);
 router.delete('/messages/:id', contact.adminDeleteMessage);
 
 /* documents */

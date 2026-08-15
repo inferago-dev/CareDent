@@ -10,6 +10,10 @@ const contactSchema = new mongoose.Schema(
     status: { type: String, enum: ['New', 'Read', 'Replied', 'Archived'], default: 'New', index: true },
     repliedAt: { type: Date },
     adminNotes: { type: String, trim: true },
+    adminReply: {
+      message: { type: String, trim: true, maxlength: 4000 },
+      sentAt: { type: Date },
+    },
   },
   { timestamps: true }
 );

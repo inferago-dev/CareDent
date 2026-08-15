@@ -3,7 +3,11 @@ import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { nextReference } from '../utils/reference.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
-import { sendMail, detailsTable } from '../utils/mailer.js';
+import { sendMail, detailsTable, replyEmail } from '../utils/mailer.js';
+
+// Escape regex metacharacters so free-text search input can never be used
+// to build an unbounded/malicious pattern (ReDoS) or an unintended match.
+const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export const createQuotation = asyncHandler(async (req, res) => {
   const reference = await nextReference('quotation', 'CD-QT-');
@@ -64,7 +68,7 @@ export const adminListQuotations = asyncHandler(async (req, res) => {
   const filter = {};
   if (req.query.status) filter.status = req.query.status;
   if (req.query.q) {
-    const rx = new RegExp(req.query.q, 'i');
+    const rx = new RegExp(escapeRegex(req.query.q), 'i');
     filter.$or = [{ reference: rx }, { name: rx }, { clinicName: rx }, { email: rx }, { product: rx }];
   }
 
@@ -103,6 +107,28 @@ export const adminUpdateQuotation = asyncHandler(async (req, res) => {
   }
 
   res.json({ success: true, data: quotation });
+});
+
+/** Free-text reply to a quote request, independent of the Quoted-status email. */
+export const adminReplyQuotation = asyncHandler(async (req, res) => {
+  const quotation = await Quotation.findById(req.params.id);
+  if (!quotation) throw ApiError.notFound('Quotation not found');
+
+  quotation.adminReply = { message: req.body.message, sentAt: new Date() };
+  await quotation.save();
+
+  const mail = await sendMail({
+    to: quotation.email,
+    subject: `Re: your quote request ${quotation.reference} - Care Dent`,
+    html: replyEmail({
+      heading: `Update on ${quotation.reference}`,
+      intro: `Hi ${quotation.name}, here's an update on your quote request for ${quotation.product}:`,
+      replyMessage: req.body.message,
+      footerNote: 'A Care Dent representative will also call you at a convenient time to go over this in more detail.',
+    }),
+  });
+
+  res.json({ success: true, data: quotation, mail });
 });
 
 export const adminDeleteQuotation = asyncHandler(async (req, res) => {

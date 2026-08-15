@@ -29,3 +29,23 @@ export const env = {
 };
 
 export const isProd = env.nodeEnv === 'production';
+
+// Refuse to boot in production with a known-insecure default. These fall back
+// silently in dev so the app runs out of the box, but shipping them live
+// means anyone who has read this file (or the public repo) can sign JWTs or
+// log into /admin.
+if (isProd) {
+  const problems = [];
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'dev-only-insecure-secret') {
+    problems.push('JWT_SECRET is missing or using the default dev value');
+  }
+  if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD === 'CareDent@2025') {
+    problems.push('ADMIN_PASSWORD is missing or using the default value');
+  }
+  if (problems.length) {
+    console.error('\n[startup] Refusing to start in production with insecure defaults:');
+    problems.forEach((p) => console.error(`  - ${p}`));
+    console.error('  Set real values in your production environment and redeploy.\n');
+    process.exit(1);
+  }
+}

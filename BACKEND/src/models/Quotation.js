@@ -26,6 +26,10 @@ const quotationSchema = new mongoose.Schema(
     quotedAmount: { type: Number, min: 0 },
     validTill: { type: Date },
     adminNotes: { type: String, trim: true },
+    adminReply: {
+      message: { type: String, trim: true, maxlength: 4000 },
+      sentAt: { type: Date },
+    },
     source: { type: String, enum: ['website', 'phone', 'walk-in', 'referral'], default: 'website' },
   },
   { timestamps: true }

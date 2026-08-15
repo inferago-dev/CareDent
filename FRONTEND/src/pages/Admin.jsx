@@ -785,6 +785,23 @@ function Quotations({ notify }) {
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState(null);
+  const [replyText, setReplyText] = useState('');
+  const [sendingReply, setSendingReply] = useState(false);
+
+  const sendReply = async () => {
+    if (!replyText.trim()) return;
+    setSendingReply(true);
+    try {
+      await adminApi.replyQuotation(editing._id, replyText.trim());
+      notify(`Reply emailed to ${editing.email}`);
+      setReplyText('');
+      reload();
+    } catch (err) {
+      notify(err.message, 'error');
+    } finally {
+      setSendingReply(false);
+    }
+  };
 
   const save = async () => {
     setSaving(true);
@@ -832,7 +849,7 @@ function Quotations({ notify }) {
       </ListShell>
 
       <Modal
-        open={Boolean(editing)} onClose={() => setEditing(null)}
+        open={Boolean(editing)} onClose={() => { setEditing(null); setReplyText(''); }}
         title={editing ? `Quotation ${editing.reference}` : ''}
         footer={<><Btn variant="ghost" onClick={() => setEditing(null)}>Cancel</Btn><Btn onClick={save} disabled={saving}>{saving ? <Spinner className="w-3.5 h-3.5 text-white" /> : 'Save'}</Btn></>}
       >
@@ -859,6 +876,32 @@ function Quotations({ notify }) {
               </Field>
             </div>
             <Field label="Internal notes"><textarea rows={3} className={inputClass} value={editing.adminNotes || ''} onChange={(e) => setEditing({ ...editing, adminNotes: e.target.value })} /></Field>
+
+            {editing.adminReply?.message && (
+              <div className="rounded-lg bg-cyan-950/30 border border-cyan-900/50 p-4 text-xs space-y-1">
+                <div className="text-cyan-400 font-semibold uppercase tracking-wide text-[10px]">
+                  Last reply sent {formatDateTime(editing.adminReply.sentAt)}
+                </div>
+                <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">{editing.adminReply.message}</p>
+              </div>
+            )}
+
+            <div className="pt-2 border-t border-slate-800 space-y-2">
+              <Field label="Email the customer" hint="Sends now, separate from Save above. Mentions we'll also call to follow up.">
+                <textarea
+                  rows={3}
+                  className={inputClass}
+                  placeholder="Thanks for your quote request — we're reviewing it and..."
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                />
+              </Field>
+              <div className="flex justify-end">
+                <Btn onClick={sendReply} disabled={sendingReply || !replyText.trim()}>
+                  {sendingReply ? <Spinner className="w-3.5 h-3.5 text-white" /> : 'Send reply'}
+                </Btn>
+              </div>
+            </div>
           </>
         )}
       </Modal>
@@ -1142,6 +1185,8 @@ function Customers({ notify }) {
 function Messages({ notify }) {
   const { items, loading, error, reload } = useAdminList(adminApi.messages);
   const [open, setOpen] = useState(null);
+  const [replyText, setReplyText] = useState('');
+  const [sending, setSending] = useState(false);
 
   const setStatus = async (m, status) => {
     try {
@@ -1151,6 +1196,22 @@ function Messages({ notify }) {
       reload();
     } catch (err) {
       notify(err.message, 'error');
+    }
+  };
+
+  const sendReply = async () => {
+    if (!replyText.trim()) return;
+    setSending(true);
+    try {
+      await adminApi.replyMessage(open._id, replyText.trim());
+      notify(`Reply emailed to ${open.email}`);
+      setReplyText('');
+      setOpen(null);
+      reload();
+    } catch (err) {
+      notify(err.message, 'error');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -1184,13 +1245,15 @@ function Messages({ notify }) {
       </ListShell>
 
       <Modal
-        open={Boolean(open)} onClose={() => setOpen(null)} title={open ? `Enquiry from ${open.name}` : ''}
+        open={Boolean(open)} onClose={() => { setOpen(null); setReplyText(''); }} title={open ? `Enquiry from ${open.name}` : ''}
         footer={
           open && (
             <>
               <Btn variant="danger" onClick={() => remove(open)}><Trash2 className="w-3.5 h-3.5" /> Delete</Btn>
               <Btn variant="ghost" onClick={() => setStatus(open, 'Archived')}>Archive</Btn>
-              <Btn onClick={() => setStatus(open, 'Replied')}>Mark replied</Btn>
+              <Btn onClick={sendReply} disabled={sending || !replyText.trim()}>
+                {sending ? <Spinner className="w-3.5 h-3.5 text-white" /> : 'Send reply'}
+              </Btn>
             </>
           )
         }
@@ -1204,6 +1267,25 @@ function Messages({ notify }) {
               <div><span className="text-slate-500">Received:</span> {formatDateTime(open.createdAt)}</div>
             </div>
             <p className="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">{open.message}</p>
+
+            {open.adminReply?.message && (
+              <div className="rounded-lg bg-cyan-950/30 border border-cyan-900/50 p-4 text-xs space-y-1">
+                <div className="text-cyan-400 font-semibold uppercase tracking-wide text-[10px]">
+                  Last reply sent {formatDateTime(open.adminReply.sentAt)}
+                </div>
+                <p className="text-slate-300 whitespace-pre-wrap leading-relaxed">{open.adminReply.message}</p>
+              </div>
+            )}
+
+            <Field label="Reply" hint="Emails the customer directly and mentions we'll also call to follow up.">
+              <textarea
+                rows={4}
+                className={inputClass}
+                placeholder="Thanks for reaching out — we've received your enquiry and..."
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+              />
+            </Field>
           </>
         )}
       </Modal>
