@@ -38,12 +38,12 @@ export default function FloatingActions() {
         </button>
       )}
 
-      {/* Floating WhatsApp Action Button in Cyan-600 */}
+      {/* Floating WhatsApp Action Button — WhatsApp brand green so it reads instantly as WhatsApp */}
       <a
         href={`https://wa.me/${COMPANY_DETAILS.whatsappNumber}?text=${encodeURIComponent('Hello Care Dent team, I am interested in inquiring about dental equipment.')}`}
         target="_blank"
         rel="noreferrer"
-        className="group bg-cyan-600 hover:bg-cyan-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-xl shadow-cyan-600/30 transition-all transform hover:scale-105 active:scale-95"
+        className="group bg-[#25D366] hover:bg-[#1EBE5A] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-xl shadow-[#25D366]/40 transition-all transform hover:scale-105 active:scale-95"
         title="Chat on WhatsApp"
       >
         <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">

@@ -4,6 +4,15 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Safety net: several sections use large decorative elements positioned
+   outside their own box (Hero's glow circles, floating stat cards). Each
+   already clips with overflow-hidden on its own section, but this stops
+   any stray horizontal scrollbar on narrow phones if one is ever missed. */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
 /* ================================
    Trusted-by marquee
 ================================ */
