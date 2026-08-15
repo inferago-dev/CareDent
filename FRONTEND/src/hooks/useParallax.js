@@ -17,6 +17,15 @@ export default function useParallax(speed = 0.08) {
     const node = ref.current;
     if (!node) return undefined;
 
+    // Skip entirely on phones/small screens and when the user has asked for
+    // reduced motion. A per-frame rAF + scroll-listener transform on every
+    // section is cheap on desktop but adds up to real jank on weaker mobile
+    // CPUs - this is the difference between the site feeling smooth vs
+    // "shaggy" on a phone. Desktop keeps the full effect.
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isSmallScreen = window.matchMedia('(max-width: 1023px)').matches;
+    if (prefersReducedMotion || isSmallScreen) return undefined;
+
     // Promote to its own compositor layer
     node.style.willChange = 'transform';
 
