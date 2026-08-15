@@ -89,8 +89,8 @@ export default function Hero({ onOpenQuoteModal }) {
           <div className="lg:col-span-5 relative flex items-center justify-center min-h-[400px] lg:min-h-[600px] mt-10 lg:mt-0">
             <div className="relative w-full max-w-[400px] lg:max-w-[500px] aspect-square flex items-center justify-center">
 
-              {/* Floating Card 1 (top-left) */}
-              <div className="absolute -left-2 sm:-left-10 top-2 sm:-top-2 z-20 backdrop-blur-xl bg-white/5 border border-white/10 p-1 px-2 sm:p-2 sm:pe-4 rounded-2xl flex items-center gap-3.5 hover:-translate-y-1 transition-transform cursor-default">
+              {/* Floating Card 1 (top-left, mirrors card 3 on the right) */}
+              <div className="absolute -left-6 sm:-left-14 top-6 sm:top-2 z-20 backdrop-blur-xl bg-white/5 border border-white/10 p-1 px-2 sm:p-2 sm:pe-4 rounded-2xl flex items-center gap-3.5 hover:-translate-y-1 transition-transform cursor-default">
                 <div className="bg-cyan-500/20 p-2.5 rounded-xl border border-cyan-500/20">
                   <ShieldCheck className="w-6 h-6 text-cyan-500" />
                 </div>
@@ -107,8 +107,8 @@ export default function Hero({ onOpenQuoteModal }) {
                 className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_80px_rgba(34,211,238,0.15)] hover:scale-105 transition-transform duration-700 ease-out"
               />
 
-              {/* Floating Card 2 (bottom-left) */}
-              <div className="absolute -left-4 sm:-left-14 bottom-6 sm:bottom-10 z-20 backdrop-blur-xl bg-white/5 border border-white/10 p-1 px-2 sm:p-2 sm:pe-4 rounded-2xl flex items-center gap-3.5 hover:-translate-y-1 transition-transform cursor-default">
+              {/* Floating Card 2 (bottom-right) */}
+              <div className="absolute -right-6 sm:-right-10 bottom-16 z-20 backdrop-blur-xl bg-white/5 border border-white/10 p-1 px-2 sm:p-2 sm:pe-4 rounded-2xl flex items-center gap-3.5 hover:-translate-y-1 transition-transform cursor-default">
                 <div className="bg-cyan-500/20 p-2.5 rounded-xl border border-cyan-500/20">
                   <Wrench className="w-6 h-6 text-cyan-500" />
                 </div>
@@ -118,8 +118,8 @@ export default function Hero({ onOpenQuoteModal }) {
                 </div>
               </div>
 
-              {/* Floating Card 3 (right) */}
-              <div className="absolute right-0 sm:-right-6 top-1/2 -translate-y-1/2 z-20 backdrop-blur-xl bg-white/5 border border-white/10 p-1 px-2 sm:p-2 sm:pe-4 rounded-2xl flex items-center gap-3.5 hover:-translate-y-1 transition-transform cursor-default">
+              {/* Floating Card 3 (top-right) */}
+              <div className="absolute right-4 sm:right-12 -top-5 z-20 backdrop-blur-xl bg-white/5 border border-white/10 p-1 px-2 sm:p-2 sm:pe-4 rounded-2xl flex items-center gap-3.5 hover:-translate-y-1 transition-transform cursor-default">
                 <div className="bg-cyan-500/20 p-2.5 rounded-xl border border-cyan-500/20">
                   <Award className="w-6 h-6 text-cyan-500" />
                 </div>
