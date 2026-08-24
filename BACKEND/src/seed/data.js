@@ -443,6 +443,13 @@ export const PRODUCTS = [
   },
 ];
 
+/**
+ * Service keys we no longer offer. `npm run seed` deletes these so a record
+ * left over from an earlier seed cannot keep showing on the public site
+ * (the upsert below only adds/updates - it never removes).
+ */
+export const RETIRED_SERVICE_KEYS = ['amc'];
+
 export const SERVICES = [
   {
     key: 'pre-installation',

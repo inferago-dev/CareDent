@@ -10,7 +10,7 @@
 import mongoose from 'mongoose';
 import { connectDB, disconnectDB } from '../config/db.js';
 import { env } from '../config/env.js';
-import { PRODUCTS, SERVICES } from './data.js';
+import { PRODUCTS, SERVICES, RETIRED_SERVICE_KEYS } from './data.js';
 
 import User from '../models/User.js';
 import Product from '../models/Product.js';
@@ -65,6 +65,9 @@ async function run() {
     await Service.findOneAndUpdate({ key: s.key }, s, { upsert: true, new: true, setDefaultsOnInsert: true });
   }
   log(`${SERVICES.length} services upserted`);
+
+  const retired = await Service.deleteMany({ key: { $in: RETIRED_SERVICE_KEYS } });
+  if (retired.deletedCount) log(`${retired.deletedCount} retired service(s) removed`);
 
   if (!DEMO) {
     log('done (pass --demo for sample customer data)');

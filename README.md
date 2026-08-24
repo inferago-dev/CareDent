@@ -58,7 +58,7 @@ npm run dev                   # http://localhost:5173
 | `/about`         | Company story, vision, mission |
 | `/products`      | Catalogue, filterable by category, searchable via `?q=` |
 | `/products/:slug`| Product detail — gallery, features, spec table, related models |
-| `/services`      | Services & AMC, plus the service-request booking form |
+| `/services`      | Services & support, plus the service-request booking form |
 | `/track-order`   | Track an order, service ticket or quotation by reference |
 | `/contact`       | Enquiry form and contact details |
 | `/login`         | Sign in / create a clinic account |
