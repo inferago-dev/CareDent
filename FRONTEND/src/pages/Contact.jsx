@@ -5,6 +5,9 @@ import { COMPANY_DETAILS } from '../data/products';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { Spinner, FieldError } from '../components/ui';
+import Seo from '../components/Seo';
+import { breadcrumbSchema } from '../lib/seo';
+import { metaFor } from '../lib/pageMeta';
 
 export default function Contact() {
   const { user } = useAuth();
@@ -55,6 +58,10 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-white text-slate-800">
+      <Seo
+        {...metaFor('/contact')}
+        schema={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact' }])}
+      />
 
       {/* HEADER */}
       <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
@@ -164,6 +171,8 @@ export default function Contact() {
                   src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=600&q=80"
                   alt="Mugalivakkam Location Map"
                   className="w-full h-full object-cover opacity-60"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center p-4 text-center">
                   <div className="bg-white text-slate-900 p-3 rounded-xl shadow-lg border border-slate-200">

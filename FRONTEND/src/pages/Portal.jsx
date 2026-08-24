@@ -8,6 +8,7 @@ import { COMPANY_DETAILS } from '../data/products';
 import { useAuth } from '../context/AuthContext';
 import useFetch from '../hooks/useFetch';
 import { portalApi, authApi, BASE_URL } from '../lib/api';
+import Seo from '../components/Seo';
 import {
   LoadingBlock, ErrorBlock, EmptyBlock, StatusPill, FieldError, formatCurrency, formatDate,
 } from '../components/ui';
@@ -48,6 +49,7 @@ export default function Portal() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col lg:flex-row">
+      <Seo title="Customer Portal" noindex />
 
       {/* SIDEBAR */}
       <aside className="w-full lg:w-64 bg-blue-950 text-white p-6 space-y-8 shrink-0">

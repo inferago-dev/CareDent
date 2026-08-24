@@ -3,6 +3,9 @@ import { Search, Package, Clock, Truck, MapPin, CheckCircle2, XCircle, Wrench, F
 import { COMPANY_DETAILS } from '../data/products';
 import { publicApi } from '../lib/api';
 import { Spinner, StatusPill, formatDate, formatDateTime } from '../components/ui';
+import Seo from '../components/Seo';
+import { breadcrumbSchema } from '../lib/seo';
+import { metaFor } from '../lib/pageMeta';
 
 const MODES = [
   { id: 'order', label: 'Order', placeholder: 'e.g. ORD-000001', icon: Package },
@@ -53,6 +56,10 @@ export default function TrackOrder() {
 
   return (
     <div className="min-h-screen bg-white text-slate-800">
+      <Seo
+        {...metaFor('/track-order')}
+        schema={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Track Order', path: '/track-order' }])}
+      />
 
       {/* HEADER + SEARCH */}
       <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">

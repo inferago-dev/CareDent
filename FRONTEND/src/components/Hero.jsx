@@ -105,6 +105,8 @@ export default function Hero({ onOpenQuoteModal }) {
                 src="/Tooth.png"
                 alt="Care Dent Tooth"
                 className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_80px_rgba(34,211,238,0.15)] hover:scale-105 transition-transform duration-700 ease-out"
+                fetchPriority="high"
+                decoding="async"
               />
 
               {/* Floating Card 2 (bottom-right) */}

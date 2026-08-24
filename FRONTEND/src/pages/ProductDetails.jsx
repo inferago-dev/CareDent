@@ -11,6 +11,8 @@ import useFetch from '../hooks/useFetch';
 import { catalogApi } from '../lib/api';
 import { LoadingBlock } from '../components/ui';
 import NotFound from './NotFound';
+import Seo from '../components/Seo';
+import { productSchema, breadcrumbSchema } from '../lib/seo';
 
 /** Bundled catalogue, used only when the API cannot be reached. */
 function findFallback(slug) {
@@ -70,6 +72,21 @@ export default function ProductDetails({ onOpenQuoteModal }) {
 
   return (
     <div className="min-h-screen bg-white text-slate-800">
+      <Seo
+        type="product"
+        title={product.name}
+        description={product.description || product.tagline}
+        image={product.heroImage || product.images?.[0]}
+        canonical={`/products/${product.slug || slug}`}
+        schema={[
+          productSchema({ ...product, slug: product.slug || slug }),
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Products', path: '/products' },
+            { name: product.name, path: `/products/${product.slug || slug}` },
+          ]),
+        ]}
+      />
 
       {/* Dark breadcrumb band. Every other public page opens on blue-950; the
           navbar is fixed and transparent until scroll, so this page needs the
@@ -109,6 +126,8 @@ export default function ProductDetails({ onOpenQuoteModal }) {
                     src={selectedImage}
                     alt={product.name}
                     className="w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-500 animate-fade-in"
+                    fetchPriority="high"
+                    decoding="async"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-sm text-slate-400">
@@ -132,7 +151,7 @@ export default function ProductDetails({ onOpenQuoteModal }) {
                         selectedImage === img ? 'border-cyan-600 scale-95 shadow-md' : 'border-slate-200 opacity-70 hover:opacity-100'
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-contain p-1" />
+                      <img src={img} alt={`${product.name} — view ${idx + 1}`} className="w-full h-full object-contain p-1" loading="lazy" decoding="async" />
                     </button>
                   ))}
                 </div>

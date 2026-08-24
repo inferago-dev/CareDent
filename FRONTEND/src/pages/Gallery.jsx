@@ -5,6 +5,9 @@ import { GALLERY_ITEMS } from '../data/gallery';
 import { COMPANY_DETAILS } from '../data/products';
 import useCatalogue from '../hooks/useCatalogue';
 import Reveal from '../components/Reveal';
+import Seo from '../components/Seo';
+import { breadcrumbSchema } from '../lib/seo';
+import { metaFor } from '../lib/pageMeta';
 
 const ALL = 'All';
 
@@ -99,6 +102,8 @@ function Lightbox({ items, index, onClose, onStep }) {
             src={item.src}
             alt={item.title}
             className="max-h-[65vh] max-w-full object-contain rounded-2xl animate-fade-in"
+            loading="lazy"
+            decoding="async"
           />
           <figcaption className="text-center mt-6 space-y-1.5 max-w-lg">
             <div className="text-lg font-medium text-white tracking-tight">{item.title}</div>
@@ -149,6 +154,10 @@ export default function Gallery({ onOpenQuoteModal }) {
 
   return (
     <div className="min-h-screen bg-white text-slate-800">
+      <Seo
+        {...metaFor('/gallery')}
+        schema={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Gallery', path: '/gallery' }])}
+      />
 
       {/* HEADER */}
       <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">

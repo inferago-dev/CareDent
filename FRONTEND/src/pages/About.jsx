@@ -2,6 +2,9 @@ import React from 'react';
 import { ArrowRight, ShieldCheck, Wrench, Award, Users, MapPin, Clock } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import Reveal from '../components/Reveal';
+import Seo from '../components/Seo';
+import { breadcrumbSchema } from '../lib/seo';
+import { metaFor } from '../lib/pageMeta';
 
 const VALUES = [
   {
@@ -29,6 +32,10 @@ const VALUES = [
 export default function About({ onOpenQuoteModal }) {
   return (
     <div className="min-h-screen bg-white text-slate-800">
+      <Seo
+        {...metaFor('/about')}
+        schema={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }])}
+      />
 
       {/* INTRO BAND */}
       <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
@@ -65,6 +72,8 @@ export default function About({ onOpenQuoteModal }) {
                     src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=1000&q=80"
                     alt="Care Dent technician servicing a dental chair"
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent mix-blend-multiply" />
                 </div>

@@ -11,6 +11,9 @@ import { COMPANY_DETAILS } from '../data/products';
 import Reveal from '../components/Reveal';
 import SiteAssessmentForm from '../components/SiteAssessmentForm';
 import downloadPreInstallationPdf from '../lib/preInstallationPdf';
+import Seo from '../components/Seo';
+import { breadcrumbSchema } from '../lib/seo';
+import { metaFor } from '../lib/pageMeta';
 
 const ICONS = {
   Ruler, Zap, Droplets, Wind, LayoutGrid, Building2, Thermometer, Compass, Truck,
@@ -97,6 +100,14 @@ export default function PreInstallation({ onOpenQuoteModal }) {
 
   return (
     <div className="min-h-screen bg-white text-slate-800">
+      <Seo
+        {...metaFor('/services/pre-installation')}
+        schema={breadcrumbSchema([
+          { name: 'Home', path: '/' },
+          { name: 'Services', path: '/services' },
+          { name: 'Pre-Installation', path: '/services/pre-installation' },
+        ])}
+      />
 
       {/* HEADER */}
       <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">

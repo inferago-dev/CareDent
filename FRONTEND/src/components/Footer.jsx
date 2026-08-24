@@ -21,6 +21,8 @@ export default function Footer() {
                 alt="Care Dent - We care for your precious equipments"
                 width="507" height="640"
                 className="h-20 w-auto object-contain"
+                loading="lazy"
+                decoding="async"
               />
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm">

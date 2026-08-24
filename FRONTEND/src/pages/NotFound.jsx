@@ -2,10 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, Phone } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
+import Seo from '../components/Seo';
 
 export default function NotFound() {
   return (
     <div className="relative overflow-hidden min-h-[70vh] bg-blue-950 text-white flex items-center">
+      <Seo title="Page Not Found" noindex />
       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen -translate-y-1/2" />
 
       <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">

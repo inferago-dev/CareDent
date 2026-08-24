@@ -1,0 +1,14 @@
+# Care Dent — https://caredent.in
+User-agent: *
+Allow: /
+
+# Authenticated areas: nothing here is useful in a search result, and the
+# pages render empty to a crawler anyway.
+Disallow: /admin
+Disallow: /portal
+Disallow: /login
+
+# Order lookups are per-reference and personal.
+Disallow: /track-order?
+
+Sitemap: https://caredent.in/sitemap.xml

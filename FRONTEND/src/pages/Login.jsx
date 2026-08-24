@@ -3,6 +3,7 @@ import { useNavigate, Link, useLocation, Navigate } from 'react-router-dom';
 import { Lock, Mail, ArrowRight, User, Building2, Phone, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Spinner, FieldError } from '../components/ui';
+import Seo from '../components/Seo';
 
 export default function Login() {
   const [mode, setMode] = useState('signin'); // 'signin' | 'register'
@@ -60,6 +61,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-blue-950 text-white flex items-center justify-center p-4">
+      <Seo title="Sign In" noindex />
       <div className="w-full max-w-md space-y-8">
 
         {/* Brand Header */}

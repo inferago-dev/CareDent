@@ -6,6 +6,9 @@ import useFetch from '../hooks/useFetch';
 import { catalogApi } from '../lib/api';
 import { DENTAL_CHAIRS, OTHER_EQUIPMENT } from '../data/products';
 import { LoadingBlock } from '../components/ui';
+import Seo from '../components/Seo';
+import { breadcrumbSchema } from '../lib/seo';
+import { metaFor } from '../lib/pageMeta';
 
 const CATEGORIES = [
   { id: 'all', label: 'All' },
@@ -81,6 +84,10 @@ export default function Products({ onOpenQuoteModal }) {
 
   return (
     <div className="min-h-screen bg-white text-slate-800">
+      <Seo
+        {...metaFor('/products')}
+        schema={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Products', path: '/products' }])}
+      />
 
       {/* HEADER */}
       <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">

@@ -14,6 +14,7 @@ import {
   LoadingBlock, ErrorBlock, StatusPill, formatCurrency, formatDate, formatDateTime, Spinner,
 } from '../components/ui';
 import { Panel, DataTable, Td, Btn, Field, inputClass, Modal, Toast } from '../components/admin/AdminBits';
+import Seo from '../components/Seo';
 
 const FILE_ROOT = BASE_URL.replace(/\/api$/, '');
 
@@ -57,6 +58,7 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col lg:flex-row">
+      <Seo title="Admin" noindex />
 
       {/* SIDEBAR */}
       <aside className="w-full lg:w-64 bg-slate-900 border-r border-slate-800 p-6 space-y-8 shrink-0">

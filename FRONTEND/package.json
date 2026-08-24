@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "node --max-old-space-size=4096 ./node_modules/vite/bin/vite.js",
-    "build": "node --max-old-space-size=4096 ./node_modules/vite/bin/vite.js build",
+    "build": "node --max-old-space-size=4096 ./node_modules/vite/bin/vite.js build && npm run seo:meta",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "seo:meta": "node scripts/prerender-meta.mjs",
+    "prebuild": "npm run sitemap"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

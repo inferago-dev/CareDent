@@ -145,3 +145,77 @@ official Care Dent product catalogue.
 **Offline resilience:** if the API is unreachable, the public catalogue falls
 back to the bundled copy in `FRONTEND/src/data/products.js`, so the marketing
 site still renders. The portal and admin correctly show an error instead.
+
+---
+
+## SEO
+
+Metadata lives in two files and flows everywhere else from there:
+
+| File | Holds |
+|------|-------|
+| `FRONTEND/src/lib/seo.js` | Site URL, business details (NAP), JSON-LD builders |
+| `FRONTEND/src/lib/pageMeta.js` | Title, description and sitemap priority per route |
+
+`FRONTEND/src/components/Seo.jsx` renders those into the document. React 19
+hoists `<title>`/`<meta>`/`<link>` from anywhere in the tree, so no helmet
+library is involved. Pages pull their copy with `metaFor('/path')` and add
+their own JSON-LD.
+
+**Set the domain before deploying.** `SITE_URL` defaults to
+`https://caredent.in` and every canonical URL, sitemap entry and `og:image`
+is built from it. If the site is served from anywhere else, set
+`VITE_SITE_URL` at build time — a wrong value here is worse than none, because
+canonicals then point at a domain you do not control.
+
+### Build steps
+
+`npm run build` runs two extra steps around Vite:
+
+- **`npm run sitemap`** (prebuild) regenerates `public/sitemap.xml` from
+  `pageMeta.js` plus the bundled catalogue. Products added *only* through the
+  admin content manager will not appear — add them to
+  `src/data/products.js` too, which is also the offline fallback list.
+- **`npm run seo:meta`** (postbuild) writes `dist/<route>/index.html` for every
+  route with that route's title, description, OG tags and JSON-LD baked in.
+
+That second step exists because this is a client-rendered SPA. Google executes
+JavaScript and sees the runtime tags; WhatsApp, LinkedIn, Slack and X do not —
+they read the HTML as served. Without the baked files, every shared link
+previews as the home page whatever it points to.
+
+**Your host must serve those files.** It needs to try a real file before
+falling back to `index.html`:
+
+```nginx
+location / { try_files $uri $uri/index.html /index.html; }
+```
+
+Netlify and Vercel do this by default, ahead of any SPA rewrite rule. If your
+host rewrites everything to `index.html` unconditionally, the baked files are
+ignored and link previews go back to being generic — harmless, but you lose
+the benefit.
+
+### Deliberate omissions
+
+- **No `offers`/price** in Product JSON-LD — the catalogue is quote-based, and
+  invented pricing markup is a structured-data violation.
+- **No `aggregateRating`** — the `rating` and `reviewsCount` fields in
+  `products.js` are not backed by collected reviews. Marking them up risks a
+  manual action. Once real reviews are collected and shown on the page, add it
+  in `productSchema()`.
+- **No geo coordinates** in the LocalBusiness schema. Add `geo` from your
+  Google Business Profile listing rather than an approximate lookup.
+
+### After deploying
+
+Search engines need to be told the site exists — none of the above does that
+on its own:
+
+1. Verify the domain in [Google Search Console](https://search.google.com/search-console)
+   and submit `https://<domain>/sitemap.xml`.
+2. Create or claim the Google Business Profile for the Mugalivakkam address.
+   For a local supplier this drives more traffic than anything on-page, and it
+   is what makes the LocalBusiness markup pay off.
+3. Keep the name, address and phone identical across the site, the profile and
+   any directory listing — they are compared literally.

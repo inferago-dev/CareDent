@@ -10,6 +10,9 @@ import ServiceRequestForm from '../components/ServiceRequestForm';
 import useFetch from '../hooks/useFetch';
 import { catalogApi } from '../lib/api';
 import downloadPreInstallationPdf from '../lib/preInstallationPdf';
+import Seo from '../components/Seo';
+import { serviceSchema, breadcrumbSchema } from '../lib/seo';
+import { metaFor } from '../lib/pageMeta';
 
 const ICONS = { Ruler, Wrench, ShieldCheck, Calendar, Activity, PhoneCall, ClipboardCheck };
 
@@ -31,6 +34,13 @@ export default function Services() {
 
   return (
     <div className="min-h-screen bg-white text-slate-800">
+      <Seo
+        {...metaFor('/services')}
+        schema={[
+          serviceSchema(services),
+          breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Services', path: '/services' }]),
+        ]}
+      />
 
       {/* HEADER */}
       <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">

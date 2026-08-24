@@ -47,6 +47,8 @@ export default function FlagshipModelsSection({ onOpenQuoteModal }) {
                     src={chair.heroImage}
                     alt={chair.name}
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                    loading="lazy"
+                    decoding="async"
                   />
                   {/* Gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-blue-950/70 via-blue-950/10 to-transparent" />
