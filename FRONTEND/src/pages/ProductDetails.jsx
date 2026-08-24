@@ -2,9 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   CheckCircle2, Download, MessageSquare, ArrowRight, ShieldCheck,
-  Sparkles, FileText, ChevronLeft,
+  Sparkles, FileText, ChevronLeft, Ruler, ClipboardCheck,
 } from 'lucide-react';
 import { DENTAL_CHAIRS, OTHER_EQUIPMENT, COMPANY_DETAILS } from '../data/products';
+import { requirementsFor } from '../data/preInstallation';
+import downloadPreInstallationPdf from '../lib/preInstallationPdf';
 import useFetch from '../hooks/useFetch';
 import { catalogApi } from '../lib/api';
 import { LoadingBlock } from '../components/ui';
@@ -64,6 +66,7 @@ export default function ProductDetails({ onOpenQuoteModal }) {
   const specs = product.specifications || [];
   const features = product.keyDifferentiators || [];
   const hasBrochure = product.brochureUrl && product.brochureUrl !== '#';
+  const installRequirements = requirementsFor(product);
 
   return (
     <div className="min-h-screen bg-white text-slate-800">
@@ -233,6 +236,56 @@ export default function ProductDetails({ onOpenQuoteModal }) {
             </div>
           </div>
         )}
+
+        {/* INSTALLATION REQUIREMENTS */}
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-lg p-6 lg:p-10 space-y-8">
+          <div className="border-b border-slate-100 pb-4 flex items-start gap-4">
+            <div className="w-11 h-11 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0">
+              <Ruler className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold text-slate-900">Installation requirements</h2>
+              <p className="text-xs text-slate-500 mt-1">
+                What the room needs before {product.name} can be installed. Figures are typical — the site
+                assessment confirms them against your clinic.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+            {installRequirements.map((requirement) => (
+              <div key={requirement} className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0 mt-2" />
+                <span className="text-sm text-slate-600 leading-relaxed">{requirement}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <button
+              onClick={() => downloadPreInstallationPdf(product)}
+              className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs px-6 py-3.5 rounded-full flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"
+            >
+              <Download className="w-4 h-4 text-cyan-600" />
+              <span>Download pre-installation PDF</span>
+            </button>
+
+            <Link
+              to={`/services/pre-installation?equipment=${encodeURIComponent(product.name)}#request-assessment`}
+              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs px-6 py-3.5 rounded-full shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            >
+              <ClipboardCheck className="w-4 h-4" />
+              <span>Request site assessment</span>
+            </Link>
+          </div>
+
+          <p className="text-xs text-slate-400 flex items-center gap-1.5">
+            <span>Full checklist, including optional Vastu layout guidance:</span>
+            <Link to="/services/pre-installation" className="font-semibold text-cyan-700 hover:text-cyan-800 transition-colors">
+              Pre-installation requirements →
+            </Link>
+          </p>
+        </div>
 
         {/* BROCHURE */}
         <div className="bg-blue-950 text-white rounded-3xl p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">

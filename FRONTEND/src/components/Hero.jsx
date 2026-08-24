@@ -113,8 +113,8 @@ export default function Hero({ onOpenQuoteModal }) {
                   <Wrench className="w-6 h-6 text-cyan-500" />
                 </div>
                 <div className="text-left">
-                  <div className="text-white text-sm sm:text-md tracking-tight">Expert AMC</div>
-                  <div className="text-slate-400 text-xs tracking-tight">Contracts &amp; call-outs</div>
+                  <div className="text-white text-sm sm:text-md tracking-tight">Site-Ready Installs</div>
+                  <div className="text-slate-400 text-xs tracking-tight">Surveyed before delivery</div>
                 </div>
               </div>
 

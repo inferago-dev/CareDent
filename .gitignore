@@ -22,3 +22,6 @@ build/
 Thumbs.db
 # Scratch folder used to stage files for deletion
 _to_delete/
+
+# Screenshots
+Screenshot_*.png

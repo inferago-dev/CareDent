@@ -12,7 +12,7 @@ const VALUES = [
   {
     icon: Wrench,
     title: 'Pan-India Service',
-    description: 'From Chennai to any pincode in the country, our AMC and breakdown support travels with your clinic.'
+    description: 'From Chennai to any pincode in the country, our installation and breakdown support travels with your clinic.'
   },
   {
     icon: Award,

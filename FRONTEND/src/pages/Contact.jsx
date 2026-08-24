@@ -265,7 +265,7 @@ export default function Contact() {
                         className="w-full px-4 py-3 bg-slate-50 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-60"
                       >
                         <option value="Equipment Inquiry">New Chair / Equipment Inquiry</option>
-                        <option value="Service Maintenance">AMC / Maintenance Service</option>
+                        <option value="Service Maintenance">Maintenance / Service Visit</option>
                         <option value="Spare Parts">Spare Parts & Handpieces</option>
                         <option value="Other">General Question</option>
                       </select>

@@ -7,7 +7,7 @@ import { Spinner, FieldError } from './ui';
 const SERVICE_TYPES = [
   'Breakdown Repair',
   'Routine Maintenance',
-  'AMC Visit',
+  'Pre-Installation Site Visit',
   'Installation',
   'Inspection',
   'Remote Support',
@@ -103,7 +103,7 @@ export default function ServiceRequestForm() {
         <div>
           <h3 className="text-2xl font-semibold text-slate-900">Book a service visit</h3>
           <p className="text-xs text-slate-500 mt-1">
-            Breakdown, AMC visit or a routine check — tell us what is wrong and we will call to confirm a slot.
+            Breakdown, routine check or an installation visit — tell us what is wrong and we will call to confirm a slot.
           </p>
         </div>
       </div>

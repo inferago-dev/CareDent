@@ -16,6 +16,8 @@ import About from './pages/About';
 import Products from './pages/Products';
 import ProductDetails from './pages/ProductDetails';
 import Services from './pages/Services';
+import PreInstallation from './pages/PreInstallation';
+import Gallery from './pages/Gallery';
 import TrackOrder from './pages/TrackOrder';
 import Contact from './pages/Contact';
 import Portal from './pages/Portal';
@@ -53,7 +55,9 @@ function MainLayout() {
           <Route path="/about" element={<About onOpenQuoteModal={handleOpenQuoteModal} />} />
           <Route path="/products" element={<Products onOpenQuoteModal={handleOpenQuoteModal} />} />
           <Route path="/products/:slug" element={<ProductDetails onOpenQuoteModal={handleOpenQuoteModal} />} />
-          <Route path="/services" element={<Services onOpenQuoteModal={handleOpenQuoteModal} />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/pre-installation" element={<PreInstallation onOpenQuoteModal={handleOpenQuoteModal} />} />
+          <Route path="/gallery" element={<Gallery onOpenQuoteModal={handleOpenQuoteModal} />} />
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/contact" element={<Contact />} />
 

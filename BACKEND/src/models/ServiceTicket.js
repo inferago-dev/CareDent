@@ -11,6 +11,38 @@ const TICKET_STATUSES = [
   'Cancelled',
 ];
 
+const SERVICE_TYPES = [
+  'Pre-Installation Site Visit',
+  'Installation',
+  'Routine Maintenance',
+  'Breakdown Repair',
+  'Inspection',
+  'Remote Support',
+];
+
+// Floor plans and room photos a clinic attaches to a site-assessment request.
+const attachmentSchema = new mongoose.Schema(
+  {
+    url: { type: String, required: true },
+    name: { type: String, trim: true },
+    size: { type: Number, default: 0 },
+    mimeType: { type: String, trim: true },
+  },
+  { _id: false }
+);
+
+// Only populated for 'Pre-Installation Site Visit' tickets.
+const siteAssessmentSchema = new mongoose.Schema(
+  {
+    location: { type: String, trim: true },
+    roomLength: { type: String, trim: true },
+    roomWidth: { type: String, trim: true },
+    ceilingHeight: { type: String, trim: true },
+    preferredDate: { type: Date },
+  },
+  { _id: false }
+);
+
 const updateSchema = new mongoose.Schema(
   {
     status: { type: String, enum: TICKET_STATUSES, required: true },
@@ -36,9 +68,11 @@ const ticketSchema = new mongoose.Schema(
     serialNumber: { type: String, trim: true },
     serviceType: {
       type: String,
-      enum: ['Installation', 'Routine Maintenance', 'AMC Visit', 'Breakdown Repair', 'Inspection', 'Remote Support'],
+      enum: SERVICE_TYPES,
       default: 'Breakdown Repair',
     },
+    siteAssessment: siteAssessmentSchema,
+    attachments: [attachmentSchema],
     issue: { type: String, required: [true, 'Describe the issue'], trim: true, maxlength: 2000 },
     priority: { type: String, enum: ['Low', 'Medium', 'High', 'Urgent'], default: 'Medium', index: true },
 
@@ -60,5 +94,5 @@ ticketSchema.pre('save', function seedTimeline(next) {
   next();
 });
 
-export { TICKET_STATUSES };
+export { TICKET_STATUSES, SERVICE_TYPES };
 export default mongoose.model('ServiceTicket', ticketSchema);

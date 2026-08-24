@@ -942,7 +942,7 @@ function Tickets({ notify }) {
   return (
     <>
       <ListShell
-        title="Service requests" subtitle="Breakdowns, AMC visits and installations"
+        title="Service requests" subtitle="Site assessments, breakdowns and installations"
         search={search} setSearch={setSearch} loading={loading} error={error} reload={reload}
       >
         <DataTable head={['Ref', 'Clinic', 'Equipment', 'Type', 'Priority', 'Engineer', 'Status', '']} empty="No service requests yet.">
@@ -973,10 +973,51 @@ function Tickets({ notify }) {
           <>
             {formError && <ErrorLine message={formError} />}
             <div className="rounded-lg bg-slate-950 border border-slate-800 p-4 text-xs space-y-1 text-slate-400">
+              <div><span className="text-slate-500">Type:</span> <span className="text-slate-200">{editing.serviceType}</span></div>
               <div><span className="text-slate-500">Equipment:</span> <span className="text-slate-200">{editing.equipment}</span>{editing.serialNumber ? ` (${editing.serialNumber})` : ''}</div>
               <div><span className="text-slate-500">Issue:</span> {editing.issue}</div>
               <div><span className="text-slate-500">Contact:</span> {editing.contactName} · {editing.phone}</div>
               {editing.address && <div><span className="text-slate-500">Address:</span> {editing.address}</div>}
+
+              {/* Pre-installation site assessments carry measurements + a floor plan. */}
+              {editing.siteAssessment && (
+                <div className="pt-2 mt-2 border-t border-slate-800 space-y-1">
+                  <div className="text-[11px] font-bold uppercase text-slate-500">Site assessment</div>
+                  {editing.siteAssessment.location && (
+                    <div><span className="text-slate-500">Location:</span> {editing.siteAssessment.location}</div>
+                  )}
+                  <div>
+                    <span className="text-slate-500">Room:</span>{' '}
+                    {[
+                      editing.siteAssessment.roomLength && `${editing.siteAssessment.roomLength} ft (L)`,
+                      editing.siteAssessment.roomWidth && `${editing.siteAssessment.roomWidth} ft (W)`,
+                      editing.siteAssessment.ceilingHeight && `${editing.siteAssessment.ceilingHeight} ft (ceiling)`,
+                    ].filter(Boolean).join(' × ') || 'not supplied'}
+                  </div>
+                  {editing.siteAssessment.preferredDate && (
+                    <div><span className="text-slate-500">Preferred date:</span> {formatDate(editing.siteAssessment.preferredDate)}</div>
+                  )}
+                </div>
+              )}
+
+              {editing.attachments?.length > 0 && (
+                <div className="pt-2 mt-2 border-t border-slate-800 space-y-1.5">
+                  <div className="text-[11px] font-bold uppercase text-slate-500">
+                    Attachments ({editing.attachments.length})
+                  </div>
+                  {editing.attachments.map((file) => (
+                    <a
+                      key={file.url}
+                      href={`${FILE_ROOT}${file.url}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block text-cyan-400 hover:text-cyan-300 truncate transition-colors"
+                    >
+                      {file.name || file.url.split('/').pop()}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Status">

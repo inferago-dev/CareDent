@@ -4,6 +4,7 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { nextReference } from '../utils/reference.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
 import { sendMail, detailsTable } from '../utils/mailer.js';
+import { publicUrlFor } from '../middleware/upload.js';
 
 export const createTicket = asyncHandler(async (req, res) => {
   const reference = await nextReference('ticket', 'TKT-');
@@ -30,6 +31,83 @@ export const createTicket = asyncHandler(async (req, res) => {
   res.status(201).json({
     success: true,
     message: 'Service request logged',
+    data: { reference: ticket.reference, id: ticket._id },
+  });
+});
+
+/**
+ * Pre-installation site assessment.
+ *
+ * It is really a service ticket with a fixed type, so it reuses the same
+ * reference series, admin queue and tracking page - but it arrives as
+ * multipart/form-data because the clinic attaches a floor plan or room photos.
+ */
+export const createSiteAssessment = asyncHandler(async (req, res) => {
+  const {
+    clinicName, contactName, phone, email, location, equipment,
+    roomLength, roomWidth, ceilingHeight, preferredDate, notes,
+  } = req.body;
+
+  const dimensions = [
+    roomLength && `${roomLength} ft (L)`,
+    roomWidth && `${roomWidth} ft (W)`,
+    ceilingHeight && `${ceilingHeight} ft (ceiling)`,
+  ].filter(Boolean).join(' x ');
+
+  const attachments = (req.files || []).map((file) => ({
+    url: publicUrlFor(file),
+    name: file.originalname,
+    size: file.size,
+    mimeType: file.mimetype,
+  }));
+
+  // The ticket's free-text issue doubles as the brief the engineer reads first.
+  const issue = [
+    `Pre-installation site assessment requested for: ${equipment}.`,
+    dimensions && `Room dimensions: ${dimensions}.`,
+    preferredDate && `Preferred installation date: ${new Date(preferredDate).toDateString()}.`,
+    attachments.length && `${attachments.length} file(s) attached (floor plan / photos).`,
+    notes && `Notes: ${notes}`,
+  ].filter(Boolean).join(' ');
+
+  const reference = await nextReference('ticket', 'TKT-');
+  const ticket = await ServiceTicket.create({
+    reference,
+    user: req.user?._id,
+    clinicName,
+    contactName,
+    phone,
+    email: email || undefined,
+    address: location,
+    equipment,
+    serviceType: 'Pre-Installation Site Visit',
+    priority: 'Medium',
+    issue,
+    siteAssessment: { location, roomLength, roomWidth, ceilingHeight, preferredDate },
+    attachments,
+  });
+
+  sendMail({
+    subject: `Site assessment request ${reference} - ${ticket.clinicName}`,
+    replyTo: ticket.email || undefined,
+    html: detailsTable('New Pre-Installation Site Assessment', [
+      ['Reference', reference],
+      ['Clinic', ticket.clinicName],
+      ['Contact', ticket.contactName],
+      ['Phone', ticket.phone],
+      ['Email', ticket.email],
+      ['Site location', location],
+      ['Equipment required', equipment],
+      ['Room dimensions', dimensions],
+      ['Preferred date', preferredDate ? new Date(preferredDate).toDateString() : ''],
+      ['Attachments', attachments.map((a) => a.name).join(', ')],
+      ['Notes', notes],
+    ]),
+  }).catch(() => {});
+
+  res.status(201).json({
+    success: true,
+    message: 'Site assessment requested',
     data: { reference: ticket.reference, id: ticket._id },
   });
 });

@@ -445,10 +445,18 @@ export const PRODUCTS = [
 
 export const SERVICES = [
   {
+    key: 'pre-installation',
+    title: 'Pre-Installation & Site Readiness',
+    iconName: 'Ruler',
+    sortOrder: 1,
+    description:
+      'A free site assessment before you commit: measurements, access, power and earthing, water and drainage, compressed air and suction - plus an optional layout and Vastu consultation.',
+  },
+  {
     key: 'installation',
     title: 'Professional Installation',
     iconName: 'Wrench',
-    sortOrder: 1,
+    sortOrder: 2,
     description:
       'Precision installation of dental chairs, utility pipelines, compressors and digital X-ray sensors by certified engineers, including commissioning and handover training.',
   },
@@ -456,17 +464,9 @@ export const SERVICES = [
     key: 'maintenance',
     title: 'Routine Maintenance',
     iconName: 'ShieldCheck',
-    sortOrder: 2,
-    description:
-      'Scheduled preventive maintenance covering tubing, valves, motor lubrication, suction flushes and light calibration - keeping small faults from becoming downtime.',
-  },
-  {
-    key: 'amc',
-    title: 'Annual Maintenance Contract (AMC)',
-    iconName: 'Calendar',
     sortOrder: 3,
     description:
-      'All-inclusive yearly contracts: regular scheduled visits, free emergency call-outs, priority response and discounted spares. Priced per chair, with multi-chair rates.',
+      'Scheduled preventive maintenance covering tubing, valves, motor lubrication, suction flushes and light calibration - keeping small faults from becoming downtime.',
   },
   {
     key: 'repair',

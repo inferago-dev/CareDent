@@ -201,7 +201,7 @@ export default function Portal() {
               {activeTab === 'service' && (
                 <Section title="Service requests" action={<Link to="/services#book-service" className="text-xs font-bold text-cyan-600 hover:underline">+ Book a visit</Link>}>
                   {tickets.length === 0 ? (
-                    <EmptyBlock title="No service requests" description="Log a breakdown or AMC visit and track the engineer's progress here." action={<Link to="/services#book-service" className="text-sm font-medium text-cyan-700 hover:underline">Book a service visit</Link>} />
+                    <EmptyBlock title="No service requests" description="Log a breakdown or a site visit and track the engineer's progress here." action={<Link to="/services#book-service" className="text-sm font-medium text-cyan-700 hover:underline">Book a service visit</Link>} />
                   ) : (
                     <Table head={['Ticket', 'Equipment', 'Issue', 'Logged', 'Priority', 'Status']}>
                       {tickets.map((t) => (

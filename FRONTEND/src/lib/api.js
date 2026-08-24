@@ -110,6 +110,8 @@ export const publicApi = {
   trackQuote: (ref) => api.get(`/quotations/track/${encodeURIComponent(ref)}`),
   sendMessage: (data) => api.post('/contact', data),
   requestService: (data) => api.post('/service-requests', data),
+  // FormData: carries the clinic's floor plan / room photos alongside the fields.
+  requestSiteAssessment: (formData) => api.post('/site-assessments', formData),
   trackService: (ref) => api.get(`/service-requests/track/${encodeURIComponent(ref)}`),
   trackOrder: (ref) => api.get(`/orders/track/${encodeURIComponent(ref)}`),
 };

@@ -153,7 +153,7 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
                   <optgroup label="Other Equipment">
                     {equipment.map((p) => <option key={p._id || p.id} value={p.name}>{p.name}</option>)}
                   </optgroup>
-                  <option value="Annual Maintenance Contract (AMC)">Annual Maintenance Contract (AMC)</option>
+                  <option value="Pre-Installation Site Assessment">Pre-Installation Site Assessment</option>
                   <option value="Complete Clinic Setup">Complete Clinic Setup</option>
                 </select>
                 <FieldError message={fieldErrors.product} />
@@ -197,7 +197,7 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
 
             <div className="space-y-1">
               <label className="text-xs font-bold text-slate-700 uppercase">Additional Requirements</label>
-              <textarea rows="3" placeholder="Custom color, compressor requirement, AMC add-on..." value={formData.notes} onChange={set('notes')} disabled={submitting} className={inputClass} />
+              <textarea rows="3" placeholder="Custom color, compressor requirement, room dimensions..." value={formData.notes} onChange={set('notes')} disabled={submitting} className={inputClass} />
               <FieldError message={fieldErrors.notes} />
             </div>
 

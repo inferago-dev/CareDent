@@ -86,10 +86,34 @@ export const ticketSchema = z.object({
   equipment: trimmed(2, 200, 'Equipment'),
   serialNumber: z.string().trim().max(80).optional().or(z.literal('')),
   serviceType: z
-    .enum(['Installation', 'Routine Maintenance', 'AMC Visit', 'Breakdown Repair', 'Inspection', 'Remote Support'])
+    .enum([
+      'Pre-Installation Site Visit',
+      'Installation',
+      'Routine Maintenance',
+      'Breakdown Repair',
+      'Inspection',
+      'Remote Support',
+    ])
     .default('Breakdown Repair'),
   issue: trimmed(5, 2000, 'Issue description'),
   priority: z.enum(['Low', 'Medium', 'High', 'Urgent']).default('Medium'),
+});
+
+/* ---------------- pre-installation site assessment ---------------- */
+// Sent as multipart/form-data (the clinic attaches a floor plan), so every
+// field arrives as a string - hence the tolerant shapes below.
+export const siteAssessmentSchema = z.object({
+  clinicName: trimmed(2, 160, 'Clinic name'),
+  contactName: trimmed(2, 120, 'Contact person'),
+  phone,
+  email: email.optional().or(z.literal('')),
+  location: trimmed(3, 400, 'Site location'),
+  equipment: trimmed(2, 400, 'Equipment required'),
+  roomLength: z.string().trim().max(30).optional().or(z.literal('')),
+  roomWidth: z.string().trim().max(30).optional().or(z.literal('')),
+  ceilingHeight: z.string().trim().max(30).optional().or(z.literal('')),
+  preferredDate: z.coerce.date().optional(),
+  notes: z.string().trim().max(2000).optional().or(z.literal('')),
 });
 
 export const ticketUpdateSchema = z.object({

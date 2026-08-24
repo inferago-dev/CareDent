@@ -8,7 +8,8 @@ import * as service from '../controllers/service.controller.js';
 import * as document from '../controllers/document.controller.js';
 import { optionalAuth } from '../middleware/auth.js';
 import validate from '../middleware/validate.js';
-import { quotationSchema, contactSchema, ticketSchema } from '../validators/schemas.js';
+import { upload } from '../middleware/upload.js';
+import { quotationSchema, contactSchema, ticketSchema, siteAssessmentSchema } from '../validators/schemas.js';
 
 const router = Router();
 
@@ -30,6 +31,16 @@ router.get('/quotations/track/:reference', quotation.trackQuotation);
 router.post('/contact', formLimiter, optionalAuth, validate({ body: contactSchema }), contact.createMessage);
 
 router.post('/service-requests', formLimiter, optionalAuth, validate({ body: ticketSchema }), ticket.createTicket);
+
+// multipart/form-data: the clinic attaches a floor plan or room photos.
+router.post(
+  '/site-assessments',
+  formLimiter,
+  optionalAuth,
+  upload.array('attachments', 6),
+  validate({ body: siteAssessmentSchema }),
+  ticket.createSiteAssessment
+);
 router.get('/service-requests/track/:reference', ticket.trackTicket);
 
 router.get('/orders/track/:reference', order.trackOrder);

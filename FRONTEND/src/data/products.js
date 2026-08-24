@@ -243,6 +243,12 @@ export const OTHER_EQUIPMENT = [
 
 export const SERVICES_LIST = [
   {
+    id: "pre-installation",
+    title: "Pre-Installation & Site Readiness",
+    iconName: "Ruler",
+    description: "A free site assessment covering measurements, power, plumbing, air and suction — so the room is ready before the chair arrives."
+  },
+  {
     id: "installation",
     title: "Professional Installation",
     iconName: "Wrench",
@@ -253,12 +259,6 @@ export const SERVICES_LIST = [
     title: "Routine Maintenance",
     iconName: "ShieldCheck",
     description: "Scheduled preventive maintenance service covering tubing, valves, motor lubrication, and suction flushes."
-  },
-  {
-    id: "amc",
-    title: "Annual Maintenance Contract (AMC)",
-    iconName: "Calendar",
-    description: "All-inclusive yearly contracts ensuring zero downtime, regular visits, free emergency calls, and discounted spares."
   },
   {
     id: "repair",

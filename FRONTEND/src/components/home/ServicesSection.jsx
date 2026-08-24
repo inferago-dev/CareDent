@@ -1,26 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, Wrench, ShieldCheck, Calendar, Zap, Phone, ClipboardCheck } from 'lucide-react';
+import { ArrowUpRight, Ruler, Wrench, ShieldCheck, Zap, Phone, ClipboardCheck } from 'lucide-react';
 import { COMPANY_DETAILS } from '../../data/products';
 import Reveal from '../Reveal';
 import useParallax from '../../hooks/useParallax';
 
 const ICONS = {
+  'pre-installation': Ruler,
   installation: Wrench,
   maintenance: ShieldCheck,
-  amc: Calendar,
   repair: Zap,
   support: Phone,
   inspection: ClipboardCheck,
 };
 
 const SERVICES = [
-  { id: 'installation', label: 'Installation', desc: 'Certified precision setup by engineers.' },
-  { id: 'maintenance', label: 'Maintenance', desc: 'Scheduled preventive service visits.' },
-  { id: 'amc', label: 'AMC', desc: 'Annual contract — zero downtime.' },
-  { id: 'repair', label: 'Repair', desc: 'Rapid fault response, all types.' },
-  { id: 'support', label: 'Support', desc: 'Direct access to our experts.' },
-  { id: 'inspection', label: 'Inspection', desc: 'Pre-purchase safety audits.' },
+  { id: 'pre-installation', label: 'Pre-Installation', desc: 'Free site survey before you buy.', to: '/services/pre-installation' },
+  { id: 'installation', label: 'Installation', desc: 'Certified precision setup by engineers.', to: '/services' },
+  { id: 'maintenance', label: 'Maintenance', desc: 'Scheduled preventive service visits.', to: '/services' },
+  { id: 'repair', label: 'Repair', desc: 'Rapid fault response, all types.', to: '/services' },
+  { id: 'support', label: 'Support', desc: 'Direct access to our experts.', to: '/services' },
+  { id: 'inspection', label: 'Inspection', desc: 'Pre-purchase safety audits.', to: '/services' },
 ];
 
 export default function ServicesSection() {
@@ -46,7 +46,10 @@ export default function ServicesSection() {
               const Icon = ICONS[s.id];
               return (
                 <Reveal key={s.id} delay={idx * 60}>
-                  <div className="group relative flex flex-col justify-between h-full min-h-[160px] rounded-2xl bg-slate-200 hover:bg-slate-300/50 transition-all duration-300 cursor-default p-5 overflow-hidden">
+                  <Link
+                    to={s.to}
+                    className="group relative flex flex-col justify-between h-full min-h-[160px] rounded-2xl bg-slate-200 hover:bg-slate-300/50 transition-all duration-300 p-5 overflow-hidden"
+                  >
                     {/* large faded index */}
                     <span className="absolute -bottom-3 -right-1 text-[5rem] font-bold text-slate-400/20 group-hover:text-slate-400/60 leading-none select-none transition-colors duration-300 pointer-events-none">
                       {String(idx + 1).padStart(2, '0')}
@@ -62,7 +65,7 @@ export default function ServicesSection() {
                       <p className="text-lg font-medium text-slate-900 tracking-tighter leading-snug">{s.label}</p>
                       <p className="text-sm text-slate-500 mt-1 leading-tight">{s.desc}</p>
                     </div>
-                  </div>
+                  </Link>
                 </Reveal>
               );
             })}
