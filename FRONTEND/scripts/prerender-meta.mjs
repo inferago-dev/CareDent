@@ -22,10 +22,13 @@ import { dirname, resolve, join } from 'node:path';
 
 import {
   SITE_NAME, DEFAULT_OG_IMAGE, absoluteUrl, buildTitle, clampDescription,
-  productSchema, breadcrumbSchema, organizationSchema, websiteSchema,
+  productSchema, breadcrumbSchema, organizationSchema, websiteSchema, articleSchema,
+  faqSchema,
 } from '../src/lib/seo.js';
 import { PAGE_META } from '../src/lib/pageMeta.js';
 import { DENTAL_CHAIRS, OTHER_EQUIPMENT } from '../src/data/products.js';
+import { ARTICLES } from '../src/data/articles.js';
+import { faqsFor } from '../src/data/faqs.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -90,7 +93,11 @@ const routes = [
     schema:
       path === '/'
         ? [organizationSchema(), websiteSchema()]
-        : [crumbs([{ name: 'Home', path: '/' }, { name: meta.title.split(' — ')[0], path }])],
+        : [
+            crumbs([{ name: 'Home', path: '/' }, { name: meta.title.split(' — ')[0], path }]),
+            // Pages with a visible FAQ block carry the matching markup.
+            ...(faqsFor(path).length ? [faqSchema(faqsFor(path))] : []),
+          ],
   })),
   ...[...DENTAL_CHAIRS, ...OTHER_EQUIPMENT].map((p) => {
     const slug = p.slug || p.id;
@@ -116,6 +123,20 @@ const routes = [
       ],
     };
   }),
+  ...ARTICLES.map((a) => ({
+    path: `/guides/${a.slug}`,
+    title: a.title,
+    description: a.summary,
+    type: 'article',
+    schema: [
+      articleSchema(a),
+      crumbs([
+        { name: 'Home', path: '/' },
+        { name: 'Guides', path: '/guides' },
+        { name: a.title, path: `/guides/${a.slug}` },
+      ]),
+    ],
+  })),
 ];
 
 let written = 0;

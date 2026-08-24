@@ -177,3 +177,33 @@ export const serviceSchema = (services = []) => ({
     },
   })),
 });
+
+/**
+ * FAQ markup. Google can surface these directly in results, so the answers
+ * must match what is visible on the page - marking up text the visitor cannot
+ * see is a structured-data violation.
+ */
+export const faqSchema = (faqs = []) => ({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+});
+
+/** A blog post or guide. */
+export const articleSchema = (article) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  '@id': `${SITE_URL}/guides/${article.slug}#article`,
+  headline: article.title,
+  description: clampDescription(article.summary, 300),
+  datePublished: article.publishedAt,
+  dateModified: article.updatedAt || article.publishedAt,
+  author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+  publisher: { '@id': `${SITE_URL}/#organization` },
+  mainEntityOfPage: absoluteUrl(`/guides/${article.slug}`),
+  ...(article.image ? { image: absoluteUrl(article.image) } : {}),
+});

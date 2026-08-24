@@ -14,6 +14,7 @@ import { dirname, resolve } from 'node:path';
 import { SITE_URL } from '../src/lib/seo.js';
 import { PAGE_META } from '../src/lib/pageMeta.js';
 import { DENTAL_CHAIRS, OTHER_EQUIPMENT } from '../src/data/products.js';
+import { ARTICLES } from '../src/data/articles.js';
 
 const OUT = resolve(dirname(fileURLToPath(import.meta.url)), '../public/sitemap.xml');
 const today = new Date().toISOString().slice(0, 10);
@@ -33,6 +34,12 @@ const urls = [
     priority: 0.7,
     changefreq: 'monthly',
   })),
+  ...ARTICLES.map((a) => ({
+    loc: `${SITE_URL}/guides/${a.slug}`,
+    priority: 0.6,
+    changefreq: 'yearly',
+    lastmod: a.updatedAt || a.publishedAt,
+  })),
 ];
 
 const seen = new Set();
@@ -42,7 +49,7 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${unique.map((u) => `  <url>
     <loc>${escape(u.loc)}</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>${u.lastmod || today}</lastmod>
     <changefreq>${u.changefreq}</changefreq>
     <priority>${u.priority.toFixed(1)}</priority>
   </url>`).join('\n')}

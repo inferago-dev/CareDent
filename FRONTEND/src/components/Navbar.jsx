@@ -63,6 +63,7 @@ export default function Navbar({ onOpenQuoteModal }) {
     { name: 'Products', path: '/products', hasDropdown: true },
     { name: 'Services', path: '/services' },
     { name: 'Gallery', path: '/gallery' },
+    { name: 'Guides', path: '/guides' },
     { name: 'Track Order', path: '/track-order' },
     { name: 'Contact', path: '/contact' },
   ];

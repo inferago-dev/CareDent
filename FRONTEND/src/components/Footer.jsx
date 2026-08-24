@@ -50,6 +50,9 @@ export default function Footer() {
               <li><Link to="/services" className="hover:text-cyan-400 transition-colors">Services & Support</Link></li>
               <li><Link to="/services/pre-installation" className="hover:text-cyan-400 transition-colors">Pre-Installation</Link></li>
               <li><Link to="/gallery" className="hover:text-cyan-400 transition-colors">Gallery</Link></li>
+              <li><Link to="/guides" className="hover:text-cyan-400 transition-colors">Guides</Link></li>
+              <li><Link to="/dental-clinic-setup" className="hover:text-cyan-400 transition-colors">Clinic Setup Guide</Link></li>
+              <li><Link to="/dental-chair-service-chennai" className="hover:text-cyan-400 transition-colors">Chair Service in Chennai</Link></li>
               <li><Link to="/track-order" className="hover:text-cyan-400 transition-colors">Track Order</Link></li>
               <li><Link to="/contact" className="hover:text-cyan-400 transition-colors">Contact</Link></li>
             </ul>

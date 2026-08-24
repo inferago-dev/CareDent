@@ -39,13 +39,14 @@ export default function CtaSection({ onOpenQuoteModal }) {
         <div ref={parallaxRef} className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center space-y-6 will-change-transform">
           <Reveal>
             <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium leading-[1.1]">
-              Ready to upgrade your practice with Care Dent?
+              Tell us about your clinic. We will tell you what it needs.
             </h2>
           </Reveal>
           <Reveal delay={100}>
             <p className="text-slate-400 text-base max-w-xl mx-auto">
-              Get a personalized quotation, chair customization details, and certified
-              technician installation advice today.
+              Send us your room size and what you need. You get a written quotation,
+              a free site check before anything is delivered, and the name of the
+              engineer who will install it. No cost, no obligation.
             </p>
           </Reveal>
           <Reveal delay={200}>

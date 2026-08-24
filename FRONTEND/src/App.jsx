@@ -18,6 +18,10 @@ import ProductDetails from './pages/ProductDetails';
 import Services from './pages/Services';
 import PreInstallation from './pages/PreInstallation';
 import Gallery from './pages/Gallery';
+import Guides from './pages/Guides';
+import GuideDetail from './pages/GuideDetail';
+import ClinicSetup from './pages/ClinicSetup';
+import ChennaiService from './pages/ChennaiService';
 import TrackOrder from './pages/TrackOrder';
 import Contact from './pages/Contact';
 import Portal from './pages/Portal';
@@ -58,6 +62,10 @@ function MainLayout() {
           <Route path="/services" element={<Services />} />
           <Route path="/services/pre-installation" element={<PreInstallation onOpenQuoteModal={handleOpenQuoteModal} />} />
           <Route path="/gallery" element={<Gallery onOpenQuoteModal={handleOpenQuoteModal} />} />
+          <Route path="/guides" element={<Guides />} />
+          <Route path="/guides/:slug" element={<GuideDetail onOpenQuoteModal={handleOpenQuoteModal} />} />
+          <Route path="/dental-clinic-setup" element={<ClinicSetup onOpenQuoteModal={handleOpenQuoteModal} />} />
+          <Route path="/dental-chair-service-chennai" element={<ChennaiService onOpenQuoteModal={handleOpenQuoteModal} />} />
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/contact" element={<Contact />} />
 

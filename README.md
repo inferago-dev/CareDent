@@ -54,11 +54,17 @@ npm run dev                   # http://localhost:5173
 ### Public site
 | Route            | Page |
 |------------------|------|
-| `/`              | Home — hero, about, testimonials, flagship models, services, CTA |
+| `/`              | Home — hero, about, why-us, flagship models, services, buying process, CTA |
 | `/about`         | Company story, vision, mission |
 | `/products`      | Catalogue, filterable by category, searchable via `?q=` |
 | `/products/:slug`| Product detail — gallery, features, spec table, related models |
 | `/services`      | Services & support, plus the service-request booking form |
+| `/services/pre-installation` | Site-readiness guide, checklist PDF, assessment request |
+| `/gallery`       | Clinic installations we have delivered |
+| `/guides`        | Guides index — content marketing, see `src/data/articles.js` |
+| `/guides/:slug`  | Guide article |
+| `/dental-clinic-setup` | Landing page: setting up a new practice, with FAQ markup |
+| `/dental-chair-service-chennai` | Landing page: local repair intent, with FAQ markup |
 | `/track-order`   | Track an order, service ticket or quotation by reference |
 | `/contact`       | Enquiry form and contact details |
 | `/login`         | Sign in / create a clinic account |
@@ -219,3 +225,16 @@ on its own:
    is what makes the LocalBusiness markup pay off.
 3. Keep the name, address and phone identical across the site, the profile and
    any directory listing — they are compared literally.
+
+### Marketing content
+
+Guides at `/guides` are plain data — append an entry to
+`FRONTEND/src/data/articles.js` and the route, the sitemap and the Article
+structured data all pick it up. Nothing else to wire.
+
+FAQ content for the landing pages lives in `FRONTEND/src/data/faqs.js`, shared
+between the page and `scripts/prerender-meta.mjs` so the visible answers and the
+FAQPage markup cannot drift apart — Google requires them to match.
+
+The off-site plan (Google Business Profile, reviews, directory listings, what to
+measure) is `docs/marketing-playbook.html`.

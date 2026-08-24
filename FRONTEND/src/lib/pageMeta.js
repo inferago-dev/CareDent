@@ -46,6 +46,24 @@ export const PAGE_META = {
       'Dental clinics Care Dent has fitted out across India — chairs, utility pipelines, X-ray rooms and full surgery installations, commissioned and handed over.',
     priority: 0.6,
   },
+  '/guides': {
+    title: 'Guides — Buying, Installing & Maintaining',
+    description:
+      'Practical guides on choosing a dental chair, preventing breakdowns and preparing a clinic site — written from what our engineers see in real practices.',
+    priority: 0.7,
+  },
+  '/dental-clinic-setup': {
+    title: 'How to Set Up a Dental Clinic in India',
+    description:
+      'The sequence that avoids expensive surprises: what to check before signing a lease, what to buy in what order, how to budget, and how to time the work.',
+    priority: 0.8,
+  },
+  '/dental-chair-service-chennai': {
+    title: 'Dental Chair Repair & Service in Chennai',
+    description:
+      'Chair, compressor, autoclave and X-ray repair across Chennai — whoever you bought from. Spares held in stock, so most faults finish in a single visit.',
+    priority: 0.9,
+  },
   '/track-order': {
     title: 'Track Your Order or Service Request',
     description:

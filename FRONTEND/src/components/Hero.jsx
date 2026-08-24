@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShieldCheck, Wrench, Award } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Wrench, Award, Phone } from 'lucide-react';
+import { COMPANY_DETAILS } from '../data/products';
 import useParallax from '../hooks/useParallax';
 
 export default function Hero({ onOpenQuoteModal }) {
@@ -56,13 +57,13 @@ export default function Hero({ onOpenQuoteModal }) {
             </span>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl tracking-tighter font-medium">
-              Premium <span className="text-cyan-500 font-playfair italic">dental chairs</span> installed and supported end to end.
+              <span className="text-cyan-500 font-playfair italic">Dental chairs</span> that come with the engineers who service them.
             </h1>
 
             <p className="text-slate-400 text-base leading-tight tracking-tighter font-regular max-w-xl">
-              Engineered for clinician legroom, integrated optic scaling, and
-              zero-downtime reliability — with certified installation and
-              support delivered pan-India.
+              We survey your room before you buy, install it ourselves, and pick up
+              the phone when something goes wrong. Spares held in stock, so most
+              repairs finish in a single visit.
             </p>
 
             {/* CTAs */}
@@ -82,6 +83,19 @@ export default function Hero({ onOpenQuoteModal }) {
                 Request a Quote
               </button>
             </div>
+
+            {/* Most enquiries for equipment at this price start as a phone call,
+                so the number is a primary action rather than a footer detail. */}
+            <a
+              href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`}
+              className="inline-flex items-center gap-2.5 text-sm text-slate-300 hover:text-cyan-400 transition-colors pt-1"
+            >
+              <Phone className="w-4 h-4 text-cyan-500" />
+              <span>
+                Or talk to {COMPANY_DETAILS.founder.replace('Mr. ', '')} directly —{' '}
+                <span className="font-semibold text-white">{COMPANY_DETAILS.phoneNumbers[0]}</span>
+              </span>
+            </a>
 
           </div>
 

@@ -192,6 +192,15 @@ export default function Services() {
           <Reveal delay={100}>
             <ServiceRequestForm />
           </Reveal>
+          <Reveal delay={160}>
+            <p className="text-center text-sm text-slate-500 mt-10">
+              Equipment down right now?{' '}
+              <Link to="/dental-chair-service-chennai" className="text-cyan-700 font-medium hover:underline">
+                See what we repair and how fast
+              </Link>
+              {' '}— or call {COMPANY_DETAILS.phoneNumbers[0]}.
+            </p>
+          </Reveal>
         </div>
       </section>
 

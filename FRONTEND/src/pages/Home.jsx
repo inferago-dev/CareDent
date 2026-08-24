@@ -4,6 +4,7 @@ import AboutSection from '../components/home/AboutSection';
 import TestimonialsSection from '../components/home/TestimonialsSection';
 import FlagshipModelsSection from '../components/home/FlagshipModelsSection';
 import ServicesSection from '../components/home/ServicesSection';
+import ProcessSection from '../components/home/ProcessSection';
 import CtaSection from '../components/home/CtaSection';
 import Seo from '../components/Seo';
 import { organizationSchema, websiteSchema } from '../lib/seo';
@@ -21,6 +22,7 @@ export default function Home({ onOpenQuoteModal }) {
       <TestimonialsSection />
       <FlagshipModelsSection onOpenQuoteModal={onOpenQuoteModal} />
       <ServicesSection />
+      <ProcessSection />
       <CtaSection onOpenQuoteModal={onOpenQuoteModal} />
     </div>
   );
