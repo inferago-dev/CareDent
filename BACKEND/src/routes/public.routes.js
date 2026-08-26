@@ -9,7 +9,7 @@ import * as document from '../controllers/document.controller.js';
 import { optionalAuth } from '../middleware/auth.js';
 import validate from '../middleware/validate.js';
 import { upload } from '../middleware/upload.js';
-import { quotationSchema, contactSchema, ticketSchema, siteAssessmentSchema } from '../validators/schemas.js';
+import { quotationSchema, contactSchema, ticketSchema, siteAssessmentSchema, referenceParamSchema } from '../validators/schemas.js';
 
 const router = Router();
 
@@ -22,11 +22,27 @@ const formLimiter = rateLimit({
   message: { success: false, message: 'You have sent several requests already. Please call us on +91 94441 53599.' },
 });
 
+/**
+ * References are a sequential counter (ORD-000001, ORD-000002, ...), so anyone
+ * who has one can walk the series and read every other customer's order status,
+ * equipment list and engineer. The endpoints have to stay open - customers
+ * track without an account - so the guard is a rate limit tight enough that
+ * enumeration is not worth the wait, but loose enough that nobody checking
+ * their own delivery ever notices it.
+ */
+const trackLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 30,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many lookups. Please wait a few minutes, or call us on +91 94441 53599.' },
+});
+
 router.get('/services', service.listServices);
 router.get('/documents', document.publicDocuments);
 
 router.post('/quotations', formLimiter, optionalAuth, validate({ body: quotationSchema }), quotation.createQuotation);
-router.get('/quotations/track/:reference', quotation.trackQuotation);
+router.get('/quotations/track/:reference', trackLimiter, validate({ params: referenceParamSchema }), quotation.trackQuotation);
 
 router.post('/contact', formLimiter, optionalAuth, validate({ body: contactSchema }), contact.createMessage);
 
@@ -41,8 +57,8 @@ router.post(
   validate({ body: siteAssessmentSchema }),
   ticket.createSiteAssessment
 );
-router.get('/service-requests/track/:reference', ticket.trackTicket);
+router.get('/service-requests/track/:reference', trackLimiter, validate({ params: referenceParamSchema }), ticket.trackTicket);
 
-router.get('/orders/track/:reference', order.trackOrder);
+router.get('/orders/track/:reference', trackLimiter, validate({ params: referenceParamSchema }), order.trackOrder);
 
 export default router;

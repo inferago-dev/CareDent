@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   CheckCircle2, Download, MessageSquare, ArrowRight, ShieldCheck,
@@ -91,10 +91,10 @@ export default function ProductDetails({ onOpenQuoteModal }) {
       {/* Dark breadcrumb band. Every other public page opens on blue-950; the
           navbar is fixed and transparent until scroll, so this page needs the
           same dark top or the white logo and nav links vanish against white. */}
-      <section className="relative overflow-hidden bg-blue-950 text-white pt-28 pb-10">
+      <section className="relative overflow-hidden bg-blue-950 text-white page-band">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+        <div className="relative container-page max-w-7xl flex items-center justify-between gap-4">
           <div className="text-xs text-slate-400 flex items-center gap-2 min-w-0">
             <Link to="/" className="hover:text-cyan-400 transition-colors">Home</Link>
             <span className="text-slate-600">/</span>
@@ -112,7 +112,7 @@ export default function ProductDetails({ onOpenQuoteModal }) {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 py-12">
+      <div className="container-page max-w-7xl space-y-12 py-12">
 
         {/* GALLERY + INFO */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden p-6 lg:p-10">

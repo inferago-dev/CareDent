@@ -14,6 +14,84 @@ html, body {
 }
 
 /* ================================
+   Page rhythm
+   ================================
+
+   One vertical scale for every public page, so /about, /services, /guides and
+   a product page all breathe the same way. Before this each page hand-rolled
+   its own padding - heroes were py-24 sm:py-32 on most pages but pt-28 pb-16
+   on a guide and pt-28 pb-10 on a product, and every band between them was a
+   flat py-24 that never stepped down, which is why phones got 96px of empty
+   blue above and below every block of text.
+
+   Declared as @utility so they sit in Tailwind's utilities layer and can still
+   be overridden by a one-off py-* on the element itself.
+================================ */
+
+/* The dark band at the top of a page. Its top padding has to clear the fixed
+   80px navbar; py-24 left only 16px of air under it on a phone. */
+@utility page-hero {
+    padding-top: 7rem;
+    padding-bottom: 4rem;
+}
+
+/* A content band. */
+@utility section-y {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+/* Half a band - for a section that sits directly against the one before it. */
+@utility section-y-tight {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+}
+
+/* Bottom half only, for the last band before the footer. */
+@utility section-pb {
+    padding-bottom: 4rem;
+}
+
+@media (width >= 40rem) {
+    .page-hero { padding-top: 8rem; padding-bottom: 5rem; }
+    .page-band { padding-top: 8rem; padding-bottom: 2.5rem; }
+    .section-y { padding-top: 5rem; padding-bottom: 5rem; }
+    .section-y-tight { padding-top: 3rem; padding-bottom: 3rem; }
+    .section-pb { padding-bottom: 5rem; }
+}
+
+@media (width >= 64rem) {
+    .page-hero { padding-top: 9rem; padding-bottom: 6rem; }
+    .page-band { padding-top: 9rem; padding-bottom: 2.5rem; }
+    .section-y { padding-top: 6rem; padding-bottom: 6rem; }
+    .section-y-tight { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+    .section-pb { padding-bottom: 6rem; }
+}
+
+/* The slim dark bar a product page opens on - breadcrumb only, but it still
+   has to clear the navbar, so it shares the hero's top padding. */
+@utility page-band {
+    padding-top: 7rem;
+    padding-bottom: 2rem;
+}
+
+/* The gutter every page shares. Width stays inline (container-page max-w-7xl)
+   so a narrower reading column is still an explicit choice on the element. */
+@utility container-page {
+    margin-inline: auto;
+    width: 100%;
+    padding-inline: 1rem;
+}
+
+@media (width >= 40rem) {
+    .container-page { padding-inline: 1.5rem; }
+}
+
+@media (width >= 64rem) {
+    .container-page { padding-inline: 2rem; }
+}
+
+/* ================================
    Trusted-by marquee
 ================================ */
 @keyframes marquee-ltr {
@@ -30,42 +108,8 @@ html, body {
 }
 
 /* ================================
-   Instrument Sans
-================================ */
-@font-face {
-    font-family: 'Instrument Sans';
-    src: url('/Instrument_Sans.woff2') format('woff2');
-    font-weight: 100 900;
-    font-style: normal;
-    font-display: swap;
-}
-
-.font-ins {
-    font-family: 'Instrument Sans', sans-serif;
-}
-
-
-/* ================================
    Inter
 ================================ */
-
-/* Inter Thin - 100 */
-@font-face {
-    font-family: 'Inter';
-    src: url('/Inter-Thin.woff2') format('woff2');
-    font-weight: 100;
-    font-style: normal;
-    font-display: swap;
-}
-
-/* Inter Light - 300 */
-@font-face {
-    font-family: 'Inter';
-    src: url('/Inter-Light.woff2') format('woff2');
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-}
 
 /* Inter Regular - 400 */
 @font-face {
@@ -96,16 +140,6 @@ html, body {
 
 
 /* Inter Utility Classes */
-.inter-thin {
-    font-family: 'Inter', sans-serif;
-    font-weight: 100;
-}
-
-.inter-light {
-    font-family: 'Inter', sans-serif;
-    font-weight: 300;
-}
-
 .inter-regular {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
@@ -123,19 +157,15 @@ html, body {
 
 
 /* ================================
-   Playfair Display
+   Serif accent
 ================================ */
 
-@font-face {
-    font-family: 'Playfair';
-    src: url('/Playfair.woff2') format('woff2');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
+/* The italic serif accent in the hero headline. No Playfair file is shipped -
+   the @font-face here pointed at /Playfair.woff2, which does not exist, so
+   every visitor paid for a 404 and got a generic serif anyway (Vite warned
+   about it on each build). This names that fallback explicitly instead. */
 .font-playfair {
-    font-family: 'Playfair', serif;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
     font-weight: 400;
 }
 

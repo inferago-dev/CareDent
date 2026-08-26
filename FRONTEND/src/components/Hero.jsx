@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, Wrench, Award, Phone } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import useParallax from '../hooks/useParallax';
+
+const HERO_FACTS = [
+  { icon: ShieldCheck, title: '30+ Yrs Exp.', detail: 'Mr. Sivakumar', position: '-left-14 top-2' },
+  { icon: Wrench, title: 'Site-Ready Installs', detail: 'Surveyed before delivery', position: '-right-10 bottom-16' },
+  { icon: Award, title: 'Sales · Service', detail: 'Support, end to end', position: 'right-12 -top-5' },
+];
 
 export default function Hero({ onOpenQuoteModal }) {
   const [isBlurVisible, setIsBlurVisible] = useState(true);
@@ -47,7 +53,7 @@ export default function Hero({ onOpenQuoteModal }) {
         <div className="absolute inset-0 backdrop-blur-2xl mask-[linear-gradient(to_top,black,transparent)]" />
       </div>
 
-      <div ref={parallaxRef} className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 will-change-transform w-full">
+      <div ref={parallaxRef} className="relative container-page max-w-7xl will-change-transform w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
 
           {/* Left Content */}
@@ -60,7 +66,7 @@ export default function Hero({ onOpenQuoteModal }) {
               <span className="text-cyan-500 font-playfair italic">Dental chairs</span> that come with the engineers who service them.
             </h1>
 
-            <p className="text-slate-400 text-base leading-tight tracking-tighter font-regular max-w-xl">
+            <p className="text-slate-400 text-base leading-relaxed tracking-tight max-w-xl">
               We survey your room before you buy, install it ourselves, and pick up
               the phone when something goes wrong. Spares held in stock, so most
               repairs finish in a single visit.
@@ -100,52 +106,54 @@ export default function Hero({ onOpenQuoteModal }) {
           </div>
 
           {/* Right Image with Floating Stats */}
-          <div className="lg:col-span-5 relative flex items-center justify-center min-h-[400px] lg:min-h-[600px] mt-10 lg:mt-0">
-            <div className="relative w-full max-w-[400px] lg:max-w-[500px] aspect-square flex items-center justify-center">
+          <div className="lg:col-span-5 relative flex flex-col items-center justify-center mt-10 lg:mt-0 lg:min-h-[600px]">
+            <div className="relative w-full max-w-[320px] sm:max-w-[400px] lg:max-w-[500px] aspect-square flex items-center justify-center">
 
-              {/* Floating Card 1 (top-left, mirrors card 3 on the right) */}
-              <div className="absolute -left-6 sm:-left-14 top-6 sm:top-2 z-20 backdrop-blur-xl bg-white/5 border border-white/10 p-1 px-2 sm:p-2 sm:pe-4 rounded-2xl flex items-center gap-3.5 hover:-translate-y-1 transition-transform cursor-default">
-                <div className="bg-cyan-500/20 p-2.5 rounded-xl border border-cyan-500/20">
-                  <ShieldCheck className="w-6 h-6 text-cyan-500" />
+              {/* The three trust cards float around the tooth from sm up. On a
+                  narrow phone the box is ~320px wide and each card is ~180px,
+                  so floating them put two cards on top of the image and pushed
+                  the outer edges past the viewport (only the global
+                  overflow-x:hidden was keeping that off-screen). Below sm the
+                  same three facts render as the strip underneath instead. */}
+              {HERO_FACTS.map(({ icon: Icon, title, detail, position }) => (
+                <div
+                  key={title}
+                  className={`hidden sm:flex absolute z-20 backdrop-blur-xl bg-white/5 border border-white/10 p-2 pe-4 rounded-2xl items-center gap-3.5 hover:-translate-y-1 transition-transform cursor-default ${position}`}
+                >
+                  <div className="bg-cyan-500/20 p-2.5 rounded-xl border border-cyan-500/20">
+                    <Icon className="w-6 h-6 text-cyan-500" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-white text-sm sm:text-base tracking-tight">{title}</div>
+                    <div className="text-slate-400 text-xs tracking-tight">{detail}</div>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <div className="text-white text-sm sm:text-md tracking-tight">30+ Yrs Exp.</div>
-                  <div className="text-slate-400 text-xs tracking-tight">Mr. Sivakumar</div>
-                </div>
-              </div>
+              ))}
 
               {/* The Tooth Image */}
               <img
                 src="/Tooth.png"
-                alt="Care Dent Tooth"
+                alt=""
+                width="512" height="512"
                 className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_80px_rgba(34,211,238,0.15)] hover:scale-105 transition-transform duration-700 ease-out"
                 fetchPriority="high"
                 decoding="async"
               />
-
-              {/* Floating Card 2 (bottom-right) */}
-              <div className="absolute -right-6 sm:-right-10 bottom-16 z-20 backdrop-blur-xl bg-white/5 border border-white/10 p-1 px-2 sm:p-2 sm:pe-4 rounded-2xl flex items-center gap-3.5 hover:-translate-y-1 transition-transform cursor-default">
-                <div className="bg-cyan-500/20 p-2.5 rounded-xl border border-cyan-500/20">
-                  <Wrench className="w-6 h-6 text-cyan-500" />
-                </div>
-                <div className="text-left">
-                  <div className="text-white text-sm sm:text-md tracking-tight">Site-Ready Installs</div>
-                  <div className="text-slate-400 text-xs tracking-tight">Surveyed before delivery</div>
-                </div>
-              </div>
-
-              {/* Floating Card 3 (top-right) */}
-              <div className="absolute right-4 sm:right-12 -top-5 z-20 backdrop-blur-xl bg-white/5 border border-white/10 p-1 px-2 sm:p-2 sm:pe-4 rounded-2xl flex items-center gap-3.5 hover:-translate-y-1 transition-transform cursor-default">
-                <div className="bg-cyan-500/20 p-2.5 rounded-xl border border-cyan-500/20">
-                  <Award className="w-6 h-6 text-cyan-500" />
-                </div>
-                <div className="text-left">
-                  <div className="text-white text-sm sm:text-md tracking-tight">Sales · Service</div>
-                  <div className="text-slate-400 text-xs tracking-tight">Support, end to end</div>
-                </div>
-              </div>
-
             </div>
+
+            {/* Phone layout for the same three facts. */}
+            <ul className="sm:hidden grid grid-cols-3 gap-2 w-full mt-6">
+              {HERO_FACTS.map(({ icon: Icon, title, detail }) => (
+                <li
+                  key={title}
+                  className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-3 text-center"
+                >
+                  <Icon className="w-5 h-5 text-cyan-500 mx-auto" />
+                  <div className="text-white text-xs tracking-tight mt-2 leading-snug">{title}</div>
+                  <div className="text-slate-400 text-[11px] tracking-tight leading-snug mt-0.5">{detail}</div>
+                </li>
+              ))}
+            </ul>
           </div>
 
         </div>

@@ -1,4 +1,3 @@
-import React from 'react';
 import TrustedBySection from '../components/home/TrustedBySection';
 import AboutSection from '../components/home/AboutSection';
 import TestimonialsSection from '../components/home/TestimonialsSection';

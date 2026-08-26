@@ -19,9 +19,9 @@ export default function Guides() {
         ])}
       />
 
-      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative container-page max-w-4xl text-center">
           <Reveal>
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               Guides
@@ -39,8 +39,8 @@ export default function Guides() {
         </div>
       </section>
 
-      <section className="py-24">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y">
+        <div className="container-page max-w-5xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {articles.map((article, idx) => (
               <Reveal key={article.slug} delay={idx * 80} y={24}>

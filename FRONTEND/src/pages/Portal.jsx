@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ShoppingBag, FileText, Wrench, Download, User, LogOut,
@@ -51,23 +51,52 @@ export default function Portal() {
     <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col lg:flex-row">
       <Seo title="Customer Portal" noindex />
 
-      {/* SIDEBAR */}
-      <aside className="w-full lg:w-64 bg-blue-950 text-white p-6 space-y-8 shrink-0">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-cyan-600 flex items-center justify-center font-bold text-white shadow-md">
-            CD
+      {/*
+        SIDEBAR
+
+        On a phone this used to be `w-full` with the full seven-item menu, the
+        brand block and the account card stacked above the content - so opening
+        the portal meant scrolling past a screen and a half of navigation before
+        seeing a single order. Below lg it is now a compact bar with the tabs on
+        one horizontally scrolling row; the vertical sidebar returns at lg.
+      */}
+      <aside className="w-full lg:w-64 bg-blue-950 text-white shrink-0 lg:sticky lg:top-0 lg:h-dvh lg:overflow-y-auto p-4 lg:p-6 space-y-4 lg:space-y-8">
+        <div className="flex items-center justify-between gap-3">
+          <Link to="/" className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-cyan-600 flex items-center justify-center font-bold text-white shadow-md shrink-0">
+              CD
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-bold text-base leading-tight">Customer Portal</h3>
+              <span className="text-xs text-cyan-400 font-semibold truncate block">
+                {user?.clinicName || COMPANY_DETAILS.name}
+              </span>
+            </div>
+          </Link>
+
+          {/* The sign-out and back-to-site actions live at the bottom of the
+              sidebar on desktop; on a phone that is below the fold. */}
+          <div className="flex items-center gap-1 lg:hidden">
+            <Link
+              to="/"
+              aria-label="Back to website"
+              className="p-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </Link>
+            <button
+              onClick={handleSignOut}
+              aria-label="Sign out"
+              className="p-2.5 rounded-lg text-red-400 hover:bg-red-950/30 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
-          <div className="min-w-0">
-            <h3 className="font-bold text-base leading-tight">Customer Portal</h3>
-            <span className="text-xs text-cyan-400 font-semibold truncate block">
-              {user?.clinicName || COMPANY_DETAILS.name}
-            </span>
-          </div>
-        </Link>
+        </div>
 
         <button
           onClick={() => setActiveTab('account')}
-          className="w-full text-left p-3.5 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 space-y-1 text-xs transition-colors"
+          className="hidden lg:block w-full text-left p-3.5 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 space-y-1 text-xs transition-colors"
           title="Manage your account"
         >
           <div className="font-bold text-white flex items-center gap-1.5">
@@ -78,7 +107,10 @@ export default function Portal() {
           {user?.phone && <div className="text-cyan-300 font-mono text-[10px]">{user.phone}</div>}
         </button>
 
-        <nav className="space-y-1 text-sm font-semibold">
+        <nav
+          aria-label="Portal sections"
+          className="flex lg:block gap-2 lg:gap-0 lg:space-y-1 overflow-x-auto lg:overflow-visible -mx-4 px-4 lg:mx-0 lg:px-0 pb-1 lg:pb-0 text-sm font-semibold"
+        >
           {TABS.map((item) => {
             const Icon = item.icon;
             const active = activeTab === item.id;
@@ -86,7 +118,8 @@ export default function Portal() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+                aria-current={active ? 'page' : undefined}
+                className={`shrink-0 lg:w-full flex items-center gap-2.5 lg:justify-between px-3.5 py-2.5 rounded-xl transition-all whitespace-nowrap ${
                   active
                     ? 'bg-cyan-600 text-white font-bold shadow-md shadow-cyan-600/30'
                     : 'text-slate-300 hover:bg-white/5 hover:text-white'
@@ -108,7 +141,7 @@ export default function Portal() {
           })}
         </nav>
 
-        <div className="pt-6 border-t border-white/10 space-y-1">
+        <div className="hidden lg:block pt-6 border-t border-white/10 space-y-1">
           <Link to="/" className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
             <ExternalLink className="w-4 h-4" />
             <span>Back to website</span>
@@ -124,7 +157,7 @@ export default function Portal() {
       </aside>
 
       {/* MAIN */}
-      <main className="flex-1 p-6 lg:p-10 space-y-8 max-w-6xl">
+      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-10 space-y-8 max-w-6xl">
 
         {loading && <LoadingBlock label="Loading your account…" />}
         {error && <ErrorBlock error={error} onRetry={reload} />}

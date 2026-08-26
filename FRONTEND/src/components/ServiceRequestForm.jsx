@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Wrench, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';

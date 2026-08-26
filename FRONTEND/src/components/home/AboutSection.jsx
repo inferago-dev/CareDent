@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { COMPANY_DETAILS } from '../../data/products';
@@ -62,8 +62,8 @@ export default function AboutSection() {
   const parallaxRef = useParallax(0.05);
 
   return (
-    <section className="relative z-3 py-20 bg-white overflow-hidden">
-      <div ref={parallaxRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 will-change-transform w-full">
+    <section className="relative z-3 section-y bg-white overflow-hidden">
+      <div ref={parallaxRef} className="container-page max-w-7xl will-change-transform w-full">
         <Reveal>
           <div className="relative bg-blue-950 rounded-[2rem] overflow-hidden">
 

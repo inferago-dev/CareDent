@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   Ruler, Zap, Droplets, Wind, LayoutGrid, Building2, Thermometer, Compass,
@@ -110,10 +110,10 @@ export default function PreInstallation({ onOpenQuoteModal }) {
       />
 
       {/* HEADER */}
-      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative container-page max-w-4xl text-center">
           <Reveal>
             <div className="text-xs text-slate-400 flex items-center justify-center gap-2 mb-6">
               <Link to="/services" className="hover:text-cyan-400 transition-colors">Services</Link>
@@ -156,8 +156,8 @@ export default function PreInstallation({ onOpenQuoteModal }) {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-20 border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y border-b border-slate-100">
+        <div className="container-page max-w-7xl">
           <Reveal>
             <span className="block text-xs uppercase tracking-widest text-slate-400 mb-10 font-medium">
               How the assessment works
@@ -180,8 +180,8 @@ export default function PreInstallation({ onOpenQuoteModal }) {
       </section>
 
       {/* REQUIREMENTS */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y">
+        <div className="container-page max-w-7xl">
           <Reveal>
             <div className="max-w-2xl mb-12">
               <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-3 font-bold">
@@ -219,8 +219,8 @@ export default function PreInstallation({ onOpenQuoteModal }) {
       </section>
 
       {/* SITE-READINESS CHECKLIST */}
-      <section className="py-24 bg-slate-50 border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y bg-slate-50 border-y border-slate-200">
+        <div className="container-page max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
             <Reveal className="lg:col-span-5">
@@ -307,8 +307,8 @@ export default function PreInstallation({ onOpenQuoteModal }) {
       </section>
 
       {/* REQUEST ASSESSMENT */}
-      <section id="request-assessment" className="py-24 scroll-mt-24">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="request-assessment" className="section-y scroll-mt-24">
+        <div className="container-page max-w-3xl">
           <Reveal>
             <div className="text-center mb-10">
               <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-3 font-bold">
@@ -330,8 +330,8 @@ export default function PreInstallation({ onOpenQuoteModal }) {
       </section>
 
       {/* CLOSING CTA */}
-      <section className="pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-pb">
+        <div className="container-page max-w-7xl">
           <Reveal>
             <div className="rounded-3xl bg-blue-950 text-white p-10 sm:p-14 flex flex-col lg:flex-row items-center justify-between gap-8">
               <div className="space-y-3 text-center lg:text-left">

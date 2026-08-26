@@ -1,4 +1,3 @@
-import React from 'react';
 import Reveal from '../Reveal';
 
 /**
@@ -18,7 +17,7 @@ const BRANDS = [
 export default function TrustedBySection() {
   return (
     <section className="relative z-2 bg-white py-10 border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="container-page max-w-7xl text-center">
         <Reveal>
           <p className="text-xs uppercase tracking-widest text-slate-400 mb-6">
             Equipment we supply, install and service

@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   User, ArrowRight, Menu, X, ChevronDown, LogOut, LayoutDashboard,
 } from 'lucide-react';
 import useCatalogue from '../hooks/useCatalogue';
 import useMountedTransition from '../hooks/useMountedTransition';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
 import { useAuth } from '../context/AuthContext';
 
 const initials = (name = '') =>
@@ -25,6 +26,11 @@ export default function Navbar({ onOpenQuoteModal }) {
   const shouldRenderMegaMenu = useMountedTransition(megaMenuOpen, 150);
   const shouldRenderMobileMenu = useMountedTransition(mobileMenuOpen, 200);
 
+  // The drawer covers the page; without this, scrolling it once it runs out
+  // carries on scrolling the page behind, so closing the menu leaves you
+  // somewhere else entirely.
+  useBodyScrollLock(mobileMenuOpen);
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
@@ -37,6 +43,18 @@ export default function Navbar({ onOpenQuoteModal }) {
     setMegaMenuOpen(false);
     setAccountMenuOpen(false);
   }, [location.pathname]);
+
+  // Escape closes whichever menu is open.
+  useEffect(() => {
+    if (!mobileMenuOpen && !accountMenuOpen) return undefined;
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return;
+      setMobileMenuOpen(false);
+      setAccountMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mobileMenuOpen, accountMenuOpen]);
 
   // Close the account dropdown on outside click
   useEffect(() => {
@@ -80,7 +98,7 @@ export default function Navbar({ onOpenQuoteModal }) {
           : 'bg-transparent'
           }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container-page max-w-7xl">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center shrink-0">
@@ -177,6 +195,8 @@ export default function Navbar({ onOpenQuoteModal }) {
                 <div className="relative" ref={accountMenuRef}>
                   <button
                     onClick={() => setAccountMenuOpen((v) => !v)}
+                    aria-expanded={accountMenuOpen}
+                    aria-haspopup="menu"
                     className="flex items-center gap-2 text-sm font-medium text-slate-200 hover:text-cyan-400 transition-colors"
                   >
                     <span className="w-7 h-7 rounded-full bg-cyan-600 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
@@ -237,7 +257,9 @@ export default function Navbar({ onOpenQuoteModal }) {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="p-2 text-slate-200 hover:text-cyan-400 transition-transform duration-200"
                 style={{ transform: mobileMenuOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
-                aria-label="Menu"
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-nav"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -247,7 +269,10 @@ export default function Navbar({ onOpenQuoteModal }) {
 
         {/* Mobile Navigation Drawer */}
         {shouldRenderMobileMenu && (
-          <div className={`lg:hidden border-t border-white/10 bg-blue-950/95 backdrop-blur-xl px-6 pt-4 pb-8 space-y-6 origin-top ${mobileMenuOpen ? 'animate-drop-in' : 'animate-drop-out'}`}>
+          <div
+            id="mobile-nav"
+            className={`lg:hidden border-t border-white/10 bg-blue-950/95 backdrop-blur-xl px-6 pt-4 pb-8 space-y-6 origin-top max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain ${mobileMenuOpen ? 'animate-drop-in' : 'animate-drop-out'}`}
+          >
             <div className="space-y-1">
               {navLinks.map((link) => {
                 const active = isLinkActive(link.path);
@@ -255,7 +280,7 @@ export default function Navbar({ onOpenQuoteModal }) {
                   <Link
                     key={link.name}
                     to={link.path}
-                    className={`block py-2.5 text-base font-medium transition-colors ${active ? 'text-cyan-400' : 'text-slate-200 hover:text-cyan-400'
+                    className={`block py-3 text-base font-medium transition-colors ${active ? 'text-cyan-400' : 'text-slate-200 hover:text-cyan-400'
                       }`}
                   >
                     {link.name}

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { Suspense, lazy, useState, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext';
@@ -24,10 +24,29 @@ import ClinicSetup from './pages/ClinicSetup';
 import ChennaiService from './pages/ChennaiService';
 import TrackOrder from './pages/TrackOrder';
 import Contact from './pages/Contact';
-import Portal from './pages/Portal';
 import Login from './pages/Login';
-import Admin from './pages/Admin';
 import NotFound from './pages/NotFound';
+
+/**
+ * The back-office is the largest screen in the app by a wide margin, and the
+ * portal is not far behind - but nobody browsing the catalogue on a phone will
+ * ever open either. Loading them on demand keeps them out of the bundle every
+ * marketing visitor pays for.
+ */
+const Portal = lazy(() => import('./pages/Portal'));
+const Admin = lazy(() => import('./pages/Admin'));
+
+/** Shown for the moment a lazily-loaded screen is still arriving. Matches the
+ *  splash ProtectedRoute already uses while it checks the session, so the two
+ *  waits read as one. */
+function RouteFallback() {
+  return (
+    <div className="min-h-screen bg-blue-950 text-white flex flex-col items-center justify-center gap-4">
+      <div className="w-9 h-9 rounded-full border-2 border-white/15 border-t-cyan-400 animate-spin" />
+      <p className="text-sm text-slate-400">Loading…</p>
+    </div>
+  );
+}
 
 /** Routes that render their own full-screen chrome (no navbar/footer/hero). */
 const BARE_ROUTES = ['/admin', '/login', '/portal'];
@@ -74,7 +93,9 @@ function MainLayout() {
             path="/portal/*"
             element={
               <ProtectedRoute>
-                <Portal />
+                <Suspense fallback={<RouteFallback />}>
+                  <Portal />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -82,7 +103,9 @@ function MainLayout() {
             path="/admin/*"
             element={
               <ProtectedRoute requireAdmin>
-                <Admin />
+                <Suspense fallback={<RouteFallback />}>
+                  <Admin />
+                </Suspense>
               </ProtectedRoute>
             }
           />

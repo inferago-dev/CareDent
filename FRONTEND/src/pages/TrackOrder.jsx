@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, Package, Clock, Truck, MapPin, CheckCircle2, XCircle, Wrench, FileText } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import { publicApi } from '../lib/api';
@@ -62,10 +63,10 @@ export default function TrackOrder() {
       />
 
       {/* HEADER + SEARCH */}
-      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative container-page max-w-3xl text-center">
           <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
             Track
           </span>
@@ -115,15 +116,15 @@ export default function TrackOrder() {
 
           <p className="text-xs text-slate-500 mt-4">
             The reference is in your confirmation email — or sign in to the{' '}
-            <a href="/portal" className="text-slate-300 hover:text-cyan-400 transition-colors">customer portal</a>{' '}
+            <Link to="/portal" className="text-slate-300 hover:text-cyan-400 transition-colors">customer portal</Link>{' '}
             to see everything at once.
           </p>
         </div>
       </section>
 
       {/* RESULT */}
-      <section className="py-24">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y">
+        <div className="container-page max-w-3xl">
 
           {state.status === 'idle' && (
             <div className="text-center text-sm text-slate-400 py-10">

@@ -1,6 +1,6 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { ArrowUpRight, ArrowRight, Search } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Search, X } from 'lucide-react';
 import Reveal from '../components/Reveal';
 import useFetch from '../hooks/useFetch';
 import { catalogApi } from '../lib/api';
@@ -15,6 +15,31 @@ const CATEGORIES = [
   { id: 'chairs', label: 'Dental Chairs' },
   { id: 'equipment', label: 'Equipment' },
 ];
+
+/**
+ * The narrower slugs the navbar mega-menu links to. They are not tabs of their
+ * own - landing on one used to leave every tab unselected, with no way to see
+ * or clear the filter that was actually applied - so the page shows the active
+ * one as a fourth, dismissible chip. Keys match CATEGORY_ALIASES on the API.
+ */
+const SUB_CATEGORY_LABELS = {
+  xray: 'X-Ray Units',
+  'x-ray': 'X-Ray Units',
+  radiology: 'X-Ray Units',
+  autoclaves: 'Autoclaves',
+  sterilization: 'Autoclaves',
+  compressors: 'Compressors',
+  utility: 'Compressors',
+  scalers: 'Ultrasonic Scalers',
+  prophylaxis: 'Ultrasonic Scalers',
+  curing: 'Curing Lights',
+  restorative: 'Curing Lights',
+  micromotors: 'Micromotors',
+  endodontics: 'Micromotors',
+  stools: 'Stools & Furniture',
+  furniture: 'Stools & Furniture',
+  accessories: 'Accessories',
+};
 
 /**
  * Static catalogue shipped with the bundle. Used only if the API is
@@ -62,14 +87,20 @@ export default function Products({ onOpenQuoteModal }) {
     const q = query.toLowerCase();
     return FALLBACK.filter((p) => {
       const matchesQ = !q || `${p.name} ${p.description}`.toLowerCase().includes(q);
+      const label = SUB_CATEGORY_LABELS[category];
       const matchesCat =
         category === 'all' ||
         (category === 'chairs' && p.kind === 'chair') ||
         (category === 'equipment' && p.kind === 'equipment') ||
+        // Bundled products carry a display category ("Radiology"), never the
+        // URL slug ("xray"), so match the label the slug stands for as well.
+        (label && p.category?.toLowerCase() === label.toLowerCase()) ||
         p.category?.toLowerCase().includes(category);
       return matchesQ && matchesCat;
     });
   }, [data, error, query, category]);
+
+  const subCategoryLabel = SUB_CATEGORY_LABELS[category];
 
   const chairs = products.filter((p) => p.kind === 'chair');
   const equipment = products.filter((p) => p.kind !== 'chair');
@@ -90,10 +121,10 @@ export default function Products({ onOpenQuoteModal }) {
       />
 
       {/* HEADER */}
-      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left">
+        <div className="relative container-page max-w-7xl text-center sm:text-left">
           <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
             Catalogue
           </span>
@@ -118,7 +149,7 @@ export default function Products({ onOpenQuoteModal }) {
             />
           </div>
 
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-6">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-6">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
@@ -132,13 +163,24 @@ export default function Products({ onOpenQuoteModal }) {
                 {cat.label}
               </button>
             ))}
+
+            {subCategoryLabel && (
+              <button
+                onClick={() => setCategory('all')}
+                className="inline-flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full border bg-cyan-600 text-white border-cyan-600 shadow-lg shadow-cyan-600/30 transition-all active:scale-95"
+                aria-label={`Clear the ${subCategoryLabel} filter`}
+              >
+                {subCategoryLabel}
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
       </section>
 
       {/* RESULTS */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      <section className="section-y">
+        <div className="container-page max-w-7xl space-y-16">
 
           {loading && <LoadingBlock label="Loading products…" />}
 

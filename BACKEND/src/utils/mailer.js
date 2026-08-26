@@ -43,8 +43,23 @@ export async function sendMail({ to, subject, html, text, replyTo }) {
   }
 }
 
+/**
+ * Every value in these templates is visitor-supplied - a name, a clinic
+ * address, the free text of an enquiry. Interpolating it raw let anyone who
+ * can reach a public form inject markup into the notification that lands in
+ * the office inbox.
+ */
+const esc = (value) =>
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
 const row = (label, value) =>
-  value ? `<tr><td style="padding:6px 12px 6px 0;color:#64748b;font-size:13px;">${label}</td><td style="padding:6px 0;font-size:13px;color:#0f172a;"><strong>${value}</strong></td></tr>` : '';
+  value || value === 0
+    ? `<tr><td style="padding:6px 12px 6px 0;color:#64748b;font-size:13px;">${esc(label)}</td><td style="padding:6px 0;font-size:13px;color:#0f172a;"><strong>${esc(value)}</strong></td></tr>`
+    : '';
 
 export function detailsTable(title, pairs) {
   return `
@@ -52,7 +67,7 @@ export function detailsTable(title, pairs) {
     <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
       <div style="background:#082f49;padding:18px 24px;">
         <div style="color:#22d3ee;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Care Dent</div>
-        <div style="color:#ffffff;font-size:18px;margin-top:4px;">${title}</div>
+        <div style="color:#ffffff;font-size:18px;margin-top:4px;">${esc(title)}</div>
       </div>
       <table style="width:100%;border-collapse:collapse;padding:24px;margin:16px 24px;">
         ${pairs.map(([l, v]) => row(l, v)).join('')}
@@ -70,12 +85,6 @@ export function detailsTable(title, pairs) {
  * the site has no live chat yet.
  */
 export function replyEmail({ heading, intro, replyMessage, footerNote }) {
-  const esc = (s) =>
-    String(s || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-
   return `
   <div style="font-family:Inter,Segoe UI,Arial,sans-serif;background:#f8fafc;padding:24px;">
     <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">

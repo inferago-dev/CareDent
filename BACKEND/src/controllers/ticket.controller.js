@@ -5,6 +5,7 @@ import { nextReference } from '../utils/reference.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
 import { sendMail, detailsTable } from '../utils/mailer.js';
 import { publicUrlFor } from '../middleware/upload.js';
+import { containsRegex } from '../utils/escapeRegex.js';
 
 export const createTicket = asyncHandler(async (req, res) => {
   const reference = await nextReference('ticket', 'TKT-');
@@ -139,7 +140,7 @@ export const adminListTickets = asyncHandler(async (req, res) => {
   if (req.query.status) filter.status = req.query.status;
   if (req.query.priority) filter.priority = req.query.priority;
   if (req.query.q) {
-    const rx = new RegExp(req.query.q, 'i');
+    const rx = containsRegex(req.query.q);
     filter.$or = [{ reference: rx }, { clinicName: rx }, { contactName: rx }, { equipment: rx }];
   }
 

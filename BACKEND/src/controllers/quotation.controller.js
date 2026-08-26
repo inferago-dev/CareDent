@@ -4,10 +4,7 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { nextReference } from '../utils/reference.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
 import { sendMail, detailsTable, replyEmail } from '../utils/mailer.js';
-
-// Escape regex metacharacters so free-text search input can never be used
-// to build an unbounded/malicious pattern (ReDoS) or an unintended match.
-const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+import { containsRegex } from '../utils/escapeRegex.js';
 
 export const createQuotation = asyncHandler(async (req, res) => {
   const reference = await nextReference('quotation', 'CD-QT-');
@@ -68,7 +65,7 @@ export const adminListQuotations = asyncHandler(async (req, res) => {
   const filter = {};
   if (req.query.status) filter.status = req.query.status;
   if (req.query.q) {
-    const rx = new RegExp(escapeRegex(req.query.q), 'i');
+    const rx = containsRegex(req.query.q);
     filter.$or = [{ reference: rx }, { name: rx }, { clinicName: rx }, { email: rx }, { product: rx }];
   }
 

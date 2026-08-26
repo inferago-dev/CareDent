@@ -3,6 +3,7 @@ import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { nextReference } from '../utils/reference.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
+import { containsRegex } from '../utils/escapeRegex.js';
 
 export const myInvoices = asyncHandler(async (req, res) => {
   const { page, limit, skip } = parsePaging(req.query);
@@ -22,7 +23,7 @@ export const adminListInvoices = asyncHandler(async (req, res) => {
   const filter = {};
   if (req.query.status) filter.status = req.query.status;
   if (req.query.q) {
-    const rx = new RegExp(req.query.q, 'i');
+    const rx = containsRegex(req.query.q);
     filter.$or = [{ reference: rx }, { customerName: rx }, { clinicName: rx }];
   }
 

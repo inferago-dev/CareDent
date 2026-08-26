@@ -3,26 +3,36 @@ import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
 import { publicUrlFor } from '../middleware/upload.js';
+import { containsRegex, exactRegex } from '../utils/escapeRegex.js';
 
+/**
+ * The slugs the site uses in `?category=` mapped to the filter they mean.
+ *
+ * Two of them are not categories at all: "chairs" and "equipment" are the
+ * catalogue's top-level split and live on `kind`. Resolving them to a category
+ * name instead is why the Equipment tab used to come back empty - no product
+ * has a category literally called "equipment".
+ */
 const CATEGORY_ALIASES = {
-  chairs: 'Dental Chairs',
-  'dental-chairs': 'Dental Chairs',
-  xray: 'Radiology',
-  'x-ray': 'Radiology',
-  radiology: 'Radiology',
-  autoclaves: 'Sterilization',
-  sterilization: 'Sterilization',
-  compressors: 'Utility',
-  utility: 'Utility',
-  scalers: 'Prophylaxis',
-  prophylaxis: 'Prophylaxis',
-  curing: 'Restorative',
-  restorative: 'Restorative',
-  micromotors: 'Endodontics',
-  endodontics: 'Endodontics',
-  stools: 'Furniture',
-  furniture: 'Furniture',
-  accessories: 'Accessories',
+  chairs: { kind: 'chair' },
+  'dental-chairs': { kind: 'chair' },
+  equipment: { kind: 'equipment' },
+  xray: { category: 'Radiology' },
+  'x-ray': { category: 'Radiology' },
+  radiology: { category: 'Radiology' },
+  autoclaves: { category: 'Sterilization' },
+  sterilization: { category: 'Sterilization' },
+  compressors: { category: 'Utility' },
+  utility: { category: 'Utility' },
+  scalers: { category: 'Prophylaxis' },
+  prophylaxis: { category: 'Prophylaxis' },
+  curing: { category: 'Restorative' },
+  restorative: { category: 'Restorative' },
+  micromotors: { category: 'Endodontics' },
+  endodontics: { category: 'Endodontics' },
+  stools: { category: 'Furniture' },
+  furniture: { category: 'Furniture' },
+  accessories: { category: 'Accessories' },
 };
 
 export const listProducts = asyncHandler(async (req, res) => {
@@ -34,13 +44,13 @@ export const listProducts = asyncHandler(async (req, res) => {
   if (featured === 'true') filter.isFeatured = true;
 
   if (category && category !== 'all') {
-    const resolved = CATEGORY_ALIASES[String(category).toLowerCase()] || category;
-    if (resolved === 'Dental Chairs') filter.kind = 'chair';
-    else filter.category = new RegExp(`^${resolved}$`, 'i');
+    const alias = CATEGORY_ALIASES[String(category).toLowerCase()];
+    if (alias?.kind) filter.kind = alias.kind;
+    else filter.category = exactRegex(alias?.category ?? category);
   }
 
   if (q) {
-    const rx = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    const rx = containsRegex(q);
     filter.$or = [{ name: rx }, { description: rx }, { tagline: rx }, { category: rx }, { brand: rx }, { series: rx }];
   }
 
@@ -80,7 +90,7 @@ export const listCategories = asyncHandler(async (_req, res) => {
 export const adminListProducts = asyncHandler(async (req, res) => {
   const { page, limit, skip } = parsePaging(req.query, { defaultLimit: 50 });
   const filter = {};
-  if (req.query.q) filter.name = new RegExp(req.query.q, 'i');
+  if (req.query.q) filter.name = containsRegex(req.query.q);
 
   const [items, total] = await Promise.all([
     Product.find(filter).sort({ sortOrder: 1, createdAt: 1 }).skip(skip).limit(limit).lean(),

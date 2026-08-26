@@ -1,10 +1,11 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { X, ChevronLeft, ChevronRight, ArrowUpRight, ImageOff } from 'lucide-react';
 import { GALLERY_ITEMS } from '../data/gallery';
 import { COMPANY_DETAILS } from '../data/products';
 import useCatalogue from '../hooks/useCatalogue';
 import Reveal from '../components/Reveal';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
 import Seo from '../components/Seo';
 import { breadcrumbSchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
@@ -53,13 +54,13 @@ function Lightbox({ items, index, onClose, onStep }) {
       if (e.key === 'ArrowLeft') onStep(-1);
     };
     document.addEventListener('keydown', onKey);
-    const { overflow } = document.body.style;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = overflow;
-    };
+    return () => document.removeEventListener('keydown', onKey);
   }, [onClose, onStep]);
+
+  // Was a private copy of the same lock; sharing the hook means a lightbox
+  // opened over another overlay releases the page only once, not on the first
+  // close.
+  useBodyScrollLock(true);
 
   if (!item) return null;
 
@@ -102,7 +103,6 @@ function Lightbox({ items, index, onClose, onStep }) {
             src={item.src}
             alt={item.title}
             className="max-h-[65vh] max-w-full object-contain rounded-2xl animate-fade-in"
-            loading="lazy"
             decoding="async"
           />
           <figcaption className="text-center mt-6 space-y-1.5 max-w-lg">
@@ -160,10 +160,10 @@ export default function Gallery({ onOpenQuoteModal }) {
       />
 
       {/* HEADER */}
-      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative container-page max-w-4xl text-center">
           <Reveal>
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               Gallery
@@ -182,8 +182,8 @@ export default function Gallery({ onOpenQuoteModal }) {
       </section>
 
       {/* FILTERS + GRID */}
-      <section className="py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y">
+        <div className="container-page max-w-7xl">
 
           <Reveal>
             <div className="flex flex-wrap items-center gap-2 mb-10">
@@ -247,8 +247,8 @@ export default function Gallery({ onOpenQuoteModal }) {
       </section>
 
       {/* CTA */}
-      <section className="pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-pb">
+        <div className="container-page max-w-7xl">
           <Reveal>
             <div className="rounded-3xl bg-blue-950 text-white p-10 sm:p-14 flex flex-col lg:flex-row items-center justify-between gap-8">
               <div className="space-y-3 text-center lg:text-left">

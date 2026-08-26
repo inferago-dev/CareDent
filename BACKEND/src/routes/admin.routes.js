@@ -15,7 +15,8 @@ import * as inventory from '../controllers/inventory.controller.js';
 import {
   productSchema, productUpdateSchema, quotationUpdateSchema, orderSchema,
   orderUpdateSchema, ticketUpdateSchema, invoiceSchema, invoicePaymentSchema,
-  stockAdjustSchema, replySchema, updateMeSchema,
+  stockAdjustSchema, replySchema, updateMeSchema, invoiceUpdateSchema,
+  messageUpdateSchema, customerActiveSchema, serviceUpsertSchema,
 } from '../validators/schemas.js';
 
 const router = Router();
@@ -28,7 +29,7 @@ router.get('/dashboard', admin.dashboard);
 router.get('/customers', admin.listCustomers);
 router.get('/customers/:id', admin.getCustomer);
 router.patch('/customers/:id', validate({ body: updateMeSchema }), admin.adminUpdateCustomer);
-router.patch('/customers/:id/active', admin.setCustomerActive);
+router.patch('/customers/:id/active', validate({ body: customerActiveSchema }), admin.setCustomerActive);
 
 /* products */
 router.get('/products', product.adminListProducts);
@@ -63,13 +64,13 @@ router.delete('/service-requests/:id', ticket.adminDeleteTicket);
 /* invoices */
 router.get('/invoices', invoice.adminListInvoices);
 router.post('/invoices', validate({ body: invoiceSchema }), invoice.adminCreateInvoice);
-router.patch('/invoices/:id', invoice.adminUpdateInvoice);
+router.patch('/invoices/:id', validate({ body: invoiceUpdateSchema }), invoice.adminUpdateInvoice);
 router.post('/invoices/:id/payment', validate({ body: invoicePaymentSchema }), invoice.adminRecordPayment);
 router.delete('/invoices/:id', invoice.adminDeleteInvoice);
 
 /* contact messages */
 router.get('/messages', contact.adminListMessages);
-router.patch('/messages/:id', contact.adminUpdateMessage);
+router.patch('/messages/:id', validate({ body: messageUpdateSchema }), contact.adminUpdateMessage);
 router.post('/messages/:id/reply', validate({ body: replySchema }), contact.adminReplyMessage);
 router.delete('/messages/:id', contact.adminDeleteMessage);
 
@@ -79,7 +80,7 @@ router.post('/documents', upload.single('file'), document.adminUploadDocument);
 router.delete('/documents/:id', document.adminDeleteDocument);
 
 /* services / content */
-router.put('/services', service.adminUpsertService);
+router.put('/services', validate({ body: serviceUpsertSchema }), service.adminUpsertService);
 router.delete('/services/:id', service.adminDeleteService);
 
 export default router;

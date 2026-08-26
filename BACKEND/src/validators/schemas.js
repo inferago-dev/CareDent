@@ -13,6 +13,24 @@ export const phone = z
 
 export const objectId = z.string().regex(/^[a-f\d]{24}$/i, 'Invalid id');
 
+/**
+ * Public tracking reference (ORD-000001, TKT-000001, CD-QT-000001). Bounded
+ * and character-restricted so the lookup can never be handed a 10 KB string or
+ * anything that is not a reference in the first place.
+ */
+export const referenceParamSchema = z.object({
+  reference: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .min(3, 'Enter the reference from your confirmation')
+    .max(40, 'That does not look like a Care Dent reference')
+    .regex(/^[A-Z0-9-]+$/, 'That does not look like a Care Dent reference'),
+});
+
+/** `:id` on every admin detail route. */
+export const idParamSchema = z.object({ id: objectId });
+
 /* ---------------- auth ---------------- */
 export const registerSchema = z.object({
   name: trimmed(2, 120, 'Name'),
@@ -232,3 +250,56 @@ export const stockAdjustSchema = z
            v.lowStockThreshold !== undefined || v.reorderQuantity !== undefined,
     { message: 'Send a delta, an absolute stock count, or a threshold to update' }
   );
+
+/* ---------------- admin: routes that previously took an unchecked body ---------------- */
+
+/**
+ * Invoice edits. Deliberately narrow: `reference`, `subtotal`, `taxAmount` and
+ * `amount` are derived or immutable, and the update handler assigns whatever it
+ * is given straight onto the document - so anything not listed here is a field
+ * an admin could silently corrupt by typo or a stray key could overwrite.
+ * Payments go through POST /invoices/:id/payment, not this route.
+ */
+export const invoiceUpdateSchema = z.object({
+  customerName: trimmed(2, 120, 'Customer name').optional(),
+  clinicName: z.string().trim().max(160).optional().or(z.literal('')),
+  description: z.string().trim().max(400).optional().or(z.literal('')),
+  lines: z
+    .array(
+      z.object({
+        description: trimmed(1, 300, 'Description'),
+        quantity: z.coerce.number().int().min(1).default(1),
+        unitPrice: z.coerce.number().min(0).default(0),
+      })
+    )
+    .min(1, 'Add at least one line item')
+    .optional(),
+  taxPercent: z.coerce.number().min(0).max(100).optional(),
+  status: z.enum(['Draft', 'Sent', 'Partially Paid', 'Paid', 'Overdue', 'Cancelled']).optional(),
+  dueOn: z.coerce.date().optional(),
+  paymentMethod: z.enum(['Cash', 'UPI', 'Bank Transfer', 'Cheque', 'Card', 'Other']).optional(),
+});
+
+export const messageUpdateSchema = z.object({
+  status: z.enum(['New', 'Read', 'Replied', 'Archived']).optional(),
+  adminNotes: z.string().trim().max(2000).optional(),
+});
+
+export const customerActiveSchema = z.object({
+  isActive: z.coerce.boolean(),
+});
+
+export const serviceUpsertSchema = z.object({
+  key: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(2, 'A service needs a key')
+    .max(60)
+    .regex(/^[a-z0-9-]+$/, 'Key can only use lowercase letters, numbers and dashes'),
+  title: trimmed(2, 120, 'Title'),
+  iconName: z.string().trim().max(40).optional(),
+  description: trimmed(10, 2000, 'Description'),
+  sortOrder: z.coerce.number().int().optional(),
+  isActive: z.coerce.boolean().optional(),
+});

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Ruler, Wrench, ShieldCheck, Calendar, Activity, PhoneCall, ClipboardCheck,
@@ -43,11 +42,11 @@ export default function Services() {
       />
 
       {/* HEADER */}
-      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         {/* Background glow effects */}
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative container-page max-w-4xl text-center">
           <Reveal>
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               Services & Support
@@ -66,8 +65,8 @@ export default function Services() {
       </section>
 
       {/* SERVICES GRID */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y">
+        <div className="container-page max-w-7xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service, idx) => {
               const Icon = ICONS[service.iconName] || Wrench;
@@ -107,8 +106,8 @@ export default function Services() {
       </section>
 
       {/* PRE-INSTALLATION HIGHLIGHT */}
-      <section className="py-24 bg-slate-50 border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y bg-slate-50 border-y border-slate-200">
+        <div className="container-page max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center bg-blue-950 rounded-3xl p-10 sm:p-14 text-white">
             <div className="lg:col-span-7 space-y-5">
               <Reveal>
@@ -174,8 +173,8 @@ export default function Services() {
       </section>
 
       {/* BOOK A SERVICE VISIT */}
-      <section id="book-service" className="py-24">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="book-service" className="section-y">
+        <div className="container-page max-w-3xl">
           <Reveal>
             <div className="text-center mb-10">
               <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-3 font-bold">

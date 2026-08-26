@@ -40,8 +40,8 @@ const STEPS = [
 
 export default function ProcessSection() {
   return (
-    <section className="relative z-5 py-24 bg-slate-50 border-y border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative z-5 section-y bg-slate-50 border-y border-slate-200">
+      <div className="container-page max-w-7xl">
         <div className="max-w-2xl">
           <Reveal>
             <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-4 font-bold">

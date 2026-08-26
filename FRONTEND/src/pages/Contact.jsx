@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
-import { MapPin, Phone, Mail, Clock, MessageSquare, Send, CheckCircle2, Stethoscope, AlertCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageSquare, Send, CheckCircle2, Stethoscope, AlertCircle, ArrowUpRight } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +8,13 @@ import { Spinner, FieldError } from '../components/ui';
 import Seo from '../components/Seo';
 import { breadcrumbSchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
+
+// Google's keyless embed and directions endpoints, both built from the one
+// address in COMPANY_DETAILS so the map can never drift from the NAP details
+// the rest of the site (and the LocalBusiness markup) publishes.
+const MAP_QUERY = encodeURIComponent(`Care Dent, ${COMPANY_DETAILS.address}`);
+const MAP_EMBED_URL = `https://maps.google.com/maps?q=${MAP_QUERY}&output=embed`;
+const MAP_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${MAP_QUERY}`;
 
 export default function Contact() {
   const { user } = useAuth();
@@ -64,11 +71,11 @@ export default function Contact() {
       />
 
       {/* HEADER */}
-      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         {/* Background glow effects */}
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative container-page max-w-4xl text-center">
           <span className="block text-xs font-bold text-cyan-400 uppercase tracking-widest mb-6">
             GET IN TOUCH
           </span>
@@ -81,7 +88,7 @@ export default function Contact() {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 py-16">
+      <div className="container-page max-w-7xl space-y-12 section-y">
         
         {/* 2-COLUMN LAYOUT */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
@@ -160,27 +167,42 @@ export default function Contact() {
 
             </div>
 
-            {/* Google Map Mockup Box */}
+            {/*
+              This was an Unsplash photograph of an unrelated street, dimmed and
+              captioned "Showroom Location Map" - it showed a visitor nothing
+              about where Care Dent actually is, and it was the page's only
+              third-party request. Replaced with the real map, plus a directions
+              link for anyone whose browser blocks the frame.
+            */}
             <div className="bg-white rounded-3xl border border-slate-200 shadow-md p-4 space-y-3">
-              <div className="text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-cyan-600" />
-                <span>Showroom Location Map</span>
-              </div>
-              <div className="w-full h-48 bg-slate-200 rounded-2xl relative overflow-hidden flex items-center justify-center border border-slate-300">
-                <img
-                  src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=600&q=80"
-                  alt="Mugalivakkam Location Map"
-                  className="w-full h-full object-cover opacity-60"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center p-4 text-center">
-                  <div className="bg-white text-slate-900 p-3 rounded-xl shadow-lg border border-slate-200">
-                    <div className="font-bold text-xs">Care Dent Showroom</div>
-                    <div className="text-[10px] text-slate-500">Mugalivakkam, Chennai - 600 125</div>
-                  </div>
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-cyan-600" />
+                  <span>Showroom location</span>
                 </div>
+                <a
+                  href={MAP_DIRECTIONS_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-cyan-700 hover:text-cyan-800 transition-colors shrink-0"
+                >
+                  Get directions
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
               </div>
+
+              <iframe
+                title="Care Dent showroom on the map"
+                src={MAP_EMBED_URL}
+                className="w-full h-56 rounded-2xl border border-slate-200"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+
+              <p className="text-[11px] text-slate-500 leading-snug">
+                {COMPANY_DETAILS.address}
+              </p>
             </div>
 
           </div>

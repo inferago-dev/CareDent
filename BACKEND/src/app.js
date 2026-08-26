@@ -1,4 +1,3 @@
-import path from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -8,35 +7,10 @@ import rateLimit from 'express-rate-limit';
 
 import routes from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middleware/error.js';
+import ApiError from './utils/ApiError.js';
 import { env, isProd } from './config/env.js';
 import { UPLOAD_ROOT } from './middleware/upload.js';
-
-// Strips keys starting with "$" or containing "." from any user-controlled
-// object (body/query/params) so a request can never inject a Mongo operator
-// (e.g. { email: { "$gt": "" } }) into a query.
-function stripOperators(obj) {
-  if (Array.isArray(obj)) {
-    obj.forEach(stripOperators);
-    return obj;
-  }
-  if (obj && typeof obj === 'object') {
-    for (const key of Object.keys(obj)) {
-      if (key.startsWith('$') || key.includes('.')) {
-        delete obj[key];
-        continue;
-      }
-      stripOperators(obj[key]);
-    }
-  }
-  return obj;
-}
-
-function mongoSanitize(req, _res, next) {
-  if (req.body) stripOperators(req.body);
-  if (req.query) stripOperators(req.query);
-  if (req.params) stripOperators(req.params);
-  next();
-}
+import mongoSanitize from './middleware/sanitize.js';
 
 const app = express();
 
@@ -50,14 +24,17 @@ app.use(
     origin(origin, cb) {
       // Allow same-origin/non-browser callers (curl, health checks) and configured origins.
       if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      cb(new Error(`Origin ${origin} is not allowed by CORS`));
+      // A rejected origin is the caller's problem, not a server fault - without
+      // this it reaches the error handler as an unrecognised Error and is
+      // reported as a 500.
+      cb(ApiError.forbidden(`Origin ${origin} is not allowed by CORS`));
     },
     credentials: true,
   })
 );
 
 app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
 app.use(mongoSanitize);
 app.use(morgan(isProd ? 'combined' : 'dev'));
@@ -72,8 +49,21 @@ app.use(
   })
 );
 
-// Uploaded product images / brochures
-app.use('/uploads', express.static(UPLOAD_ROOT, { maxAge: '7d' }));
+// Uploaded product images / brochures. Uploads only ever land here with an
+// extension derived from their mimetype (see middleware/upload.js), and these
+// options make sure nothing else in the directory can be reached: no directory
+// listings, no dotfiles, and no content-type sniffing on the way out.
+app.use(
+  '/uploads',
+  express.static(UPLOAD_ROOT, {
+    maxAge: '7d',
+    index: false,
+    dotfiles: 'deny',
+    setHeaders(res) {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+    },
+  })
+);
 
 app.use('/api', routes);
 

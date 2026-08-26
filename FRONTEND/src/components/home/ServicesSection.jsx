@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Ruler, Wrench, ShieldCheck, Zap, Phone, ClipboardCheck } from 'lucide-react';
 import { COMPANY_DETAILS } from '../../data/products';
@@ -27,8 +26,8 @@ export default function ServicesSection() {
   const parallaxRef = useParallax(0.04);
 
   return (
-    <section className="relative z-6 py-20 bg-white overflow-hidden">
-      <div ref={parallaxRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 will-change-transform w-full">
+    <section className="relative z-6 section-y bg-white overflow-hidden">
+      <div ref={parallaxRef} className="container-page max-w-7xl will-change-transform w-full">
 
         {/* Label */}
         <Reveal>

@@ -9,10 +9,7 @@ import { LOW_STOCK_EXPR } from './inventory.controller.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
-
-// Escape regex metacharacters in free-text search input (see the same fix
-// in quotation.controller.js for why this matters).
-const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+import { containsRegex } from '../utils/escapeRegex.js';
 
 const OPEN_TICKETS = ['Open', 'Acknowledged', 'Engineer Assigned', 'Pending Parts', 'In Progress'];
 const OPEN_ORDERS = ['Pending Confirmation', 'Confirmed', 'Processing', 'Pending Dispatch', 'Dispatched', 'Installation Scheduled'];
@@ -81,7 +78,7 @@ export const listCustomers = asyncHandler(async (req, res) => {
   const { page, limit, skip } = parsePaging(req.query);
   const filter = { role: 'customer' };
   if (req.query.q) {
-    const rx = new RegExp(escapeRegex(req.query.q), 'i');
+    const rx = containsRegex(req.query.q);
     filter.$or = [{ name: rx }, { email: rx }, { clinicName: rx }, { phone: rx }];
   }
 

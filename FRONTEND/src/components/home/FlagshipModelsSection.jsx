@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, ChevronRight } from 'lucide-react';
 import useCatalogue from '../../hooks/useCatalogue';
@@ -12,8 +11,8 @@ export default function FlagshipModelsSection({ onOpenQuoteModal }) {
   const CHAIRS = chairs.slice(0, 3);
 
   return (
-    <section className="relative z-5 py-20 bg-white overflow-hidden">
-      <div ref={parallaxRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 will-change-transform w-full">
+    <section className="relative z-5 section-y bg-white overflow-hidden">
+      <div ref={parallaxRef} className="container-page max-w-7xl will-change-transform w-full">
 
         {/* Header row */}
         <Reveal>
@@ -22,7 +21,7 @@ export default function FlagshipModelsSection({ onOpenQuoteModal }) {
               <span className="block text-xs uppercase tracking-widest text-slate-400 mb-3 font-medium">
                 Flagship Models
               </span>
-              <h2 className="text-3xl sm:text-4xl font-semibold tracking-tighter text-blue-950 leading-[1.1]">
+              <h2 className="text-3xl sm:text-4xl font-medium tracking-tighter text-blue-950 leading-[1.1]">
                 Dental chairs built for the clinic of tomorrow
               </h2>
             </div>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import Reveal from '../Reveal';
 import useParallax from '../../hooks/useParallax';
@@ -7,7 +6,7 @@ export default function CtaSection({ onOpenQuoteModal }) {
   const parallaxRef = useParallax(0.08);
 
   return (
-    <section className="relative z-7 pt-10 pb-16 sm:pb-24 bg-white overflow-hidden">
+    <section className="relative z-7 pt-10 section-pb bg-white overflow-hidden">
       <div className="relative rounded-3xl mx-10 bg-blue-950 text-white overflow-hidden w-full">
 
         {/* Concentric circles pattern — decorative, low opacity */}
@@ -36,7 +35,7 @@ export default function CtaSection({ onOpenQuoteModal }) {
           <div className="absolute inset-0 backdrop-blur-2xl mask-[linear-gradient(to_top,black,transparent)]" />
         </div>
 
-        <div ref={parallaxRef} className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center space-y-6 will-change-transform">
+        <div ref={parallaxRef} className="relative container-page max-w-3xl py-12 text-center space-y-6 will-change-transform">
           <Reveal>
             <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium leading-[1.1]">
               Tell us about your clinic. We will tell you what it needs.

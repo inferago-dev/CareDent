@@ -4,13 +4,22 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { signToken } from '../middleware/auth.js';
 import { isProd } from '../config/env.js';
 
+// A cookie is only replaced or removed by a Set-Cookie carrying the same
+// name, path, domain, secure and sameSite. Clearing it with anything less
+// leaves the original in place, so sign-out has to mirror sign-in exactly.
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: isProd,
+  sameSite: isProd ? 'none' : 'lax',
+  path: '/',
+};
+
 function setAuthCookie(res, token) {
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
+  res.cookie('token', token, { ...COOKIE_OPTIONS, maxAge: 7 * 24 * 60 * 60 * 1000 });
+}
+
+function clearAuthCookie(res) {
+  res.clearCookie('token', COOKIE_OPTIONS);
 }
 
 export const register = asyncHandler(async (req, res) => {
@@ -44,7 +53,7 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const logout = asyncHandler(async (_req, res) => {
-  res.clearCookie('token');
+  clearAuthCookie(res);
   res.json({ success: true, message: 'Signed out' });
 });
 

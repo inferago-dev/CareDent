@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Small data-fetching hook for the API client.
@@ -17,9 +17,6 @@ export default function useFetch(fetcher, deps = [], { enabled = true, initialDa
   const [error, setError] = useState(null);
   const [nonce, setNonce] = useState(0);
 
-  const fetcherRef = useRef(fetcher);
-  fetcherRef.current = fetcher;
-
   useEffect(() => {
     if (!enabled) {
       setLoading(false);
@@ -31,7 +28,7 @@ export default function useFetch(fetcher, deps = [], { enabled = true, initialDa
     setLoading(true);
     setError(null);
 
-    Promise.resolve(fetcherRef.current(controller.signal))
+    Promise.resolve(fetcher(controller.signal))
       .then((res) => { if (active) setData(res); })
       .catch((err) => { if (active && err.name !== 'AbortError') setError(err); })
       .finally(() => { if (active) setLoading(false); });

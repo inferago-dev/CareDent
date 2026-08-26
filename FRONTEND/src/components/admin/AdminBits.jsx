@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
+import useBodyScrollLock from '../../hooks/useBodyScrollLock';
 
 /* Dark-theme building blocks shared by every admin screen. */
 
@@ -81,6 +82,8 @@ export function Modal({ open, onClose, title, children, footer, wide = false }) 
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
+  useBodyScrollLock(open);
+
   if (!open) return null;
 
   return (
@@ -97,7 +100,7 @@ export function Modal({ open, onClose, title, children, footer, wide = false }) 
             <X className="w-4 h-4" />
           </button>
         </header>
-        <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">{children}</div>
+        <div className="p-6 space-y-4 max-h-[min(70vh,calc(100dvh-12rem))] overflow-y-auto">{children}</div>
         {footer && <footer className="flex items-center justify-end gap-2 px-6 py-4 border-t border-slate-800">{footer}</footer>}
       </div>
     </div>

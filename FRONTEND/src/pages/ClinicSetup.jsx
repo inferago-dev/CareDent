@@ -87,9 +87,9 @@ export default function ClinicSetup({ onOpenQuoteModal }) {
       />
 
       {/* HEADER */}
-      <section className="relative overflow-hidden bg-blue-950 text-white py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative container-page max-w-4xl text-center">
           <Reveal>
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               Opening a Dental Practice
@@ -127,8 +127,8 @@ export default function ClinicSetup({ onOpenQuoteModal }) {
       </section>
 
       {/* PHASES */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y">
+        <div className="container-page max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {PHASES.map((phase, idx) => {
               const Icon = phase.icon;
@@ -161,8 +161,8 @@ export default function ClinicSetup({ onOpenQuoteModal }) {
       </section>
 
       {/* EQUIPMENT ORDER */}
-      <section className="py-24 bg-slate-50 border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y bg-slate-50 border-y border-slate-200">
+        <div className="container-page max-w-7xl">
           <div className="max-w-2xl">
             <Reveal>
               <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-4 font-bold">
@@ -212,8 +212,8 @@ export default function ClinicSetup({ onOpenQuoteModal }) {
       </section>
 
       {/* FAQ */}
-      <section className="py-24">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-y">
+        <div className="container-page max-w-3xl">
           <Reveal>
             <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium text-blue-950 leading-[1.1] text-center">
               Questions from first-time clinic owners
@@ -236,8 +236,8 @@ export default function ClinicSetup({ onOpenQuoteModal }) {
       </section>
 
       {/* CTA */}
-      <section className="pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-pb">
+        <div className="container-page max-w-7xl">
           <Reveal>
             <div className="bg-blue-950 rounded-3xl p-10 sm:p-14 text-white text-center space-y-5">
               <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium leading-[1.15]">

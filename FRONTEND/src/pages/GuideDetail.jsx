@@ -70,9 +70,9 @@ export default function GuideDetail({ onOpenQuoteModal }) {
 
       {/* Dark top band: the navbar is fixed and transparent until scroll, so a
           white panel here would hide the white logo. */}
-      <section className="relative overflow-hidden bg-blue-950 text-white pt-28 pb-16">
+      <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative container-page max-w-3xl">
           <Link
             to="/guides"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-cyan-400 transition-colors mb-8"
@@ -84,7 +84,7 @@ export default function GuideDetail({ onOpenQuoteModal }) {
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-5 font-bold">
               {article.category}
             </span>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl tracking-tighter font-medium leading-[1.1]">
+            <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1]">
               {article.title}
             </h1>
           </Reveal>
@@ -104,8 +104,8 @@ export default function GuideDetail({ onOpenQuoteModal }) {
         </div>
       </section>
 
-      <article className="py-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <article className="section-y">
+        <div className="container-page max-w-3xl">
           {article.body.map((block, idx) => (
             <Block key={`${block.type}-${idx}`} block={block} />
           ))}
@@ -113,8 +113,8 @@ export default function GuideDetail({ onOpenQuoteModal }) {
       </article>
 
       {/* CTA */}
-      <section className="pb-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-pb">
+        <div className="container-page max-w-3xl">
           <div className="bg-blue-950 rounded-3xl p-10 text-white text-center space-y-4">
             <h2 className="text-2xl sm:text-3xl tracking-tighter font-medium leading-[1.15]">
               Want this checked against your actual room?
@@ -144,8 +144,8 @@ export default function GuideDetail({ onOpenQuoteModal }) {
 
       {/* MORE GUIDES */}
       {others.length > 0 && (
-        <section className="pb-24">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="section-pb">
+          <div className="container-page max-w-3xl">
             <h2 className="text-xs uppercase tracking-widest text-slate-400 font-bold mb-6">
               More guides
             </h2>

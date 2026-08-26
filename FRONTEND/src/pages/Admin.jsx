@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Package, ShoppingCart, Users, FileText, Wrench,
   CreditCard, Globe, TrendingUp, Plus, Trash2, Search,
   ShieldCheck, LogOut, RefreshCw, Mail, Download, Upload, AlertCircle,
-  Boxes, Minus, AlertTriangle,
+  Boxes, Minus, AlertTriangle, ExternalLink,
 } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
@@ -60,19 +60,47 @@ export default function Admin() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col lg:flex-row">
       <Seo title="Admin" noindex />
 
-      {/* SIDEBAR */}
-      <aside className="w-full lg:w-64 bg-slate-900 border-r border-slate-800 p-6 space-y-8 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-cyan-600 flex items-center justify-center font-bold text-white shadow-lg">
-            AD
+      {/*
+        SIDEBAR
+
+        Same story as the portal: `w-full` on a phone put ten menu items above
+        the first row of data. Below lg the menu is one horizontally scrolling
+        strip; the vertical sidebar returns at lg.
+      */}
+      <aside className="w-full lg:w-64 bg-slate-900 border-b lg:border-b-0 lg:border-r border-slate-800 shrink-0 lg:sticky lg:top-0 lg:h-dvh lg:overflow-y-auto p-4 lg:p-6 space-y-4 lg:space-y-8">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-cyan-600 flex items-center justify-center font-bold text-white shadow-lg shrink-0">
+              AD
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-bold text-base text-white">Care Dent Admin</h3>
+              <span className="text-[11px] text-cyan-400 font-semibold truncate block">{user?.name}</span>
+            </div>
           </div>
-          <div className="min-w-0">
-            <h3 className="font-bold text-base text-white">Care Dent Admin</h3>
-            <span className="text-[11px] text-cyan-400 font-semibold truncate block">{user?.name}</span>
+
+          <div className="flex items-center gap-1 lg:hidden">
+            <Link
+              to="/"
+              aria-label="Exit to public site"
+              className="p-2.5 rounded-lg text-slate-400 hover:text-cyan-400 transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </Link>
+            <button
+              onClick={handleSignOut}
+              aria-label="Sign out"
+              className="p-2.5 rounded-lg text-red-400 hover:bg-red-950/30 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        <nav className="space-y-1 text-xs font-semibold">
+        <nav
+          aria-label="Admin sections"
+          className="flex lg:block gap-2 lg:gap-0 lg:space-y-1 overflow-x-auto lg:overflow-visible -mx-4 px-4 lg:mx-0 lg:px-0 pb-1 lg:pb-0 text-xs font-semibold"
+        >
           {MENU.map((item) => {
             const Icon = item.icon;
             const isActive = tab === item.id;
@@ -80,7 +108,8 @@ export default function Admin() {
               <button
                 key={item.id}
                 onClick={() => setTab(item.id)}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all text-left ${
+                aria-current={isActive ? 'page' : undefined}
+                className={`shrink-0 lg:w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all text-left whitespace-nowrap ${
                   isActive
                     ? 'bg-cyan-600 text-white font-bold shadow-md shadow-cyan-600/30'
                     : 'text-slate-400 hover:bg-slate-800 hover:text-white'
@@ -93,7 +122,7 @@ export default function Admin() {
           })}
         </nav>
 
-        <div className="pt-4 border-t border-slate-800 space-y-1">
+        <div className="hidden lg:block pt-4 border-t border-slate-800 space-y-1">
           <Link to="/" className="flex items-center gap-2 px-3 py-2 text-xs text-slate-400 hover:text-cyan-400 transition-colors">
             ← Exit to public site
           </Link>
@@ -104,7 +133,7 @@ export default function Admin() {
       </aside>
 
       {/* MAIN */}
-      <main className="flex-1 p-6 lg:p-10 space-y-8 max-w-7xl min-w-0">
+      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-10 space-y-8 max-w-7xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
           <div>
             <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/30">
@@ -112,7 +141,7 @@ export default function Admin() {
             </span>
             <h1 className="text-2xl font-bold text-white mt-2">{active?.label}</h1>
           </div>
-          <div className="flex items-center gap-2 text-xs text-slate-400">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400">
             <ShieldCheck className="w-4 h-4 text-cyan-400" />
             <span>Signed in as {user?.email}</span>
           </div>

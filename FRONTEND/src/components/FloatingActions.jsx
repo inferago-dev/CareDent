@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import useMountedTransition from '../hooks/useMountedTransition';

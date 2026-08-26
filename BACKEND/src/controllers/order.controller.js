@@ -5,6 +5,7 @@ import { nextReference } from '../utils/reference.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
 import { sendMail, detailsTable } from '../utils/mailer.js';
 import { applyStockForOrder } from './inventory.controller.js';
+import { containsRegex } from '../utils/escapeRegex.js';
 
 /** Public tracking - returns only what is safe to show without signing in. */
 export const trackOrder = asyncHandler(async (req, res) => {
@@ -57,7 +58,7 @@ export const adminListOrders = asyncHandler(async (req, res) => {
   const filter = {};
   if (req.query.status) filter.status = req.query.status;
   if (req.query.q) {
-    const rx = new RegExp(req.query.q, 'i');
+    const rx = containsRegex(req.query.q);
     filter.$or = [{ reference: rx }, { customerName: rx }, { clinicName: rx }, { phone: rx }];
   }
 
@@ -77,7 +78,7 @@ export const adminGetOrder = asyncHandler(async (req, res) => {
 export const adminCreateOrder = asyncHandler(async (req, res) => {
   const reference = await nextReference('order', 'ORD-');
   const order = await Order.create({ ...req.body, reference });
-  await applyStockForOrder(order, null);
+  await applyStockForOrder(order);
   await order.save();
 
   if (order.email) {
@@ -100,7 +101,6 @@ export const adminUpdateOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
   if (!order) throw ApiError.notFound('Order not found');
 
-  const previousStatus = order.status;
   const { status, note, ...rest } = req.body;
   Object.assign(order, rest);
 
@@ -112,7 +112,7 @@ export const adminUpdateOrder = asyncHandler(async (req, res) => {
     order.timeline.push({ status: order.status, note });
   }
 
-  await applyStockForOrder(order, previousStatus);
+  await applyStockForOrder(order);
   await order.save();
   res.json({ success: true, data: order });
 });

@@ -98,8 +98,13 @@ GET    /services
 POST   /quotations                 GET /quotations/track/:reference
 POST   /contact
 POST   /service-requests           GET /service-requests/track/:reference
+POST   /site-assessments           (multipart: floor plan / room photos)
 GET    /orders/track/:reference
 ```
+
+The three `track/:reference` lookups are rate limited to 30 per 15 minutes per
+IP. References are a sequential counter, so without that anyone holding one
+could walk the series and read every other customer's order.
 
 **Auth**
 ```
@@ -144,6 +149,14 @@ and nothing breaks.
 **Uploads** go to `BACKEND/uploads/` and are served from `/uploads/...`. For a
 real deployment, put them on S3 or a persistent volume — most hosts wipe the
 container filesystem on redeploy.
+
+Accepted types are JPEG, PNG, WebP, AVIF and PDF, and the stored filename's
+extension is derived from the mimetype rather than from the name the client
+sent. SVG is refused on purpose: `express.static` picks a `Content-Type` from
+the file extension, so an upload that keeps its own extension — or an SVG,
+which browsers execute script inside — is served back as active content from
+the API's own origin. The site-assessment form is public, so that was reachable
+without an account.
 
 **Product photos** in `FRONTEND/public/products/` were extracted from the
 official Care Dent product catalogue.

@@ -1,4 +1,3 @@
-import React from 'react';
 
 /* Shared loading / empty / error states so every page fails the same way. */
 

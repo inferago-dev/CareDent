@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, CheckCircle2, Send, Stethoscope, AlertCircle } from 'lucide-react';
 import useCatalogue from '../hooks/useCatalogue';
 import useMountedTransition from '../hooks/useMountedTransition';
+import useBodyScrollLock from '../hooks/useBodyScrollLock';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { Spinner, FieldError } from '../components/ui';
@@ -20,6 +21,27 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
   const [formData, setFormData] = useState(EMPTY);
 
   const shouldRender = useMountedTransition(isOpen, 200);
+
+  const handleClose = useCallback(() => {
+    onClose();
+    // Reset only after the exit animation, so the form does not flash empty.
+    setTimeout(() => {
+      setSubmitted(null);
+      setFormData(EMPTY);
+      setError(null);
+      setFieldErrors({});
+    }, 220);
+  }, [onClose]);
+
+  // Escape closes the dialog, as every other overlay on the site already does.
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') handleClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, handleClose]);
+
+  useBodyScrollLock(isOpen);
 
   // Prefill from the product the visitor clicked and from their account.
   useEffect(() => {
@@ -68,16 +90,6 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
     }
   };
 
-  const handleClose = () => {
-    onClose();
-    // Reset only after the exit animation, so the form does not flash empty.
-    setTimeout(() => {
-      setSubmitted(null);
-      setFormData(EMPTY);
-      setError(null);
-      setFieldErrors({});
-    }, 220);
-  };
 
   const inputClass =
     'w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:bg-slate-50 disabled:text-slate-500';
@@ -90,10 +102,10 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
       aria-modal="true"
       aria-label="Request a quotation"
     >
-      <div className={`bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden border border-slate-100 ${isOpen ? 'animate-scale-in' : 'animate-scale-out'}`}>
+      <div className={`bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[calc(100dvh-2rem)] ${isOpen ? 'animate-scale-in' : 'animate-scale-out'}`}>
 
         {/* Header */}
-        <div className="bg-blue-950 p-6 text-white flex items-center justify-between">
+        <div className="bg-blue-950 p-6 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-cyan-600 flex items-center justify-center text-white shadow-md">
               <Stethoscope className="w-5 h-5" />
@@ -109,7 +121,7 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
         </div>
 
         {submitted ? (
-          <div className="p-8 text-center space-y-4">
+          <div className="p-8 text-center space-y-4 overflow-y-auto">
             <div className="w-16 h-16 bg-cyan-50 text-cyan-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
               <CheckCircle2 className="w-10 h-10" />
             </div>
@@ -133,7 +145,7 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+          <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
 
             {error && (
               <div className="flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 px-4 py-3">

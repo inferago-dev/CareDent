@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
@@ -9,7 +8,7 @@ export default function Footer() {
 
   return (
     <footer className="relative z-10 bg-blue-950 text-slate-300 pt-12 pb-8">
-      <div ref={parallaxRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 will-change-transform">
+      <div ref={parallaxRef} className="container-page max-w-7xl will-change-transform">
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-12 border-b border-white/10">
 
@@ -88,10 +87,13 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <span>© {new Date().getFullYear()} Care Dent. All rights reserved.</span>
+          {/* "Privacy Policy" and "Terms of Service" sat here as plain <span>s
+              with no pages behind them - they read as links, did nothing when
+              tapped, and the site has no such routes. Removed rather than left
+              broken; add them back as <Link>s once the pages exist. */}
           <div className="flex items-center gap-6">
             <Link to="/login" className="hover:text-cyan-400 transition-colors">Portal Login</Link>
-            <span>Privacy Policy</span>
-            <span>Terms of Service</span>
+            <Link to="/contact" className="hover:text-cyan-400 transition-colors">Contact</Link>
           </div>
         </div>
 

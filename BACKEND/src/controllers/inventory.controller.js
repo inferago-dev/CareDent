@@ -4,6 +4,7 @@ import Order from '../models/Order.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { sendMail, detailsTable } from '../utils/mailer.js';
+import { containsRegex } from '../utils/escapeRegex.js';
 
 /** A product is "low" when it is at or below its own threshold but not yet out. */
 export const LOW_STOCK_EXPR = {
@@ -12,7 +13,7 @@ export const LOW_STOCK_EXPR = {
 
 export const listInventory = asyncHandler(async (req, res) => {
   const filter = { isActive: true };
-  if (req.query.q) filter.name = new RegExp(req.query.q, 'i');
+  if (req.query.q) filter.name = containsRegex(req.query.q);
   if (req.query.state === 'low') Object.assign(filter, LOW_STOCK_EXPR, { stock: { $gt: 0 } });
   if (req.query.state === 'out') filter.stock = { $lte: 0 };
 
@@ -67,7 +68,7 @@ export const adjustStock = asyncHandler(async (req, res) => {
  * later cancelled. `stockDeducted` on the order makes this idempotent, so
  * flipping a status back and forth can never double-count.
  */
-export async function applyStockForOrder(order, previousStatus) {
+export async function applyStockForOrder(order) {
   const DEDUCT_AT = ['Confirmed', 'Processing', 'Pending Dispatch', 'Dispatched', 'Installation Scheduled', 'Delivered', 'Completed'];
   const shouldHold = DEDUCT_AT.includes(order.status);
   const isCancelled = order.status === 'Cancelled';

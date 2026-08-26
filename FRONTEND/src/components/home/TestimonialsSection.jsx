@@ -1,4 +1,3 @@
-import React from 'react';
 import { ShieldCheck, Package, Wrench } from 'lucide-react';
 import Reveal from '../Reveal';
 import useParallax from '../../hooks/useParallax';
@@ -33,8 +32,8 @@ export default function TestimonialsSection() {
   const parallaxRef = useParallax(0.05);
 
   return (
-    <section className="relative z-4 py-24 bg-white overflow-hidden">
-      <div ref={parallaxRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 will-change-transform w-full">
+    <section className="relative z-4 section-y bg-white overflow-hidden">
+      <div ref={parallaxRef} className="container-page max-w-7xl will-change-transform w-full">
 
         <div className="max-w-2xl">
           <Reveal>
