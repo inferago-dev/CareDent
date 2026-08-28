@@ -1,19 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Wrench, Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { Wrench, Send, CheckCircle2 } from 'lucide-react';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
-import { Spinner, FieldError } from './ui';
+import { Spinner } from './ui';
+import { Field, FieldRow, FormError } from './form';
+import usePrefillFromUser from '../hooks/usePrefillFromUser';
+import { SERVICE_TYPES, PRIORITIES } from '../lib/domain';
 
-const SERVICE_TYPES = [
-  'Breakdown Repair',
-  'Routine Maintenance',
-  'Pre-Installation Site Visit',
-  'Installation',
-  'Inspection',
-  'Remote Support',
-];
-
-const PRIORITIES = ['Low', 'Medium', 'High', 'Urgent'];
 
 const EMPTY = {
   contactName: '', clinicName: '', phone: '', email: '', address: '',
@@ -30,17 +23,16 @@ export default function ServiceRequestForm() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
+  usePrefillFromUser(user, (u) =>
     setForm((f) => ({
       ...f,
-      contactName: f.contactName || user.name || '',
-      email: f.email || user.email || '',
-      phone: f.phone || user.phone || '',
-      clinicName: f.clinicName || user.clinicName || '',
-      address: f.address || user.address || '',
-    }));
-  }, [user]);
+      contactName: f.contactName || u.name || '',
+      email: f.email || u.email || '',
+      phone: f.phone || u.phone || '',
+      clinicName: f.clinicName || u.clinicName || '',
+      address: f.address || u.address || '',
+    }))
+  );
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -62,9 +54,6 @@ export default function ServiceRequestForm() {
       setSubmitting(false);
     }
   };
-
-  const input =
-    'w-full px-4 py-3 bg-slate-50 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-60';
 
   if (reference) {
     return (
@@ -108,73 +97,41 @@ export default function ServiceRequestForm() {
         </div>
       </div>
 
-      {error && (
-        <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-          <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-          <p className="text-sm text-red-700">{error}</p>
-        </div>
-      )}
+      <FormError message={error} />
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Your Name *</label>
-            <input type="text" required disabled={submitting} placeholder="Dr. Sivakumar" value={form.contactName} onChange={set('contactName')} className={input} />
-            <FieldError message={fieldErrors.contactName} />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Clinic Name</label>
-            <input type="text" disabled={submitting} placeholder="Care Dental Clinic" value={form.clinicName} onChange={set('clinicName')} className={input} />
-            <FieldError message={fieldErrors.clinicName} />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Phone *</label>
-            <input type="tel" required disabled={submitting} placeholder="+91 94441 53599" value={form.phone} onChange={set('phone')} className={input} />
-            <FieldError message={fieldErrors.phone} />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Email</label>
-            <input type="email" disabled={submitting} placeholder="doctor@clinic.com" value={form.email} onChange={set('email')} className={input} />
-            <FieldError message={fieldErrors.email} />
-          </div>
-        </div>
+        <FieldRow>
+          <Field label="Your Name" required type="text" placeholder="Dr. Sivakumar" autoComplete="name"
+                 value={form.contactName} onChange={set('contactName')} disabled={submitting} error={fieldErrors.contactName} />
+          <Field label="Clinic Name" type="text" placeholder="Care Dental Clinic" autoComplete="organization"
+                 value={form.clinicName} onChange={set('clinicName')} disabled={submitting} error={fieldErrors.clinicName} />
+          <Field label="Phone" required type="tel" placeholder="+91 94441 53599" autoComplete="tel"
+                 value={form.phone} onChange={set('phone')} disabled={submitting} error={fieldErrors.phone} />
+          <Field label="Email" type="email" placeholder="doctor@clinic.com" autoComplete="email"
+                 value={form.email} onChange={set('email')} disabled={submitting} error={fieldErrors.email} />
+        </FieldRow>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Equipment *</label>
-            <input type="text" required disabled={submitting} placeholder="Gamma Overhanging (Chair #1)" value={form.equipment} onChange={set('equipment')} className={input} />
-            <FieldError message={fieldErrors.equipment} />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Serial Number</label>
-            <input type="text" disabled={submitting} placeholder="If you have it to hand" value={form.serialNumber} onChange={set('serialNumber')} className={input} />
-            <FieldError message={fieldErrors.serialNumber} />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Service Type *</label>
-            <select disabled={submitting} value={form.serviceType} onChange={set('serviceType')} className={input}>
-              {SERVICE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-            </select>
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Priority *</label>
-            <select disabled={submitting} value={form.priority} onChange={set('priority')} className={input}>
-              {PRIORITIES.map((p) => <option key={p} value={p}>{p}</option>)}
-            </select>
-          </div>
-        </div>
+        <FieldRow>
+          <Field label="Equipment" required type="text" placeholder="Gamma Overhanging (Chair #1)"
+                 value={form.equipment} onChange={set('equipment')} disabled={submitting} error={fieldErrors.equipment} />
+          <Field label="Serial Number" type="text" placeholder="If you have it to hand"
+                 value={form.serialNumber} onChange={set('serialNumber')} disabled={submitting} error={fieldErrors.serialNumber} />
+          <Field label="Service Type" as="select" required
+                 value={form.serviceType} onChange={set('serviceType')} disabled={submitting} error={fieldErrors.serviceType}>
+            {SERVICE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+          </Field>
+          <Field label="Priority" as="select" required
+                 value={form.priority} onChange={set('priority')} disabled={submitting} error={fieldErrors.priority}>
+            {PRIORITIES.map((p) => <option key={p} value={p}>{p}</option>)}
+          </Field>
+        </FieldRow>
 
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-slate-700 uppercase">Clinic Address</label>
-          <input type="text" disabled={submitting} placeholder="Street, City, Pincode" value={form.address} onChange={set('address')} className={input} />
-          <FieldError message={fieldErrors.address} />
-        </div>
+        <Field label="Clinic Address" type="text" placeholder="Street, City, Pincode" autoComplete="street-address"
+               value={form.address} onChange={set('address')} disabled={submitting} error={fieldErrors.address} />
 
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-slate-700 uppercase">What is the problem? *</label>
-          <textarea required rows={4} disabled={submitting} placeholder="e.g. Suction has weakened over the last week and the auto-flush is not running." value={form.issue} onChange={set('issue')} className={`${input} resize-none`} />
-          <FieldError message={fieldErrors.issue} />
-        </div>
+        <Field label="What is the problem?" as="textarea" required rows={4}
+               placeholder="e.g. Suction has weakened over the last week and the auto-flush is not running."
+               value={form.issue} onChange={set('issue')} disabled={submitting} error={fieldErrors.issue} />
 
         <button
           type="submit"

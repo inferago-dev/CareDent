@@ -26,7 +26,7 @@ export default function Hero({ onOpenQuoteModal }) {
     return () => observer.disconnect();
   }, []);
   return (
-    <section className="relative z-1 overflow-hidden text-white bg-blue-950 pt-28 pb-10 lg:pt-16 lg:pb-0 lg:h-screen lg:flex lg:items-center">
+    <section className="relative overflow-hidden text-white bg-blue-950 pt-28 pb-10 lg:pt-16 lg:pb-0 lg:h-screen lg:flex lg:items-center">
       {/* Concentric circles pattern */}
       <svg
         className={`absolute -right-72 top-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[1200px] sm:h-[1200px] pointer-events-none transition-opacity duration-500 mask-[linear-gradient(to_right,transparent,black_40%)] ${isBlurVisible ? 'opacity-100' : 'opacity-0'}`}
@@ -134,7 +134,7 @@ export default function Hero({ onOpenQuoteModal }) {
               <img
                 src="/Tooth.png"
                 alt=""
-                width="512" height="512"
+                width="360" height="360"
                 className="relative z-10 w-full h-full object-contain drop-shadow-[0_0_80px_rgba(34,211,238,0.15)] hover:scale-105 transition-transform duration-700 ease-out"
                 fetchPriority="high"
                 decoding="async"

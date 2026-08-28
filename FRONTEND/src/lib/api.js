@@ -42,7 +42,7 @@ async function request(path, { method = 'GET', body, headers = {}, signal, raw =
   } catch (err) {
     if (err.name === 'AbortError') throw err;
     throw new ApiError(
-      'Cannot reach the server. Make sure the API is running on ' + BASE_URL.replace('/api', ''),
+      `Cannot reach the server. Make sure the API is running on ${BASE_URL.replace(/\/api$/, '')}`,
       { status: 0 }
     );
   }
@@ -175,3 +175,19 @@ export const adminApi = {
 };
 
 export { BASE_URL };
+
+/**
+ * Absolute URL for a file the API serves out of /uploads.
+ *
+ * Uploaded paths come back relative ("/uploads/documents/manual-ab12.pdf") but
+ * the API is on its own origin, so they need the server root rather than the
+ * `/api` base. Both the portal and the admin were deriving that root from
+ * BASE_URL independently; a third copy of the same regex is how one of them
+ * ends up handling a trailing slash differently from the other.
+ */
+const FILE_ROOT = BASE_URL.replace(/\/api$/, '');
+
+export const fileUrl = (path) => {
+  if (!path) return '';
+  return /^https?:\/\//.test(path) ? path : `${FILE_ROOT}${path.startsWith('/') ? path : `/${path}`}`;
+};

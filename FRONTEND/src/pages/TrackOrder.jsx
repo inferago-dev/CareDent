@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { Search, Package, Clock, Truck, MapPin, CheckCircle2, XCircle, Wrench, FileText } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import { publicApi } from '../lib/api';
-import { Spinner, StatusPill, formatDate, formatDateTime } from '../components/ui';
+import { Spinner, StatusPill } from '../components/ui';
+import { formatDate, formatDateTime } from '../lib/format';
 import Seo from '../components/Seo';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { breadcrumbSchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
 
@@ -25,6 +27,10 @@ const STEP_ICON = {
   Completed: CheckCircle2,
   Cancelled: XCircle,
 };
+
+// Declared once: the same array feeds the visible breadcrumb and the
+// BreadcrumbList markup, so the two can never disagree.
+const BREADCRUMB_TRAIL = [{ name: 'Home', path: '/' }, { name: 'Track Order', path: '/track-order' }];
 
 export default function TrackOrder() {
   const [mode, setMode] = useState('order');
@@ -59,7 +65,7 @@ export default function TrackOrder() {
     <div className="min-h-screen bg-white text-slate-800">
       <Seo
         {...metaFor('/track-order')}
-        schema={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Track Order', path: '/track-order' }])}
+        schema={breadcrumbSchema(BREADCRUMB_TRAIL)}
       />
 
       {/* HEADER + SEARCH */}
@@ -67,6 +73,7 @@ export default function TrackOrder() {
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
         <div className="relative container-page max-w-3xl text-center">
+          <Breadcrumbs trail={BREADCRUMB_TRAIL} align="center" />
           <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
             Track
           </span>

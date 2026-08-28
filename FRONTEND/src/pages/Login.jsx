@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useNavigate, Link, useLocation, Navigate } from 'react-router-dom';
 import { Lock, Mail, ArrowRight, User, Building2, Phone, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { Spinner, FieldError } from '../components/ui';
+import { Spinner } from '../components/ui';
+import { FieldError } from '../components/form';
 import Seo from '../components/Seo';
 
 export default function Login() {
@@ -70,7 +71,7 @@ export default function Login() {
             <img
               src="/Logo_White_Lockup.png"
               alt="Care Dent"
-              width="507" height="640"
+              width="152" height="192"
               className="h-24 mx-auto w-auto object-contain"
             />
           </Link>

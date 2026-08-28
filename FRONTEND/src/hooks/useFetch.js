@@ -18,13 +18,15 @@ export default function useFetch(fetcher, deps = [], { enabled = true, initialDa
   const [nonce, setNonce] = useState(0);
 
   useEffect(() => {
-    if (!enabled) {
-      setLoading(false);
-      return undefined;
-    }
+    if (!enabled) return undefined;
+
     const controller = new AbortController();
     let active = true;
 
+    // Entering the loading state IS the side effect here: it is what starting
+    // a request looks like, and nothing in props can derive it until the
+    // response lands.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     setError(null);
 

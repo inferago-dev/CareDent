@@ -21,12 +21,14 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve, join } from 'node:path';
 
 import {
-  SITE_NAME, DEFAULT_OG_IMAGE, absoluteUrl, buildTitle, clampDescription,
+  SITE_NAME, DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_WIDTH, DEFAULT_OG_IMAGE_HEIGHT,
+  DEFAULT_OG_IMAGE_ALT, absoluteUrl, buildTitle, clampDescription,
   productSchema, breadcrumbSchema, organizationSchema, websiteSchema, articleSchema,
-  faqSchema,
+  faqSchema, serviceSchema, imageGallerySchema, articleListSchema,
 } from '../src/lib/seo.js';
 import { PAGE_META } from '../src/lib/pageMeta.js';
-import { DENTAL_CHAIRS, OTHER_EQUIPMENT } from '../src/data/products.js';
+import { DENTAL_CHAIRS, OTHER_EQUIPMENT, SERVICES_LIST } from '../src/data/products.js';
+import { GALLERY_ITEMS } from '../src/data/gallery.js';
 import { ARTICLES } from '../src/data/articles.js';
 import { faqsFor } from '../src/data/faqs.js';
 
@@ -52,6 +54,8 @@ function headFor({ path, title, description, image = DEFAULT_OG_IMAGE, type = 'w
   const desc = esc(clampDescription(description || ''));
   const url = esc(absoluteUrl(path));
   const img = esc(absoluteUrl(image));
+  const isDefaultImage = image === DEFAULT_OG_IMAGE;
+  const imgAlt = esc(isDefaultImage ? DEFAULT_OG_IMAGE_ALT : title || DEFAULT_OG_IMAGE_ALT);
   // Markers are re-emitted so the script stays idempotent - `npm run seo:meta`
   // can be re-run against an already-processed dist without losing its anchor.
   return [
@@ -66,12 +70,18 @@ function headFor({ path, title, description, image = DEFAULT_OG_IMAGE, type = 'w
     `    <meta property="og:description" content="${desc}" />`,
     `    <meta property="og:url" content="${url}" />`,
     `    <meta property="og:image" content="${img}" />`,
+    `    <meta property="og:image:alt" content="${imgAlt}" />`,
+    ...(isDefaultImage
+      ? [`    <meta property="og:image:width" content="${DEFAULT_OG_IMAGE_WIDTH}" />`,
+         `    <meta property="og:image:height" content="${DEFAULT_OG_IMAGE_HEIGHT}" />`]
+      : []),
     `    <meta property="og:locale" content="en_IN" />`,
     ``,
     `    <meta name="twitter:card" content="summary_large_image" />`,
     `    <meta name="twitter:title" content="${fullTitle}" />`,
     `    <meta name="twitter:description" content="${desc}" />`,
     `    <meta name="twitter:image" content="${img}" />`,
+    `    <meta name="twitter:image:alt" content="${imgAlt}" />`,
     ...(schema.length ? ['', ldjson(schema)] : []),
     `    <!-- seo:end -->`,
   ].join('\n');
@@ -86,6 +96,24 @@ if (!BLOCK.test(shell)) {
 
 const crumbs = (trail) => breadcrumbSchema(trail);
 
+/**
+ * Schema a route emits beyond its breadcrumb.
+ *
+ * The runtime <Seo> already renders these, but only for crawlers that execute
+ * JavaScript. Everything that reads the served HTML - every link preview, and
+ * any crawler on its first non-rendering pass - saw a breadcrumb and nothing
+ * else. Anything listed here is built from bundled data, so the static copy
+ * says exactly what the runtime copy says.
+ */
+const EXTRA_SCHEMA = {
+  '/services': () => [serviceSchema(SERVICES_LIST)],
+  '/gallery': () => [imageGallerySchema(GALLERY_ITEMS, {
+    name: 'Care Dent clinic installations',
+    path: '/gallery',
+  })],
+  '/guides': () => [articleListSchema(ARTICLES)],
+};
+
 const routes = [
   ...Object.entries(PAGE_META).map(([path, meta]) => ({
     path,
@@ -97,6 +125,7 @@ const routes = [
             crumbs([{ name: 'Home', path: '/' }, { name: meta.title.split(' — ')[0], path }]),
             // Pages with a visible FAQ block carry the matching markup.
             ...(faqsFor(path).length ? [faqSchema(faqsFor(path))] : []),
+            ...(EXTRA_SCHEMA[path]?.() ?? []),
           ],
   })),
   ...[...DENTAL_CHAIRS, ...OTHER_EQUIPMENT].map((p) => {
@@ -139,6 +168,29 @@ const routes = [
   })),
 ];
 
+/**
+ * A 404 document for hosts that can serve one.
+ *
+ * A SPA answers every unknown URL with the index shell and HTTP 200, so a
+ * mistyped or retired link looks to Google like a real page whose content
+ * happens to say "not found" - a soft 404. Those get crawled repeatedly and
+ * can be indexed. Netlify and most static hosts serve `404.html` with a real
+ * 404 status automatically; the header below keeps it out of the index either
+ * way, so the file is useful even where the status stays 200.
+ */
+function write404() {
+  const head = headFor({
+    path: '/404',
+    title: 'Page Not Found',
+    description: 'That page has moved or never existed. Browse the Care Dent catalogue instead.',
+  })
+    // A 404 must not name a canonical - that asserts the URL is the preferred
+    // version of a real page. noindex,follow takes its place: keep it out of
+    // the index, still crawl the links out of it.
+    .replace(/^.*<link rel="canonical".*$/m, '    <meta name="robots" content="noindex, follow" />');
+  writeFileSync(join(DIST, '404.html'), shell.replace(BLOCK, head));
+}
+
 let written = 0;
 for (const route of routes) {
   const html = shell.replace(BLOCK, headFor(route));
@@ -149,4 +201,6 @@ for (const route of routes) {
   written += 1;
 }
 
-console.log(`[prerender] metadata baked into ${written} route(s) under dist/`);
+write404();
+
+console.log(`[prerender] metadata baked into ${written} route(s) + 404.html under dist/`);

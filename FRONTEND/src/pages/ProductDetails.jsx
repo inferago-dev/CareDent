@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   CheckCircle2, Download, MessageSquare, ArrowRight, ShieldCheck,
@@ -12,6 +12,7 @@ import { catalogApi } from '../lib/api';
 import { LoadingBlock } from '../components/ui';
 import NotFound from './NotFound';
 import Seo from '../components/Seo';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { productSchema, breadcrumbSchema } from '../lib/seo';
 
 /** Bundled catalogue, used only when the API cannot be reached. */
@@ -50,9 +51,17 @@ export default function ProductDetails({ onOpenQuoteModal }) {
   }, [data, error, product, slug]);
 
   const gallery = product?.images?.length ? product.images : product?.heroImage ? [product.heroImage] : [];
-  const [selectedImage, setSelectedImage] = useState(null);
 
-  useEffect(() => { setSelectedImage(gallery[0] || null); }, [slug, gallery[0]]);
+  /**
+   * Which gallery image is showing.
+   *
+   * Stored with the slug it belongs to, so navigating to another product falls
+   * back to that product's first image without an effect resetting it after
+   * the fact - and so an image chosen by hand survives the catalogue arriving
+   * from the API and replacing the bundled fallback.
+   */
+  const [picked, setPicked] = useState({ slug: null, src: null });
+  const selectedImage = (picked.slug === slug && picked.src) || gallery[0] || null;
 
   // Dark background: the navbar is fixed and transparent until you scroll, so
   // a white panel at the top of the page would make its white logo invisible.
@@ -64,6 +73,13 @@ export default function ProductDetails({ onOpenQuoteModal }) {
     );
   }
   if (!product) return <NotFound />;
+
+  // One array for the visible breadcrumb and the BreadcrumbList markup.
+  const trail = [
+    { name: 'Home', path: '/' },
+    { name: 'Products', path: '/products' },
+    { name: product.name, path: `/products/${product.slug || slug}` },
+  ];
 
   const specs = product.specifications || [];
   const features = product.keyDifferentiators || [];
@@ -80,11 +96,7 @@ export default function ProductDetails({ onOpenQuoteModal }) {
         canonical={`/products/${product.slug || slug}`}
         schema={[
           productSchema({ ...product, slug: product.slug || slug }),
-          breadcrumbSchema([
-            { name: 'Home', path: '/' },
-            { name: 'Products', path: '/products' },
-            { name: product.name, path: `/products/${product.slug || slug}` },
-          ]),
+          breadcrumbSchema(trail),
         ]}
       />
 
@@ -95,13 +107,7 @@ export default function ProductDetails({ onOpenQuoteModal }) {
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
         <div className="relative container-page max-w-7xl flex items-center justify-between gap-4">
-          <div className="text-xs text-slate-400 flex items-center gap-2 min-w-0">
-            <Link to="/" className="hover:text-cyan-400 transition-colors">Home</Link>
-            <span className="text-slate-600">/</span>
-            <Link to="/products" className="hover:text-cyan-400 transition-colors">Products</Link>
-            <span className="text-slate-600">/</span>
-            <span className="font-semibold text-white truncate">{product.name}</span>
-          </div>
+          <Breadcrumbs trail={trail} className="mb-0 min-w-0" />
           <button
             onClick={() => navigate('/products')}
             className="text-xs font-semibold text-slate-300 hover:text-cyan-400 flex items-center gap-1 shrink-0 transition-colors"
@@ -146,7 +152,7 @@ export default function ProductDetails({ onOpenQuoteModal }) {
                   {gallery.map((img, idx) => (
                     <button
                       key={`${img}-${idx}`}
-                      onClick={() => setSelectedImage(img)}
+                      onClick={() => setPicked({ slug, src: img })}
                       className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 bg-slate-50 ${
                         selectedImage === img ? 'border-cyan-600 scale-95 shadow-md' : 'border-slate-200 opacity-70 hover:opacity-100'
                       }`}

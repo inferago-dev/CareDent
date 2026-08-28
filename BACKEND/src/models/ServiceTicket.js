@@ -1,24 +1,5 @@
 import mongoose from 'mongoose';
-
-const TICKET_STATUSES = [
-  'Open',
-  'Acknowledged',
-  'Engineer Assigned',
-  'Pending Parts',
-  'In Progress',
-  'Resolved',
-  'Closed',
-  'Cancelled',
-];
-
-const SERVICE_TYPES = [
-  'Pre-Installation Site Visit',
-  'Installation',
-  'Routine Maintenance',
-  'Breakdown Repair',
-  'Inspection',
-  'Remote Support',
-];
+import { TICKET_STATUSES, SERVICE_TYPES, PRIORITIES } from '../constants/domain.js';
 
 // Floor plans and room photos a clinic attaches to a site-assessment request.
 const attachmentSchema = new mongoose.Schema(
@@ -74,7 +55,7 @@ const ticketSchema = new mongoose.Schema(
     siteAssessment: siteAssessmentSchema,
     attachments: [attachmentSchema],
     issue: { type: String, required: [true, 'Describe the issue'], trim: true, maxlength: 2000 },
-    priority: { type: String, enum: ['Low', 'Medium', 'High', 'Urgent'], default: 'Medium', index: true },
+    priority: { type: String, enum: PRIORITIES, default: 'Medium', index: true },
 
     status: { type: String, enum: TICKET_STATUSES, default: 'Open', index: true },
     updates: [updateSchema],
@@ -94,5 +75,4 @@ ticketSchema.pre('save', function seedTimeline(next) {
   next();
 });
 
-export { TICKET_STATUSES, SERVICE_TYPES };
 export default mongoose.model('ServiceTicket', ticketSchema);

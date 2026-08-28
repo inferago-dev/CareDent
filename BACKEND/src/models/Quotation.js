@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { QUOTATION_STATUSES, QUOTATION_SOURCES } from '../constants/domain.js';
 
 const quotationSchema = new mongoose.Schema(
   {
@@ -19,7 +20,7 @@ const quotationSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ['New', 'In Review', 'Quoted', 'Approved', 'Rejected', 'Expired'],
+      enum: QUOTATION_STATUSES,
       default: 'New',
       index: true,
     },
@@ -30,7 +31,7 @@ const quotationSchema = new mongoose.Schema(
       message: { type: String, trim: true, maxlength: 4000 },
       sentAt: { type: Date },
     },
-    source: { type: String, enum: ['website', 'phone', 'walk-in', 'referral'], default: 'website' },
+    source: { type: String, enum: QUOTATION_SOURCES, default: 'website' },
   },
   { timestamps: true }
 );

@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import {
-  SITE_NAME, DEFAULT_OG_IMAGE, absoluteUrl, buildTitle, clampDescription,
+  SITE_NAME, DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_WIDTH, DEFAULT_OG_IMAGE_HEIGHT,
+  DEFAULT_OG_IMAGE_ALT, absoluteUrl, buildTitle, clampDescription,
 } from '../lib/seo';
 
 /**
@@ -33,6 +34,10 @@ export default function Seo({
   const fullTitle = buildTitle(title);
   const desc = description ? clampDescription(description) : undefined;
   const ogImage = absoluteUrl(image);
+  // Dimensions are only true of the shared card. A product page passes its own
+  // photograph, and stating the wrong size is worse than stating none.
+  const isDefaultImage = image === DEFAULT_OG_IMAGE;
+  const imageAlt = isDefaultImage ? DEFAULT_OG_IMAGE_ALT : title || DEFAULT_OG_IMAGE_ALT;
   const blocks = schema ? (Array.isArray(schema) ? schema : [schema]).filter(Boolean) : [];
 
   return (
@@ -51,12 +56,16 @@ export default function Seo({
       {desc && <meta property="og:description" content={desc} />}
       <meta property="og:url" content={url} />
       <meta property="og:image" content={ogImage} />
+      <meta property="og:image:alt" content={imageAlt} />
+      {isDefaultImage && <meta property="og:image:width" content={String(DEFAULT_OG_IMAGE_WIDTH)} />}
+      {isDefaultImage && <meta property="og:image:height" content={String(DEFAULT_OG_IMAGE_HEIGHT)} />}
       <meta property="og:locale" content="en_IN" />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       {desc && <meta name="twitter:description" content={desc} />}
       <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content={imageAlt} />
 
       {blocks.map((block, i) => (
         <script

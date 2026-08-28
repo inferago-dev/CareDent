@@ -1,4 +1,11 @@
 import { z } from 'zod';
+import {
+  ORDER_STATUSES, TICKET_STATUSES, SERVICE_TYPES, PRIORITIES, QUOTATION_STATUSES,
+  INVOICE_STATUSES, PAYMENT_METHODS, MESSAGE_STATUSES, PRODUCT_KINDS,
+} from '../constants/domain.js';
+
+// zod wants a non-empty tuple; the domain lists are plain arrays.
+const oneOf = (values) => z.enum(values);
 
 const trimmed = (min, max, label) =>
   z.string({ error: `${label} is required` }).trim().min(min, `${label} is required`).max(max, `${label} is too long`);
@@ -74,7 +81,7 @@ export const quotationSchema = z.object({
 });
 
 export const quotationUpdateSchema = z.object({
-  status: z.enum(['New', 'In Review', 'Quoted', 'Approved', 'Rejected', 'Expired']).optional(),
+  status: oneOf(QUOTATION_STATUSES).optional(),
   quotedAmount: z.coerce.number().min(0).optional(),
   validTill: z.coerce.date().optional(),
   adminNotes: z.string().trim().max(2000).optional(),
@@ -103,18 +110,9 @@ export const ticketSchema = z.object({
   address: z.string().trim().max(400).optional().or(z.literal('')),
   equipment: trimmed(2, 200, 'Equipment'),
   serialNumber: z.string().trim().max(80).optional().or(z.literal('')),
-  serviceType: z
-    .enum([
-      'Pre-Installation Site Visit',
-      'Installation',
-      'Routine Maintenance',
-      'Breakdown Repair',
-      'Inspection',
-      'Remote Support',
-    ])
-    .default('Breakdown Repair'),
+  serviceType: oneOf(SERVICE_TYPES).default('Breakdown Repair'),
   issue: trimmed(5, 2000, 'Issue description'),
-  priority: z.enum(['Low', 'Medium', 'High', 'Urgent']).default('Medium'),
+  priority: oneOf(PRIORITIES).default('Medium'),
 });
 
 /* ---------------- pre-installation site assessment ---------------- */
@@ -135,10 +133,8 @@ export const siteAssessmentSchema = z.object({
 });
 
 export const ticketUpdateSchema = z.object({
-  status: z
-    .enum(['Open', 'Acknowledged', 'Engineer Assigned', 'Pending Parts', 'In Progress', 'Resolved', 'Closed', 'Cancelled'])
-    .optional(),
-  priority: z.enum(['Low', 'Medium', 'High', 'Urgent']).optional(),
+  status: oneOf(TICKET_STATUSES).optional(),
+  priority: oneOf(PRIORITIES).optional(),
   assignedEngineer: z.string().trim().max(120).optional(),
   scheduledFor: z.coerce.date().optional(),
   resolutionNotes: z.string().trim().max(2000).optional(),
@@ -150,7 +146,7 @@ export const productSchema = z.object({
   slug: z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/, 'Slug can only use lowercase letters, numbers and dashes'),
   name: trimmed(2, 160, 'Name'),
   tagline: z.string().trim().max(200).optional().or(z.literal('')),
-  kind: z.enum(['chair', 'equipment']),
+  kind: oneOf(PRODUCT_KINDS),
   category: trimmed(2, 80, 'Category'),
   series: z.string().trim().max(80).optional().or(z.literal('')),
   brand: z.string().trim().max(80).optional().or(z.literal('')),
@@ -161,8 +157,6 @@ export const productSchema = z.object({
   keyDifferentiators: z.array(z.string().trim().max(300)).max(20).optional(),
   specifications: z.array(z.object({ label: z.string().trim().min(1), value: z.string().trim().min(1) })).max(40).optional(),
   brochureUrl: z.string().trim().optional().or(z.literal('')),
-  rating: z.coerce.number().min(0).max(5).optional(),
-  reviewsCount: z.coerce.number().int().min(0).optional(),
   price: z.coerce.number().min(0).optional(),
   priceOnRequest: z.coerce.boolean().optional(),
   stock: z.coerce.number().int().min(0).optional(),
@@ -198,12 +192,7 @@ export const orderSchema = z.object({
 });
 
 export const orderUpdateSchema = z.object({
-  status: z
-    .enum([
-      'Pending Confirmation', 'Confirmed', 'Processing', 'Pending Dispatch',
-      'Dispatched', 'Installation Scheduled', 'Delivered', 'Completed', 'Cancelled',
-    ])
-    .optional(),
+  status: oneOf(ORDER_STATUSES).optional(),
   note: z.string().trim().max(500).optional(),
   expectedDelivery: z.coerce.date().optional(),
   installationDate: z.coerce.date().optional(),
@@ -233,7 +222,7 @@ export const invoiceSchema = z.object({
 
 export const invoicePaymentSchema = z.object({
   amountPaid: z.coerce.number().min(0),
-  paymentMethod: z.enum(['Cash', 'UPI', 'Bank Transfer', 'Cheque', 'Card', 'Other']).optional(),
+  paymentMethod: oneOf(PAYMENT_METHODS).optional(),
 });
 
 /* ---------------- inventory ---------------- */
@@ -275,13 +264,13 @@ export const invoiceUpdateSchema = z.object({
     .min(1, 'Add at least one line item')
     .optional(),
   taxPercent: z.coerce.number().min(0).max(100).optional(),
-  status: z.enum(['Draft', 'Sent', 'Partially Paid', 'Paid', 'Overdue', 'Cancelled']).optional(),
+  status: oneOf(INVOICE_STATUSES).optional(),
   dueOn: z.coerce.date().optional(),
-  paymentMethod: z.enum(['Cash', 'UPI', 'Bank Transfer', 'Cheque', 'Card', 'Other']).optional(),
+  paymentMethod: oneOf(PAYMENT_METHODS).optional(),
 });
 
 export const messageUpdateSchema = z.object({
-  status: z.enum(['New', 'Read', 'Replied', 'Archived']).optional(),
+  status: oneOf(MESSAGE_STATUSES).optional(),
   adminNotes: z.string().trim().max(2000).optional(),
 });
 

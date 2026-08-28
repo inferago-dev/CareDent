@@ -6,7 +6,7 @@ export default function CtaSection({ onOpenQuoteModal }) {
   const parallaxRef = useParallax(0.08);
 
   return (
-    <section className="relative z-7 pt-10 section-pb bg-white overflow-hidden">
+    <section className="relative pt-10 section-pb bg-white overflow-hidden">
       <div className="relative rounded-3xl mx-10 bg-blue-950 text-white overflow-hidden w-full">
 
         {/* Concentric circles pattern — decorative, low opacity */}

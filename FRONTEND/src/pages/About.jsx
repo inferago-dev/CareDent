@@ -2,6 +2,7 @@ import { ArrowRight, ShieldCheck, Wrench, Award, Users, MapPin, Clock } from 'lu
 import { COMPANY_DETAILS } from '../data/products';
 import Reveal from '../components/Reveal';
 import Seo from '../components/Seo';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { breadcrumbSchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
 
@@ -28,12 +29,16 @@ const VALUES = [
   }
 ];
 
+// Declared once: the same array feeds the visible breadcrumb and the
+// BreadcrumbList markup, so the two can never disagree.
+const BREADCRUMB_TRAIL = [{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }];
+
 export default function About({ onOpenQuoteModal }) {
   return (
     <div className="min-h-screen bg-white text-slate-800">
       <Seo
         {...metaFor('/about')}
-        schema={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }])}
+        schema={breadcrumbSchema(BREADCRUMB_TRAIL)}
       />
 
       {/* INTRO BAND */}
@@ -43,6 +48,7 @@ export default function About({ onOpenQuoteModal }) {
         
         <div className="relative container-page max-w-4xl text-center">
           <Reveal>
+            <Breadcrumbs trail={BREADCRUMB_TRAIL} />
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               About Care Dent
             </span>

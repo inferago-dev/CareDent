@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
+const prefersReducedMotion =
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 /**
  * Tracks whether an element has scrolled into view.
  * Fires once by default, which is what reveal animations want.
@@ -10,18 +13,16 @@ export default function useInView({
   once = true,
 } = {}) {
   const ref = useRef(null);
-  const [inView, setInView] = useState(false);
+
+  // Respect users who have asked for reduced motion: start visible rather than
+  // animating in. This is knowable before the first paint, so it belongs in the
+  // initial state - deciding it in an effect meant one frame of hidden content
+  // for exactly the users who asked not to see movement.
+  const [inView, setInView] = useState(prefersReducedMotion);
 
   useEffect(() => {
     const node = ref.current;
-    if (!node) return undefined;
-
-    // Respect users who have asked for reduced motion: show content immediately.
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (media.matches) {
-      setInView(true);
-      return undefined;
-    }
+    if (!node || prefersReducedMotion) return undefined;
 
     const observer = new IntersectionObserver(
       ([entry]) => {

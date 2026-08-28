@@ -4,6 +4,7 @@ import Order from '../models/Order.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { sendMail, detailsTable } from '../utils/mailer.js';
+import { STOCK_COMMITTED_STATUSES } from '../constants/domain.js';
 import { containsRegex } from '../utils/escapeRegex.js';
 
 /** A product is "low" when it is at or below its own threshold but not yet out. */
@@ -69,8 +70,7 @@ export const adjustStock = asyncHandler(async (req, res) => {
  * flipping a status back and forth can never double-count.
  */
 export async function applyStockForOrder(order) {
-  const DEDUCT_AT = ['Confirmed', 'Processing', 'Pending Dispatch', 'Dispatched', 'Installation Scheduled', 'Delivered', 'Completed'];
-  const shouldHold = DEDUCT_AT.includes(order.status);
+  const shouldHold = STOCK_COMMITTED_STATUSES.includes(order.status);
   const isCancelled = order.status === 'Cancelled';
 
   if (shouldHold && !order.stockDeducted) {

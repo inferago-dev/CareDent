@@ -40,7 +40,7 @@ const STEPS = [
 
 export default function ProcessSection() {
   return (
-    <section className="relative z-5 section-y bg-slate-50 border-y border-slate-200">
+    <section className="relative section-y bg-slate-50 border-y border-slate-200">
       <div className="container-page max-w-7xl">
         <div className="max-w-2xl">
           <Reveal>

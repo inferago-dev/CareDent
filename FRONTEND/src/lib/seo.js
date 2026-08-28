@@ -8,16 +8,36 @@
  * Production origin, no trailing slash. Override per environment with
  * VITE_SITE_URL. Every canonical, sitemap entry and og:image is built from
  * this, so it must match the domain the site is actually served from.
+ *
+ * This default was `https://caredent.in` while the site was served from
+ * www.caredent.net, and caredent.in has never resolved - no A, NS or SOA
+ * record. Every page therefore carried a cross-domain canonical to a host
+ * that does not exist, which is an instruction to Google to index something
+ * else instead. If this is ever repointed, change it here AND clear any
+ * VITE_SITE_URL set in the Vercel project, or the two disagree silently.
  */
 export const SITE_URL = (
   import.meta.env?.VITE_SITE_URL ||
   globalThis.process?.env?.VITE_SITE_URL ||
-  'https://caredent.in'
+  'https://www.caredent.net'
 ).replace(/\/+$/, '');
 
 export const SITE_NAME = 'Care Dent';
 export const SITE_TAGLINE = 'We care for your precious equipments';
-export const DEFAULT_OG_IMAGE = '/Logo_Lockup.png';
+/**
+ * The share card. Scrapers crop a `summary_large_image` to roughly 1.91:1, so
+ * the old portrait logo (507x640) came back cropped through the middle or
+ * demoted to a small thumbnail. This is a real 1200x630 card.
+ *
+ * Declaring the dimensions alongside it lets Facebook and LinkedIn lay the
+ * card out before they have fetched the image, instead of dropping it from
+ * the first render of a preview.
+ */
+export const DEFAULT_OG_IMAGE = '/og-card.png';
+export const DEFAULT_OG_IMAGE_WIDTH = 1200;
+export const DEFAULT_OG_IMAGE_HEIGHT = 630;
+export const DEFAULT_OG_IMAGE_ALT =
+  'Care Dent - dental equipment supply, installation and service in Chennai';
 
 export const BUSINESS = {
   legalName: 'Care Dent',
@@ -64,6 +84,10 @@ export const organizationSchema = () => ({
   '@id': `${SITE_URL}/#organization`,
   name: SITE_NAME,
   legalName: BUSINESS.legalName,
+  // The mark is written "Care Dent"; almost every search for it is typed as
+  // one word. Listing the variants is what lets Google treat them as one
+  // entity rather than as unrelated strings.
+  alternateName: ['Caredent', 'CareDent', 'Care Dent Chennai'],
   description:
     'Dental equipment supply, installation and service in Chennai - dental chairs, ' +
     'X-ray units, compressors and autoclaves, backed by in-house certified engineers.',
@@ -126,11 +150,13 @@ export const breadcrumbSchema = (trail = []) => ({
 });
 
 /**
- * Product schema. Price is omitted on purpose - the catalogue is quote-based,
- * and an invented `offers` block is worse than none. `rating`/`reviewsCount`
- * in the bundled data are not tied to collected reviews, so no
- * aggregateRating is emitted either: Google treats unverifiable review markup
- * as a structured-data violation.
+ * Product schema.
+ *
+ * No `offers` and no `aggregateRating`, both on purpose. The catalogue is
+ * quote-based, so a price would be invented; and no review has ever been
+ * collected, so a rating would be too. Google treats unverifiable review
+ * markup as a structured-data violation, and a manual action costs more than
+ * the rich result is worth. Add both once there is real data behind them.
  */
 export const productSchema = (product) => {
   if (!product) return null;
@@ -206,4 +232,43 @@ export const articleSchema = (article) => ({
   publisher: { '@id': `${SITE_URL}/#organization` },
   mainEntityOfPage: absoluteUrl(`/guides/${article.slug}`),
   ...(article.image ? { image: absoluteUrl(article.image) } : {}),
+});
+
+/**
+ * A gallery page. `ImageObject` entries let Google associate each photograph
+ * with its caption and the product it shows, rather than treating the page as
+ * an undifferentiated wall of images.
+ */
+export const imageGallerySchema = (items = [], { name, path }) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  '@id': `${SITE_URL}${path}#gallery`,
+  name,
+  url: absoluteUrl(path),
+  publisher: { '@id': `${SITE_URL}/#organization` },
+  image: items.slice(0, 30).map((item) => ({
+    '@type': 'ImageObject',
+    contentUrl: absoluteUrl(item.src),
+    name: item.title,
+    ...(item.caption ? { caption: item.caption } : {}),
+    ...(item.href ? { mainEntityOfPage: absoluteUrl(item.href) } : {}),
+  })),
+});
+
+/**
+ * The guides index. Describing it as a list of the articles it links to is
+ * what lets Google treat /guides as a hub rather than a thin page that happens
+ * to repeat other pages' titles.
+ */
+export const articleListSchema = (articles = []) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  '@id': `${SITE_URL}/guides#list`,
+  name: 'Care Dent guides',
+  itemListElement: articles.map((article, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: absoluteUrl(`/guides/${article.slug}`),
+    name: article.title,
+  })),
 });

@@ -195,6 +195,12 @@ canonicals then point at a domain you do not control.
   `pageMeta.js` plus the bundled catalogue. Products added *only* through the
   admin content manager will not appear — add them to
   `src/data/products.js` too, which is also the offline fallback list.
+
+  `lastmod` comes from `git log` for the source behind each route, not from the
+  build date. Stamping today on every URL each deploy tells crawlers the whole
+  site changed, and they discount a sitemap that does it — which costs exactly
+  the crawl priority the field is there to earn. Outside a git checkout it
+  falls back to the build date.
 - **`npm run seo:meta`** (postbuild) writes `dist/<route>/index.html` for every
   route with that route's title, description, OG tags and JSON-LD baked in.
 
@@ -204,25 +210,59 @@ they read the HTML as served. Without the baked files, every shared link
 previews as the home page whatever it points to.
 
 **Your host must serve those files.** It needs to try a real file before
-falling back to `index.html`:
+falling back to `index.html`, and to answer genuinely unknown URLs with
+`404.html` and a real 404 status:
 
 ```nginx
-location / { try_files $uri $uri/index.html /index.html; }
+location / {
+  try_files $uri $uri/index.html /index.html;
+}
+
+error_page 404 /404.html;
 ```
+
+That second half matters as much as the first. A single-page app answers every
+URL with the index shell and HTTP 200, so a mistyped or retired link looks to
+Google like a working page that happens to say "not found" — a soft 404. Those
+get recrawled indefinitely and can end up indexed. `npm run build` writes
+`dist/404.html` (noindex, no canonical) for hosts that serve one; Netlify picks
+it up with the right status automatically, and on Vercel you either name it in
+`vercel.json` or keep the SPA rewrite and accept that the page is at least
+`noindex`.
 
 Netlify and Vercel do this by default, ahead of any SPA rewrite rule. If your
 host rewrites everything to `index.html` unconditionally, the baked files are
 ignored and link previews go back to being generic — harmless, but you lose
 the benefit.
 
+### Share cards
+
+`public/og-card.png` is the default `og:image`: 1200x630, the size every
+scraper crops a `summary_large_image` to. It is generated art, not a
+screenshot — regenerate it from the lockup if the branding changes:
+
+```bash
+cd FRONTEND/public
+magick -size 1200x630 xc:'#172554' \
+  \( Logo_White_Lockup.png -resize x300 \) -gravity center -geometry +0-20 -composite \
+  -strip PNG8:og-card.png
+```
+
+Product pages override it with their own photograph. `og:image:width` and
+`og:image:height` are only emitted for the shared card, because those numbers
+are not true of an arbitrary product photo and a wrong dimension is worse than
+a missing one.
+
 ### Deliberate omissions
 
 - **No `offers`/price** in Product JSON-LD — the catalogue is quote-based, and
   invented pricing markup is a structured-data violation.
-- **No `aggregateRating`** — the `rating` and `reviewsCount` fields in
-  `products.js` are not backed by collected reviews. Marking them up risks a
-  manual action. Once real reviews are collected and shown on the page, add it
-  in `productSchema()`.
+- **No `aggregateRating`** — and no rating data at all. `products.js` used to
+  carry `rating`/`reviewsCount` for every product; nothing rendered them and no
+  review had ever been collected, so they have been removed from the catalogue,
+  the model and the admin write schema rather than left lying around waiting to
+  be marked up. Add them back alongside a real review pipeline, then emit the
+  markup in `productSchema()`.
 - **No geo coordinates** in the LocalBusiness schema. Add `geo` from your
   Google Business Profile listing rather than an approximate lookup.
 

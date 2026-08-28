@@ -1,3 +1,4 @@
+import { statusTone } from '../../lib/format';
 
 /* Shared loading / empty / error states so every page fails the same way. */
 
@@ -57,22 +58,6 @@ export function EmptyBlock({ title, description, action, dark = false }) {
   );
 }
 
-export function FieldError({ message }) {
-  if (!message) return null;
-  return <p className="text-xs text-red-500 mt-1">{message}</p>;
-}
-
-export function statusTone(status = '') {
-  const s = String(status).toLowerCase();
-  if (['delivered', 'completed', 'paid', 'resolved', 'closed', 'approved'].some((k) => s.includes(k)))
-    return 'bg-emerald-100 text-emerald-800';
-  if (['cancelled', 'rejected', 'overdue', 'expired'].some((k) => s.includes(k)))
-    return 'bg-red-100 text-red-700';
-  if (['pending', 'draft', 'new', 'open'].some((k) => s.includes(k)))
-    return 'bg-amber-100 text-amber-800';
-  return 'bg-cyan-100 text-cyan-800';
-}
-
 export function StatusPill({ status, className = '' }) {
   return (
     <span
@@ -82,20 +67,3 @@ export function StatusPill({ status, className = '' }) {
     </span>
   );
 }
-
-/* ------------------------------ formatting ------------------------------ */
-
-export const formatCurrency = (value) =>
-  typeof value === 'number'
-    ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)
-    : '—';
-
-export const formatDate = (value) =>
-  value ? new Date(value).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
-
-export const formatDateTime = (value) =>
-  value
-    ? new Date(value).toLocaleString('en-IN', {
-        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
-      })
-    : '—';

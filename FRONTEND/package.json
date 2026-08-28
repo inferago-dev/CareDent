@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "seo:meta": "node scripts/prerender-meta.mjs",
-    "prebuild": "npm run sitemap"
+    "prebuild": "npm run check:domain && npm run sitemap",
+    "check:domain": "node scripts/check-domain-parity.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

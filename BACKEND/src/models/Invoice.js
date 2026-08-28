@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { INVOICE_STATUSES, PAYMENT_METHODS } from '../constants/domain.js';
 
 const lineSchema = new mongoose.Schema(
   {
@@ -26,11 +27,11 @@ const invoiceSchema = new mongoose.Schema(
     amount: { type: Number, min: 0, default: 0 },
     amountPaid: { type: Number, min: 0, default: 0 },
 
-    status: { type: String, enum: ['Draft', 'Sent', 'Partially Paid', 'Paid', 'Overdue', 'Cancelled'], default: 'Draft', index: true },
+    status: { type: String, enum: INVOICE_STATUSES, default: 'Draft', index: true },
     issuedOn: { type: Date, default: Date.now },
     dueOn: { type: Date },
     paidOn: { type: Date },
-    paymentMethod: { type: String, enum: ['Cash', 'UPI', 'Bank Transfer', 'Cheque', 'Card', 'Other'] },
+    paymentMethod: { type: String, enum: PAYMENT_METHODS },
     fileUrl: { type: String },
   },
   { timestamps: true }

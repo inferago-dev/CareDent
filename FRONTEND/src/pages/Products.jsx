@@ -7,6 +7,7 @@ import { catalogApi } from '../lib/api';
 import { DENTAL_CHAIRS, OTHER_EQUIPMENT } from '../data/products';
 import { LoadingBlock } from '../components/ui';
 import Seo from '../components/Seo';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { breadcrumbSchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
 
@@ -52,6 +53,10 @@ const FALLBACK = [
   })),
 ];
 
+// Declared once: the same array feeds the visible breadcrumb and the
+// BreadcrumbList markup, so the two can never disagree.
+const BREADCRUMB_TRAIL = [{ name: 'Home', path: '/' }, { name: 'Products', path: '/products' }];
+
 export default function Products({ onOpenQuoteModal }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
@@ -59,8 +64,14 @@ export default function Products({ onOpenQuoteModal }) {
 
   const [term, setTerm] = useState(query);
 
-  // Keep the box in sync when the URL changes from elsewhere (back button, links).
-  useEffect(() => { setTerm(query); }, [query]);
+  // Keep the box in sync when the URL changes from elsewhere (back button, a
+  // mega-menu link). Adjusted during render rather than in an effect so the
+  // box never paints one frame of stale text after a navigation.
+  const [syncedQuery, setSyncedQuery] = useState(query);
+  if (query !== syncedQuery) {
+    setSyncedQuery(query);
+    setTerm(query);
+  }
 
   // Debounce typing into the URL so every keystroke isn't a request or a history entry.
   useEffect(() => {
@@ -117,7 +128,7 @@ export default function Products({ onOpenQuoteModal }) {
     <div className="min-h-screen bg-white text-slate-800">
       <Seo
         {...metaFor('/products')}
-        schema={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Products', path: '/products' }])}
+        schema={breadcrumbSchema(BREADCRUMB_TRAIL)}
       />
 
       {/* HEADER */}
@@ -125,6 +136,7 @@ export default function Products({ onOpenQuoteModal }) {
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
         <div className="relative container-page max-w-7xl text-center sm:text-left">
+          <Breadcrumbs trail={BREADCRUMB_TRAIL} />
           <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
             Catalogue
           </span>

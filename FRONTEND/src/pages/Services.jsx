@@ -10,6 +10,7 @@ import useFetch from '../hooks/useFetch';
 import { catalogApi } from '../lib/api';
 import downloadPreInstallationPdf from '../lib/preInstallationPdf';
 import Seo from '../components/Seo';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { serviceSchema, breadcrumbSchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
 
@@ -25,6 +26,10 @@ const PRE_INSTALL_HIGHLIGHTS = [
   'Optional layout and Vastu consultation, at no extra cost'
 ];
 
+// Declared once: the same array feeds the visible breadcrumb and the
+// BreadcrumbList markup, so the two can never disagree.
+const BREADCRUMB_TRAIL = [{ name: 'Home', path: '/' }, { name: 'Services', path: '/services' }];
+
 export default function Services() {
   // Services are editable from the admin content manager; fall back to the
   // bundled list if the API is unreachable so the page is never empty.
@@ -37,7 +42,7 @@ export default function Services() {
         {...metaFor('/services')}
         schema={[
           serviceSchema(services),
-          breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Services', path: '/services' }]),
+          breadcrumbSchema(BREADCRUMB_TRAIL),
         ]}
       />
 
@@ -48,6 +53,7 @@ export default function Services() {
 
         <div className="relative container-page max-w-4xl text-center">
           <Reveal>
+            <Breadcrumbs trail={BREADCRUMB_TRAIL} align="center" />
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               Services & Support
             </span>

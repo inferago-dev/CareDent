@@ -37,12 +37,16 @@ export default function Navbar({ onOpenQuoteModal }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close menus on route change
-  useEffect(() => {
+  // Close every menu on navigation. Adjusted during render rather than in an
+  // effect, so the new page never paints for a frame with the old page's menu
+  // still open over it.
+  const [lastPath, setLastPath] = useState(location.pathname);
+  if (location.pathname !== lastPath) {
+    setLastPath(location.pathname);
     setMobileMenuOpen(false);
     setMegaMenuOpen(false);
     setAccountMenuOpen(false);
-  }, [location.pathname]);
+  }
 
   // Escape closes whichever menu is open.
   useEffect(() => {
@@ -105,7 +109,7 @@ export default function Navbar({ onOpenQuoteModal }) {
               <img
                 src="/Logo_White_Badge.png"
                 alt="Care Dent"
-                width="494" height="512"
+                width="108" height="112"
                 className="h-12 sm:h-14 w-auto object-contain"
               />
             </Link>

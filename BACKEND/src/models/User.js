@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { USER_ROLES } from '../constants/domain.js';
 import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema(
@@ -13,7 +14,7 @@ const userSchema = new mongoose.Schema(
       match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Enter a valid email address'],
     },
     password: { type: String, required: true, minlength: 8, select: false },
-    role: { type: String, enum: ['customer', 'admin'], default: 'customer', index: true },
+    role: { type: String, enum: USER_ROLES, default: 'customer', index: true },
     phone: { type: String, trim: true },
     clinicName: { type: String, trim: true },
     city: { type: String, trim: true },

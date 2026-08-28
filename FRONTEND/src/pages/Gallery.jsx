@@ -7,7 +7,8 @@ import useCatalogue from '../hooks/useCatalogue';
 import Reveal from '../components/Reveal';
 import useBodyScrollLock from '../hooks/useBodyScrollLock';
 import Seo from '../components/Seo';
-import { breadcrumbSchema } from '../lib/seo';
+import Breadcrumbs from '../components/Breadcrumbs';
+import { breadcrumbSchema, imageGallerySchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
 
 const ALL = 'All';
@@ -132,6 +133,10 @@ function Lightbox({ items, index, onClose, onStep }) {
   );
 }
 
+// Declared once: the same array feeds the visible breadcrumb and the
+// BreadcrumbList markup, so the two can never disagree.
+const BREADCRUMB_TRAIL = [{ name: 'Home', path: '/' }, { name: 'Gallery', path: '/gallery' }];
+
 export default function Gallery({ onOpenQuoteModal }) {
   const items = useGalleryItems();
   const [filter, setFilter] = useState(ALL);
@@ -156,7 +161,10 @@ export default function Gallery({ onOpenQuoteModal }) {
     <div className="min-h-screen bg-white text-slate-800">
       <Seo
         {...metaFor('/gallery')}
-        schema={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Gallery', path: '/gallery' }])}
+        schema={[
+          breadcrumbSchema(BREADCRUMB_TRAIL),
+          imageGallerySchema(items, { name: 'Care Dent clinic installations', path: '/gallery' }),
+        ]}
       />
 
       {/* HEADER */}
@@ -165,6 +173,7 @@ export default function Gallery({ onOpenQuoteModal }) {
 
         <div className="relative container-page max-w-4xl text-center">
           <Reveal>
+            <Breadcrumbs trail={BREADCRUMB_TRAIL} />
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               Gallery
             </span>

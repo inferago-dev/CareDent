@@ -18,7 +18,7 @@ export default function Footer() {
               <img
                 src="/Logo_White_Lockup.png"
                 alt="Care Dent - We care for your precious equipments"
-                width="507" height="640"
+                width="152" height="192"
                 className="h-20 w-auto object-contain"
                 loading="lazy"
                 decoding="async"

@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X, CheckCircle2, Send, Stethoscope, AlertCircle } from 'lucide-react';
+import { X, CheckCircle2, Send, Stethoscope } from 'lucide-react';
 import useCatalogue from '../hooks/useCatalogue';
 import useMountedTransition from '../hooks/useMountedTransition';
 import useBodyScrollLock from '../hooks/useBodyScrollLock';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
-import { Spinner, FieldError } from '../components/ui';
+import { Spinner } from '../components/ui';
+import { Field, FieldRow, FormError } from './form';
 
 const EMPTY = {
   product: '', quantity: 1, clinicName: '', name: '', phone: '', email: '', address: '', notes: '',
@@ -18,7 +19,7 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState(EMPTY);
+  const [form, setForm] = useState(EMPTY);
 
   const shouldRender = useMountedTransition(isOpen, 200);
 
@@ -27,7 +28,7 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
     // Reset only after the exit animation, so the form does not flash empty.
     setTimeout(() => {
       setSubmitted(null);
-      setFormData(EMPTY);
+      setForm(EMPTY);
       setError(null);
       setFieldErrors({});
     }, 220);
@@ -43,26 +44,41 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
 
   useBodyScrollLock(isOpen);
 
-  // Prefill from the product the visitor clicked and from their account.
-  useEffect(() => {
-    if (!isOpen) return;
-    setFormData((prev) => ({
-      ...prev,
-      product: initialProduct || prev.product || 'Gamma Premium',
-      name: prev.name || user?.name || '',
-      email: prev.email || user?.email || '',
-      phone: prev.phone || user?.phone || '',
-      clinicName: prev.clinicName || user?.clinicName || '',
-      address: prev.address || user?.address || '',
-    }));
-    setError(null);
-    setFieldErrors({});
-  }, [isOpen, initialProduct, user]);
+  /**
+   * Prefill from the product the visitor clicked and from their account.
+   *
+   * Adjusted during render rather than in an effect: an effect renders the
+   * blank form, commits it, then renders again filled, which is a visible
+   * flash on a slow phone. React discards an in-progress render when state
+   * changes during it, so this only ever paints once.
+   *
+   * The key covers both triggers - reopening the modal on a different product,
+   * and the account arriving after the modal is already open.
+   */
+  const prefillKey = isOpen ? `${initialProduct}|${user?.id ?? ''}` : null;
+  const [prefilledFor, setPrefilledFor] = useState(null);
+
+  if (prefillKey !== prefilledFor) {
+    setPrefilledFor(prefillKey);
+    if (prefillKey) {
+      setForm((prev) => ({
+        ...prev,
+        product: initialProduct || prev.product || 'Gamma Premium',
+        name: prev.name || user?.name || '',
+        email: prev.email || user?.email || '',
+        phone: prev.phone || user?.phone || '',
+        clinicName: prev.clinicName || user?.clinicName || '',
+        address: prev.address || user?.address || '',
+      }));
+      setError(null);
+      setFieldErrors({});
+    }
+  }
 
   if (!shouldRender) return null;
 
   const set = (key) => (e) =>
-    setFormData((f) => ({ ...f, [key]: key === 'quantity' ? Number(e.target.value) : e.target.value }));
+    setForm((f) => ({ ...f, [key]: key === 'quantity' ? Number(e.target.value) : e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,14 +88,14 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
 
     try {
       const res = await publicApi.requestQuote({
-        name: formData.name.trim(),
-        clinicName: formData.clinicName.trim(),
-        phone: formData.phone.trim(),
-        email: formData.email.trim(),
-        address: formData.address.trim(),
-        product: formData.product,
-        quantity: formData.quantity,
-        notes: formData.notes.trim(),
+        name: form.name.trim(),
+        clinicName: form.clinicName.trim(),
+        phone: form.phone.trim(),
+        email: form.email.trim(),
+        address: form.address.trim(),
+        product: form.product,
+        quantity: form.quantity,
+        notes: form.notes.trim(),
       });
       setSubmitted(res.data.reference);
     } catch (err) {
@@ -90,9 +106,6 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
     }
   };
 
-
-  const inputClass =
-    'w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:bg-slate-50 disabled:text-slate-500';
 
   return (
     <div
@@ -147,71 +160,50 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
         ) : (
           <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
 
-            {error && (
-              <div className="flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            )}
+            <FormError message={error} />
 
             {/* Product & quantity */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="sm:col-span-2 space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase">Selected Equipment *</label>
-                <select required value={formData.product} onChange={set('product')} disabled={submitting} className={inputClass}>
-                  <optgroup label="Dental Chairs">
-                    {chairs.map((c) => <option key={c._id || c.id} value={c.name}>{c.name}</option>)}
-                  </optgroup>
-                  <optgroup label="Other Equipment">
-                    {equipment.map((p) => <option key={p._id || p.id} value={p.name}>{p.name}</option>)}
-                  </optgroup>
-                  <option value="Pre-Installation Site Assessment">Pre-Installation Site Assessment</option>
-                  <option value="Complete Clinic Setup">Complete Clinic Setup</option>
-                </select>
-                <FieldError message={fieldErrors.product} />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase">Quantity *</label>
-                <input type="number" min="1" max="99" required value={formData.quantity} onChange={set('quantity')} disabled={submitting} className={inputClass} />
-                <FieldError message={fieldErrors.quantity} />
-              </div>
-            </div>
+            <FieldRow cols={3}>
+              <Field
+                label="Selected Equipment" as="select" required variant="subtle"
+                className="sm:col-span-2"
+                value={form.product} onChange={set('product')}
+                disabled={submitting} error={fieldErrors.product}
+              >
+                <optgroup label="Dental Chairs">
+                  {chairs.map((c) => <option key={c._id || c.id} value={c.name}>{c.name}</option>)}
+                </optgroup>
+                <optgroup label="Other Equipment">
+                  {equipment.map((p) => <option key={p._id || p.id} value={p.name}>{p.name}</option>)}
+                </optgroup>
+                <option value="Pre-Installation Site Assessment">Pre-Installation Site Assessment</option>
+                <option value="Complete Clinic Setup">Complete Clinic Setup</option>
+              </Field>
+              <Field
+                label="Quantity" required variant="subtle" type="number" min="1" max="99"
+                value={form.quantity} onChange={set('quantity')}
+                disabled={submitting} error={fieldErrors.quantity}
+              />
+            </FieldRow>
 
-            {/* Contact */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase">Your Name *</label>
-                <input type="text" required placeholder="Dr. Sivakumar" value={formData.name} onChange={set('name')} disabled={submitting} className={inputClass} />
-                <FieldError message={fieldErrors.name} />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase">Clinic Name</label>
-                <input type="text" placeholder="Care Dental Clinic" value={formData.clinicName} onChange={set('clinicName')} disabled={submitting} className={inputClass} />
-                <FieldError message={fieldErrors.clinicName} />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase">Phone *</label>
-                <input type="tel" required placeholder="+91 94441 53599" value={formData.phone} onChange={set('phone')} disabled={submitting} className={inputClass} />
-                <FieldError message={fieldErrors.phone} />
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 uppercase">Email *</label>
-                <input type="email" required placeholder="doctor@clinic.com" value={formData.email} onChange={set('email')} disabled={submitting} className={inputClass} />
-                <FieldError message={fieldErrors.email} />
-              </div>
-            </div>
+            <FieldRow>
+              <Field label="Your Name" required variant="subtle" type="text" placeholder="Dr. Sivakumar" autoComplete="name"
+                     value={form.name} onChange={set('name')} disabled={submitting} error={fieldErrors.name} />
+              <Field label="Clinic Name" variant="subtle" type="text" placeholder="Care Dental Clinic" autoComplete="organization"
+                     value={form.clinicName} onChange={set('clinicName')} disabled={submitting} error={fieldErrors.clinicName} />
+              <Field label="Phone" required variant="subtle" type="tel" placeholder="+91 94441 53599" autoComplete="tel"
+                     value={form.phone} onChange={set('phone')} disabled={submitting} error={fieldErrors.phone} />
+              <Field label="Email" required variant="subtle" type="email" placeholder="doctor@clinic.com" autoComplete="email"
+                     value={form.email} onChange={set('email')} disabled={submitting} error={fieldErrors.email} />
+            </FieldRow>
 
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-700 uppercase">Installation Address</label>
-              <input type="text" placeholder="Street address, City, Pincode (e.g. Mugalivakkam, Chennai)" value={formData.address} onChange={set('address')} disabled={submitting} className={inputClass} />
-              <FieldError message={fieldErrors.address} />
-            </div>
+            <Field label="Installation Address" variant="subtle" type="text" autoComplete="street-address"
+                   placeholder="Street address, City, Pincode (e.g. Mugalivakkam, Chennai)"
+                   value={form.address} onChange={set('address')} disabled={submitting} error={fieldErrors.address} />
 
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-700 uppercase">Additional Requirements</label>
-              <textarea rows="3" placeholder="Custom color, compressor requirement, room dimensions..." value={formData.notes} onChange={set('notes')} disabled={submitting} className={inputClass} />
-              <FieldError message={fieldErrors.notes} />
-            </div>
+            <Field label="Additional Requirements" as="textarea" variant="subtle" rows={3}
+                   placeholder="Custom color, compressor requirement, room dimensions..."
+                   value={form.notes} onChange={set('notes')} disabled={submitting} error={fieldErrors.notes} />
 
             <div className="pt-3">
               <button

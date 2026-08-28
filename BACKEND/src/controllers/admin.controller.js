@@ -10,9 +10,7 @@ import ApiError from '../utils/ApiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { parsePaging, pageMeta } from '../utils/pagination.js';
 import { containsRegex } from '../utils/escapeRegex.js';
-
-const OPEN_TICKETS = ['Open', 'Acknowledged', 'Engineer Assigned', 'Pending Parts', 'In Progress'];
-const OPEN_ORDERS = ['Pending Confirmation', 'Confirmed', 'Processing', 'Pending Dispatch', 'Dispatched', 'Installation Scheduled'];
+import { OPEN_ORDER_STATUSES, OPEN_TICKET_STATUSES } from '../constants/domain.js';
 
 export const dashboard = asyncHandler(async (_req, res) => {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -26,9 +24,9 @@ export const dashboard = asyncHandler(async (_req, res) => {
     User.countDocuments({ role: 'customer', isActive: true }),
     Product.countDocuments({ isActive: true }),
     Order.countDocuments(),
-    Order.countDocuments({ status: { $in: OPEN_ORDERS } }),
+    Order.countDocuments({ status: { $in: OPEN_ORDER_STATUSES } }),
     Quotation.countDocuments({ status: 'New' }),
-    ServiceTicket.countDocuments({ status: { $in: OPEN_TICKETS } }),
+    ServiceTicket.countDocuments({ status: { $in: OPEN_TICKET_STATUSES } }),
     ContactMessage.countDocuments({ status: 'New' }),
     Invoice.aggregate([
       { $match: { status: { $in: ['Paid', 'Partially Paid'] } } },
@@ -36,7 +34,7 @@ export const dashboard = asyncHandler(async (_req, res) => {
     ]),
     Order.find().sort({ createdAt: -1 }).limit(5).select('reference customerName clinicName items totalAmount status createdAt').lean(),
     Quotation.find().sort({ createdAt: -1 }).limit(5).select('reference name clinicName product status createdAt').lean(),
-    ServiceTicket.find({ status: { $in: OPEN_TICKETS } }).sort({ createdAt: -1 }).limit(5)
+    ServiceTicket.find({ status: { $in: OPEN_TICKET_STATUSES } }).sort({ createdAt: -1 }).limit(5)
       .select('reference clinicName equipment issue priority status assignedEngineer').lean(),
     Order.aggregate([
       { $match: { createdAt: { $gte: thirtyDaysAgo } } },

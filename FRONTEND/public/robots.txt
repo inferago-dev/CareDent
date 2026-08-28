@@ -1,4 +1,4 @@
-# Care Dent — https://caredent.in
+# Care Dent — https://www.caredent.net
 User-agent: *
 Allow: /
 
@@ -11,4 +11,4 @@ Disallow: /login
 # Order lookups are per-reference and personal.
 Disallow: /track-order?
 
-Sitemap: https://caredent.in/sitemap.xml
+Sitemap: https://www.caredent.net/sitemap.xml

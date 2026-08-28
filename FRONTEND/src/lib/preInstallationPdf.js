@@ -81,7 +81,7 @@ export default function downloadPreInstallationPdf(product = null) {
   doc.spacer(12);
   doc.text(
     `Questions? Call ${COMPANY_DETAILS.founder} on ${COMPANY_DETAILS.phoneNumbers[0]} or request a free ` +
-    'pre-installation site assessment at caredent.in/services/pre-installation.',
+    'pre-installation site assessment at www.caredent.net/services/pre-installation.',
     { size: 9, color: [0.42, 0.47, 0.55] }
   );
 

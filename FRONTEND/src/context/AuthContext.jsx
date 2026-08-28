@@ -9,10 +9,9 @@ export function AuthProvider({ children }) {
 
   // Restore the session on first load if a token is already stored.
   useEffect(() => {
-    if (!getToken()) {
-      setLoading(false);
-      return;
-    }
+    // `loading` already starts false when there is no token, so there is
+    // nothing to restore and nothing to set.
+    if (!getToken()) return undefined;
     const controller = new AbortController();
     authApi
       .me({ signal: controller.signal })
@@ -72,6 +71,10 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+/* eslint-disable-next-line react-refresh/only-export-components --
+   colocating the provider with its consumer hook is the documented React
+   pattern; splitting them across modules to satisfy a Fast Refresh hint costs
+   more than the hot-reload it buys. */
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>');

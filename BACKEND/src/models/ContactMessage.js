@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { MESSAGE_STATUSES } from '../constants/domain.js';
 
 const contactSchema = new mongoose.Schema(
   {
@@ -8,7 +9,7 @@ const contactSchema = new mongoose.Schema(
     phone: { type: String, trim: true },
     subject: { type: String, trim: true, default: 'General Enquiry' },
     message: { type: String, required: [true, 'Message is required'], trim: true, maxlength: 4000 },
-    status: { type: String, enum: ['New', 'Read', 'Replied', 'Archived'], default: 'New', index: true },
+    status: { type: String, enum: MESSAGE_STATUSES, default: 'New', index: true },
     repliedAt: { type: Date },
     adminNotes: { type: String, trim: true },
     adminReply: {

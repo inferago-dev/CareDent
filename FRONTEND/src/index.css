@@ -14,6 +14,28 @@ html, body {
 }
 
 /* ================================
+   Stacking order
+   ================================
+
+   Every z-index in the app comes from this list. It replaced a per-section
+   ladder on the home page (z-1 through z-7, with two sections both on z-5)
+   that ordered opaque, full-width sections against each other - sections that
+   are in normal flow with no negative margins and therefore cannot overlap at
+   all. Document order already decides those; only things that leave the flow
+   need a layer.
+
+     10   raised in-page content (footer over the hero's trailing glow)
+     20   decoration pinned inside a section (the hero's floating stat cards)
+     30   floating actions - above the page, below any menu or dialog
+     40   the fixed navbar and its mobile drawer
+     50   modal dialogs
+     60   the gallery lightbox and toasts, which may open over a dialog
+
+   The gap between steps is deliberate: it leaves room to slot something in
+   without renumbering, which is what produced the duplicate in the first place.
+================================ */
+
+/* ================================
    Page rhythm
    ================================
 

@@ -1,9 +1,10 @@
 import { useParams, Link } from 'react-router-dom';
-import { Clock, ChevronLeft, ArrowRight, Info, CheckCircle2 } from 'lucide-react';
+import { Clock, ArrowRight, Info, CheckCircle2 } from 'lucide-react';
 import { findArticle, sortedArticles } from '../data/articles';
 import { COMPANY_DETAILS } from '../data/products';
 import Reveal from '../components/Reveal';
 import Seo from '../components/Seo';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { articleSchema, breadcrumbSchema } from '../lib/seo';
 import NotFound from './NotFound';
 
@@ -51,6 +52,13 @@ export default function GuideDetail({ onOpenQuoteModal }) {
     day: 'numeric', month: 'long', year: 'numeric',
   });
 
+  // One array for the visible breadcrumb and the BreadcrumbList markup.
+  const trail = [
+    { name: 'Home', path: '/' },
+    { name: 'Guides', path: '/guides' },
+    { name: article.title, path: `/guides/${article.slug}` },
+  ];
+
   return (
     <div className="min-h-screen bg-white text-slate-800">
       <Seo
@@ -60,11 +68,7 @@ export default function GuideDetail({ onOpenQuoteModal }) {
         canonical={`/guides/${article.slug}`}
         schema={[
           articleSchema(article),
-          breadcrumbSchema([
-            { name: 'Home', path: '/' },
-            { name: 'Guides', path: '/guides' },
-            { name: article.title, path: `/guides/${article.slug}` },
-          ]),
+          breadcrumbSchema(trail),
         ]}
       />
 
@@ -73,13 +77,7 @@ export default function GuideDetail({ onOpenQuoteModal }) {
       <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
         <div className="relative container-page max-w-3xl">
-          <Link
-            to="/guides"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-cyan-400 transition-colors mb-8"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            <span>All guides</span>
-          </Link>
+          <Breadcrumbs trail={trail} />
           <Reveal>
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-5 font-bold">
               {article.category}

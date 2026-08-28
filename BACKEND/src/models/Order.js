@@ -1,16 +1,5 @@
 import mongoose from 'mongoose';
-
-const ORDER_STATUSES = [
-  'Pending Confirmation',
-  'Confirmed',
-  'Processing',
-  'Pending Dispatch',
-  'Dispatched',
-  'Installation Scheduled',
-  'Delivered',
-  'Completed',
-  'Cancelled',
-];
+import { ORDER_STATUSES } from '../constants/domain.js';
 
 const itemSchema = new mongoose.Schema(
   {
@@ -75,5 +64,4 @@ orderSchema.pre('save', function computeTotal(next) {
   next();
 });
 
-export { ORDER_STATUSES };
 export default mongoose.model('Order', orderSchema);

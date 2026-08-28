@@ -7,14 +7,11 @@ import {
 import { COMPANY_DETAILS } from '../data/products';
 import { useAuth } from '../context/AuthContext';
 import useFetch from '../hooks/useFetch';
-import { portalApi, authApi, BASE_URL } from '../lib/api';
+import { portalApi, authApi, fileUrl } from '../lib/api';
 import Seo from '../components/Seo';
-import {
-  LoadingBlock, ErrorBlock, EmptyBlock, StatusPill, FieldError, formatCurrency, formatDate,
-} from '../components/ui';
-
-const FILE_ROOT = BASE_URL.replace(/\/api$/, '');
-const fileUrl = (path) => (path?.startsWith('http') ? path : `${FILE_ROOT}${path}`);
+import { LoadingBlock, ErrorBlock, EmptyBlock, StatusPill } from '../components/ui';
+import { formatCurrency, formatDate } from '../lib/format';
+import { FieldError } from '../components/form';
 
 export default function Portal() {
   const [activeTab, setActiveTab] = useState('orders');

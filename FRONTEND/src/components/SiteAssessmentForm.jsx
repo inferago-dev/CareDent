@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import {
-  Ruler, Send, CheckCircle2, AlertCircle, Upload, X, FileText, Image as ImageIcon,
+  Ruler, Send, CheckCircle2, Upload, X, FileText, Image as ImageIcon,
 } from 'lucide-react';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
-import { Spinner, FieldError } from './ui';
+import { Spinner } from './ui';
+import { Field, FieldRow, FormError } from './form';
+import usePrefillFromUser from '../hooks/usePrefillFromUser';
 
 const MAX_FILES = 6;
 const MAX_FILE_MB = 10;
@@ -37,17 +39,16 @@ export default function SiteAssessmentForm({ initialEquipment = '' }) {
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    if (!user) return;
+  usePrefillFromUser(user, (u) =>
     setForm((f) => ({
       ...f,
-      contactName: f.contactName || user.name || '',
-      email: f.email || user.email || '',
-      phone: f.phone || user.phone || '',
-      clinicName: f.clinicName || user.clinicName || '',
-      location: f.location || user.city || user.address || '',
-    }));
-  }, [user]);
+      contactName: f.contactName || u.name || '',
+      email: f.email || u.email || '',
+      phone: f.phone || u.phone || '',
+      clinicName: f.clinicName || u.clinicName || '',
+      location: f.location || u.city || u.address || '',
+    }))
+  );
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -94,9 +95,6 @@ export default function SiteAssessmentForm({ initialEquipment = '' }) {
     }
   };
 
-  const input =
-    'w-full px-4 py-3 bg-slate-50 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-60';
-
   if (reference) {
     return (
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-10 text-center space-y-4">
@@ -139,56 +137,37 @@ export default function SiteAssessmentForm({ initialEquipment = '' }) {
         </div>
       </div>
 
-      {error && (
-        <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-          <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-          <p className="text-sm text-red-700">{error}</p>
-        </div>
-      )}
+      <FormError message={error} />
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Clinic Name *</label>
-            <input type="text" required disabled={submitting} placeholder="Care Dental Clinic" value={form.clinicName} onChange={set('clinicName')} className={input} />
-            <FieldError message={fieldErrors.clinicName} />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Contact Person *</label>
-            <input type="text" required disabled={submitting} placeholder="Dr. Sivakumar" value={form.contactName} onChange={set('contactName')} className={input} />
-            <FieldError message={fieldErrors.contactName} />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Phone *</label>
-            <input type="tel" required disabled={submitting} placeholder="+91 94441 53599" value={form.phone} onChange={set('phone')} className={input} />
-            <FieldError message={fieldErrors.phone} />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Email</label>
-            <input type="email" disabled={submitting} placeholder="doctor@clinic.com" value={form.email} onChange={set('email')} className={input} />
-            <FieldError message={fieldErrors.email} />
-          </div>
-        </div>
+        <FieldRow>
+          <Field label="Clinic Name" required type="text" placeholder="Care Dental Clinic" autoComplete="organization"
+                 value={form.clinicName} onChange={set('clinicName')} disabled={submitting} error={fieldErrors.clinicName} />
+          <Field label="Contact Person" required type="text" placeholder="Dr. Sivakumar" autoComplete="name"
+                 value={form.contactName} onChange={set('contactName')} disabled={submitting} error={fieldErrors.contactName} />
+          <Field label="Phone" required type="tel" placeholder="+91 94441 53599" autoComplete="tel"
+                 value={form.phone} onChange={set('phone')} disabled={submitting} error={fieldErrors.phone} />
+          <Field label="Email" type="email" placeholder="doctor@clinic.com" autoComplete="email"
+                 value={form.email} onChange={set('email')} disabled={submitting} error={fieldErrors.email} />
+        </FieldRow>
 
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-slate-700 uppercase">Site Location *</label>
-          <input type="text" required disabled={submitting} placeholder="Street, area, city, pincode" value={form.location} onChange={set('location')} className={input} />
-          <FieldError message={fieldErrors.location} />
-        </div>
+        <Field label="Site Location" required type="text" placeholder="Street, area, city, pincode" autoComplete="street-address"
+               value={form.location} onChange={set('location')} disabled={submitting} error={fieldErrors.location} />
 
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-slate-700 uppercase">Equipment Required *</label>
-          <input type="text" required disabled={submitting} placeholder="Gamma Overhanging chair + compressor + autoclave" value={form.equipment} onChange={set('equipment')} className={input} />
-          <FieldError message={fieldErrors.equipment} />
-        </div>
+        <Field label="Equipment Required" required type="text"
+               placeholder="Gamma Overhanging chair + compressor + autoclave"
+               value={form.equipment} onChange={set('equipment')} disabled={submitting} error={fieldErrors.equipment} />
 
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-slate-700 uppercase">Room Dimensions</label>
-          <div className="grid grid-cols-3 gap-3">
-            <input type="text" inputMode="decimal" disabled={submitting} placeholder="Length (ft)" value={form.roomLength} onChange={set('roomLength')} className={input} />
-            <input type="text" inputMode="decimal" disabled={submitting} placeholder="Width (ft)" value={form.roomWidth} onChange={set('roomWidth')} className={input} />
-            <input type="text" inputMode="decimal" disabled={submitting} placeholder="Ceiling (ft)" value={form.ceilingHeight} onChange={set('ceilingHeight')} className={input} />
-          </div>
+          <span className="text-xs font-bold text-slate-700 uppercase">Room Dimensions</span>
+          <FieldRow cols={3}>
+            <Field label="Length (ft)" type="text" inputMode="decimal" placeholder="Length (ft)"
+                   value={form.roomLength} onChange={set('roomLength')} disabled={submitting} error={fieldErrors.roomLength} />
+            <Field label="Width (ft)" type="text" inputMode="decimal" placeholder="Width (ft)"
+                   value={form.roomWidth} onChange={set('roomWidth')} disabled={submitting} error={fieldErrors.roomWidth} />
+            <Field label="Ceiling (ft)" type="text" inputMode="decimal" placeholder="Ceiling (ft)"
+                   value={form.ceilingHeight} onChange={set('ceilingHeight')} disabled={submitting} error={fieldErrors.ceilingHeight} />
+          </FieldRow>
           <p className="text-[11px] text-slate-400">
             Approximate is fine — the engineer confirms exact measurements on the visit.
           </p>
@@ -248,18 +227,12 @@ export default function SiteAssessmentForm({ initialEquipment = '' }) {
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Preferred Installation Date</label>
-            <input type="date" disabled={submitting} value={form.preferredDate} onChange={set('preferredDate')} className={input} />
-            <FieldError message={fieldErrors.preferredDate} />
-          </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700 uppercase">Anything else we should know?</label>
-            <input type="text" disabled={submitting} placeholder="First floor, no lift · Vastu layout" value={form.notes} onChange={set('notes')} className={input} />
-            <FieldError message={fieldErrors.notes} />
-          </div>
-        </div>
+        <FieldRow>
+          <Field label="Preferred Installation Date" type="date"
+                 value={form.preferredDate} onChange={set('preferredDate')} disabled={submitting} error={fieldErrors.preferredDate} />
+          <Field label="Anything else we should know?" type="text" placeholder="First floor, no lift · Vastu layout"
+                 value={form.notes} onChange={set('notes')} disabled={submitting} error={fieldErrors.notes} />
+        </FieldRow>
 
         <button
           type="submit"

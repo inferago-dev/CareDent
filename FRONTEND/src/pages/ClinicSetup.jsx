@@ -5,6 +5,7 @@ import {
 import { COMPANY_DETAILS } from '../data/products';
 import Reveal from '../components/Reveal';
 import Seo from '../components/Seo';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { metaFor } from '../lib/pageMeta';
 import { faqsFor } from '../data/faqs';
 import { breadcrumbSchema, faqSchema } from '../lib/seo';
@@ -72,6 +73,13 @@ const EQUIPMENT_ORDER = [
 /** Shown on the page and emitted as FAQPage markup - they must stay identical. */
 const FAQS = faqsFor('/dental-clinic-setup');
 
+// Declared once: the same array feeds the visible breadcrumb and the
+// BreadcrumbList markup, so the two can never disagree.
+const BREADCRUMB_TRAIL = [
+  { name: 'Home', path: '/' },
+  { name: 'Clinic Setup', path: '/dental-clinic-setup' },
+];
+
 export default function ClinicSetup({ onOpenQuoteModal }) {
   return (
     <div className="min-h-screen bg-white text-slate-800">
@@ -79,10 +87,7 @@ export default function ClinicSetup({ onOpenQuoteModal }) {
         {...metaFor('/dental-clinic-setup')}
         schema={[
           faqSchema(FAQS),
-          breadcrumbSchema([
-            { name: 'Home', path: '/' },
-            { name: 'Clinic Setup', path: '/dental-clinic-setup' },
-          ]),
+          breadcrumbSchema(BREADCRUMB_TRAIL),
         ]}
       />
 
@@ -91,6 +96,7 @@ export default function ClinicSetup({ onOpenQuoteModal }) {
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
         <div className="relative container-page max-w-4xl text-center">
           <Reveal>
+            <Breadcrumbs trail={BREADCRUMB_TRAIL} />
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               Opening a Dental Practice
             </span>

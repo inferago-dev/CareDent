@@ -12,6 +12,7 @@ import Reveal from '../components/Reveal';
 import SiteAssessmentForm from '../components/SiteAssessmentForm';
 import downloadPreInstallationPdf from '../lib/preInstallationPdf';
 import Seo from '../components/Seo';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { breadcrumbSchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
 
@@ -83,6 +84,14 @@ function SectionCard({ section, index }) {
   );
 }
 
+// Declared once: the same array feeds the visible breadcrumb and the
+// BreadcrumbList markup, so the two can never disagree.
+const BREADCRUMB_TRAIL = [
+  { name: 'Home', path: '/' },
+  { name: 'Services', path: '/services' },
+  { name: 'Pre-Installation', path: '/services/pre-installation' },
+];
+
 export default function PreInstallation({ onOpenQuoteModal }) {
   const [params] = useSearchParams();
   const equipment = params.get('equipment') || '';
@@ -102,11 +111,7 @@ export default function PreInstallation({ onOpenQuoteModal }) {
     <div className="min-h-screen bg-white text-slate-800">
       <Seo
         {...metaFor('/services/pre-installation')}
-        schema={breadcrumbSchema([
-          { name: 'Home', path: '/' },
-          { name: 'Services', path: '/services' },
-          { name: 'Pre-Installation', path: '/services/pre-installation' },
-        ])}
+        schema={breadcrumbSchema(BREADCRUMB_TRAIL)}
       />
 
       {/* HEADER */}
@@ -120,6 +125,7 @@ export default function PreInstallation({ onOpenQuoteModal }) {
               <span className="text-slate-600">/</span>
               <span className="text-slate-200">Pre-Installation</span>
             </div>
+            <Breadcrumbs trail={BREADCRUMB_TRAIL} />
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               Pre-Installation & Site Readiness
             </span>

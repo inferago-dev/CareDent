@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { DOCUMENT_CATEGORIES } from '../constants/domain.js';
 
 // Manuals, warranty certificates and other files exposed in the customer portal.
 const documentSchema = new mongoose.Schema(
@@ -6,7 +7,7 @@ const documentSchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true },
     category: {
       type: String,
-      enum: ['Manual', 'Warranty', 'Brochure', 'Invoice', 'Certificate', 'Other'],
+      enum: DOCUMENT_CATEGORIES,
       default: 'Other',
       index: true,
     },

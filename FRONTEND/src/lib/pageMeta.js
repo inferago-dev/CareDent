@@ -13,7 +13,7 @@ export const PAGE_META = {
   '/': {
     title: 'Dental Equipment Supplier & Service in Chennai',
     description:
-      'Care Dent supplies, installs and services dental chairs, X-ray units, compressors and autoclaves across India — certified engineers, spares held in stock.',
+      'Care Dent, Mugalivakkam, Chennai — dental chairs, X-ray units, compressors and autoclaves supplied, installed and serviced across India by our own engineers.',
     priority: 1.0,
   },
   '/about': {

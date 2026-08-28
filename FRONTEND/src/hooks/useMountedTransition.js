@@ -16,6 +16,9 @@ export default function useMountedTransition(isOpen, exitDuration = 200) {
     useEffect(() => {
         clearTimeout(timeoutRef.current);
         if (isOpen) {
+            // The point of this hook is to hold a closed element mounted on a
+            // timer, which no prop can derive.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setShouldRender(true);
         } else {
             timeoutRef.current = setTimeout(() => setShouldRender(false), exitDuration);

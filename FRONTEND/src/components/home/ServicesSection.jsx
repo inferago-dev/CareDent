@@ -26,7 +26,7 @@ export default function ServicesSection() {
   const parallaxRef = useParallax(0.04);
 
   return (
-    <section className="relative z-6 section-y bg-white overflow-hidden">
+    <section className="relative section-y bg-white overflow-hidden">
       <div ref={parallaxRef} className="container-page max-w-7xl will-change-transform w-full">
 
         {/* Label */}

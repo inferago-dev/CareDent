@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-import { MapPin, Phone, Mail, Clock, MessageSquare, Send, CheckCircle2, Stethoscope, AlertCircle, ArrowUpRight } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageSquare, Send, CheckCircle2, Stethoscope, ArrowUpRight } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
-import { Spinner, FieldError } from '../components/ui';
+import { Spinner } from '../components/ui';
+import { Field, FieldRow, FormError } from '../components/form';
+import usePrefillFromUser from '../hooks/usePrefillFromUser';
 import Seo from '../components/Seo';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { breadcrumbSchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
 
@@ -16,30 +19,30 @@ const MAP_QUERY = encodeURIComponent(`Care Dent, ${COMPANY_DETAILS.address}`);
 const MAP_EMBED_URL = `https://maps.google.com/maps?q=${MAP_QUERY}&output=embed`;
 const MAP_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${MAP_QUERY}`;
 
+// Declared once: the same array feeds the visible breadcrumb and the
+// BreadcrumbList markup, so the two can never disagree.
+const BREADCRUMB_TRAIL = [{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact' }];
+
+const EMPTY = { name: '', email: '', phone: '', subject: 'Equipment Inquiry', message: '' };
+
 export default function Contact() {
   const { user } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: 'Equipment Inquiry',
-    message: ''
-  });
+  const [form, setForm] = useState(EMPTY);
 
-  // Prefill for signed-in customers.
-  useEffect(() => {
-    if (!user) return;
-    setFormData((f) => ({
+  usePrefillFromUser(user, (u) =>
+    setForm((f) => ({
       ...f,
-      name: f.name || user.name || '',
-      email: f.email || user.email || '',
-      phone: f.phone || user.phone || '',
-    }));
-  }, [user]);
+      name: f.name || u.name || '',
+      email: f.email || u.email || '',
+      phone: f.phone || u.phone || '',
+    }))
+  );
+
+  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,11 +51,11 @@ export default function Contact() {
     setSubmitting(true);
     try {
       await publicApi.sendMessage({
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-        subject: formData.subject,
-        message: formData.message.trim(),
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        subject: form.subject,
+        message: form.message.trim(),
       });
       setSubmitted(true);
     } catch (err) {
@@ -67,7 +70,7 @@ export default function Contact() {
     <div className="min-h-screen bg-white text-slate-800">
       <Seo
         {...metaFor('/contact')}
-        schema={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact' }])}
+        schema={breadcrumbSchema(BREADCRUMB_TRAIL)}
       />
 
       {/* HEADER */}
@@ -76,6 +79,7 @@ export default function Contact() {
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
         <div className="relative container-page max-w-4xl text-center">
+          <Breadcrumbs trail={BREADCRUMB_TRAIL} align="center" />
           <span className="block text-xs font-bold text-cyan-400 uppercase tracking-widest mb-6">
             GET IN TOUCH
           </span>
@@ -223,10 +227,10 @@ export default function Contact() {
                   </div>
                   <h4 className="text-2xl font-semibold text-slate-900">Message Received!</h4>
                   <p className="text-sm text-slate-600">
-                    Thank you, {formData.name}. We have received your inquiry and will reply to <strong>{formData.email}</strong> shortly.
+                    Thank you, {form.name}. We have received your inquiry and will reply to <strong>{form.email}</strong> shortly.
                   </p>
                   <button
-                    onClick={() => { setSubmitted(false); setFormData((f) => ({ ...f, subject: 'Equipment Inquiry', message: '' })); }}
+                    onClick={() => { setSubmitted(false); setForm((f) => ({ ...f, subject: EMPTY.subject, message: '' })); }}
                     className="bg-cyan-600 text-white font-semibold text-xs px-6 py-2.5 rounded-full shadow transition-all active:scale-[0.98]"
                   >
                     Send Another Message
@@ -235,87 +239,45 @@ export default function Contact() {
               ) : (
                 <form key="form" onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
 
-                  {error && (
-                    <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-                      <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                      <p className="text-sm text-red-700">{error}</p>
-                    </div>
-                  )}
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 uppercase">Your Name *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Dr. Sivakumar"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        disabled={submitting}
-                        className="w-full px-4 py-3 bg-slate-50 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-60"
-                      />
-                      <FieldError message={fieldErrors.name} />
-                    </div>
+                  <FormError message={error} />
 
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 uppercase">Email Address *</label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="doctor@clinic.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        disabled={submitting}
-                        className="w-full px-4 py-3 bg-slate-50 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-60"
-                      />
-                      <FieldError message={fieldErrors.email} />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 uppercase">Phone Number *</label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="+91 94441 53599"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        disabled={submitting}
-                        className="w-full px-4 py-3 bg-slate-50 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-60"
-                      />
-                      <FieldError message={fieldErrors.phone} />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700 uppercase">Subject *</label>
-                      <select
-                        value={formData.subject}
-                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                        disabled={submitting}
-                        className="w-full px-4 py-3 bg-slate-50 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-60"
-                      >
-                        <option value="Equipment Inquiry">New Chair / Equipment Inquiry</option>
-                        <option value="Service Maintenance">Maintenance / Service Visit</option>
-                        <option value="Spare Parts">Spare Parts & Handpieces</option>
-                        <option value="Other">General Question</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 uppercase">Your Message *</label>
-                    <textarea
-                      required
-                      rows={5}
-                      placeholder="Write your query here..."
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      disabled={submitting}
-                        className="w-full px-4 py-3 bg-slate-50 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-60 resize-none"
+                  <FieldRow>
+                    <Field
+                      label="Your Name" required type="text" placeholder="Dr. Sivakumar"
+                      value={form.name} onChange={set('name')}
+                      disabled={submitting} error={fieldErrors.name} autoComplete="name"
                     />
-                    <FieldError message={fieldErrors.message} />
-                  </div>
+                    <Field
+                      label="Email Address" required type="email" placeholder="doctor@clinic.com"
+                      value={form.email} onChange={set('email')}
+                      disabled={submitting} error={fieldErrors.email} autoComplete="email"
+                    />
+                  </FieldRow>
+
+                  <FieldRow>
+                    <Field
+                      label="Phone Number" required type="tel" placeholder="+91 94441 53599"
+                      value={form.phone} onChange={set('phone')}
+                      disabled={submitting} error={fieldErrors.phone} autoComplete="tel"
+                    />
+                    <Field
+                      label="Subject" as="select" required
+                      value={form.subject} onChange={set('subject')}
+                      disabled={submitting} error={fieldErrors.subject}
+                    >
+                      <option value="Equipment Inquiry">New Chair / Equipment Inquiry</option>
+                      <option value="Service Maintenance">Maintenance / Service Visit</option>
+                      <option value="Spare Parts">Spare Parts &amp; Handpieces</option>
+                      <option value="Other">General Question</option>
+                    </Field>
+                  </FieldRow>
+
+                  <Field
+                    label="Your Message" as="textarea" required rows={5}
+                    placeholder="Write your query here..."
+                    value={form.message} onChange={set('message')}
+                    disabled={submitting} error={fieldErrors.message}
+                  />
 
                   <button
                     type="submit"

@@ -3,8 +3,13 @@ import { ArrowUpRight, Clock, BookOpen } from 'lucide-react';
 import { sortedArticles } from '../data/articles';
 import Reveal from '../components/Reveal';
 import Seo from '../components/Seo';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { metaFor } from '../lib/pageMeta';
-import { breadcrumbSchema } from '../lib/seo';
+import { breadcrumbSchema, articleListSchema } from '../lib/seo';
+
+// Declared once: the same array feeds the visible breadcrumb and the
+// BreadcrumbList markup, so the two can never disagree.
+const BREADCRUMB_TRAIL = [{ name: 'Home', path: '/' }, { name: 'Guides', path: '/guides' }];
 
 export default function Guides() {
   const articles = sortedArticles();
@@ -13,16 +18,17 @@ export default function Guides() {
     <div className="min-h-screen bg-white text-slate-800">
       <Seo
         {...metaFor('/guides')}
-        schema={breadcrumbSchema([
-          { name: 'Home', path: '/' },
-          { name: 'Guides', path: '/guides' },
-        ])}
+        schema={[
+          breadcrumbSchema(BREADCRUMB_TRAIL),
+          articleListSchema(articles),
+        ]}
       />
 
       <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
         <div className="relative container-page max-w-4xl text-center">
           <Reveal>
+            <Breadcrumbs trail={BREADCRUMB_TRAIL} />
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               Guides
             </span>

@@ -32,7 +32,7 @@ export default function TestimonialsSection() {
   const parallaxRef = useParallax(0.05);
 
   return (
-    <section className="relative z-4 section-y bg-white overflow-hidden">
+    <section className="relative section-y bg-white overflow-hidden">
       <div ref={parallaxRef} className="container-page max-w-7xl will-change-transform w-full">
 
         <div className="max-w-2xl">
