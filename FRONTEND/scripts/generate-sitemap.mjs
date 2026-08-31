@@ -7,7 +7,7 @@
  *
  *   npm run sitemap
  */
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -21,21 +21,61 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = resolve(ROOT, 'public/sitemap.xml');
 const today = new Date().toISOString().slice(0, 10);
 
+const unescapeXml = (s) =>
+  String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, '&');
+
 /**
- * Last commit date for a file, as YYYY-MM-DD.
+ * The dates in the sitemap already committed to the tree.
  *
- * `lastmod` used to be today's date for every URL on every build, which told
- * Google the entire site changed each time we deployed. Crawlers discount a
- * sitemap that does that, which costs exactly the crawl priority the field is
- * meant to earn. Git already knows when each page's source last changed, so
- * ask it. Falls back to today outside a repo (a fresh tarball, some CI images).
+ * Read before anything is written, so a build that cannot see real history
+ * republishes the dates it last published instead of inventing new ones.
+ */
+const previousLastmod = new Map();
+try {
+  const entry = /<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g;
+  for (const [, loc, mod] of readFileSync(OUT, 'utf8').matchAll(entry)) {
+    previousLastmod.set(unescapeXml(loc), mod);
+  }
+} catch {
+  /* first run, or no sitemap yet - there is nothing to carry forward */
+}
+
+/**
+ * Whether git here can answer "when did this file last change?" honestly.
+ *
+ * Vercel, and most CI, clones shallowly. In a depth-1 clone every file looks
+ * as though the tip commit created it, so `git log -1` returns that single
+ * date for every path: a well-formed answer that happens to be wrong for all
+ * but the files that commit really touched. Validating the date's *format*
+ * cannot catch that, which is how every URL ended up stamped with the deploy
+ * date - the exact "the whole site changed today" signal this field exists to
+ * avoid. So ask git whether its history is complete before trusting it.
+ */
+const gitDatesAreTrustworthy = (() => {
+  try {
+    return execFileSync(
+      'git', ['rev-parse', '--is-shallow-repository'],
+      { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }
+    ).trim() === 'false';
+  } catch {
+    // Not a git checkout, or a git too old to know the flag. Either way we
+    // cannot vouch for what `git log` would say, so we do not use it.
+    return false;
+  }
+})();
+
+/**
+ * Last commit date for a file as YYYY-MM-DD, or null when git cannot say.
  */
 const dateCache = new Map();
 function lastCommitDate(...files) {
+  if (!gitDatesAreTrustworthy) return null;
+
   const key = files.join('|');
   if (dateCache.has(key)) return dateCache.get(key);
 
-  let date = today;
+  let date = null;
   try {
     const out = execFileSync(
       'git',
@@ -44,10 +84,27 @@ function lastCommitDate(...files) {
     ).trim();
     if (/^\d{4}-\d{2}-\d{2}$/.test(out)) date = out;
   } catch {
-    /* not a git checkout - today is the honest best guess */
+    /* leave it null - the caller falls back to what we published before */
   }
   dateCache.set(key, date);
   return date;
+}
+
+/**
+ * A URL's lastmod: what git says, else what we last published for that URL,
+ * else today. Only a genuinely new URL should ever be dated today.
+ */
+const carriedOver = new Set();
+const datedToday = new Set();
+function freshness(loc, gitDate) {
+  if (gitDate) return gitDate;
+  const published = previousLastmod.get(loc);
+  if (published) {
+    carriedOver.add(loc);
+    return published;
+  }
+  datedToday.add(loc);
+  return today;
 }
 
 // A route's freshness is the newest of the copy that describes it and the page
@@ -77,25 +134,35 @@ const PAGE_SOURCE = {
 };
 
 const urls = [
-  ...Object.entries(PAGE_META).map(([path, meta]) => ({
-    loc: `${SITE_URL}${path === '/' ? '/' : path}`,
-    priority: meta.priority ?? 0.5,
-    changefreq: path === '/' ? 'weekly' : 'monthly',
-    lastmod: lastCommitDate(...[META_SOURCE, PAGE_SOURCE[path]].filter(Boolean)),
-  })),
-  ...[...DENTAL_CHAIRS, ...OTHER_EQUIPMENT].map((p) => ({
-    loc: `${SITE_URL}/products/${p.slug || p.id}`,
-    priority: 0.7,
-    changefreq: 'monthly',
-    lastmod: lastCommitDate(CATALOGUE_SOURCE),
-  })),
-  ...ARTICLES.map((a) => ({
-    loc: `${SITE_URL}/guides/${a.slug}`,
-    priority: 0.6,
-    changefreq: 'yearly',
-    // A guide states its own dates; trust those over the file's commit date.
-    lastmod: a.updatedAt || a.publishedAt || lastCommitDate(ARTICLE_SOURCE),
-  })),
+  ...Object.entries(PAGE_META).map(([path, meta]) => {
+    const loc = `${SITE_URL}${path === '/' ? '/' : path}`;
+    const sources = [META_SOURCE, PAGE_SOURCE[path]].filter(Boolean);
+    return {
+      loc,
+      priority: meta.priority ?? 0.5,
+      changefreq: path === '/' ? 'weekly' : 'monthly',
+      lastmod: freshness(loc, lastCommitDate(...sources)),
+    };
+  }),
+  ...[...DENTAL_CHAIRS, ...OTHER_EQUIPMENT].map((p) => {
+    const loc = `${SITE_URL}/products/${p.slug || p.id}`;
+    return {
+      loc,
+      priority: 0.7,
+      changefreq: 'monthly',
+      lastmod: freshness(loc, lastCommitDate(CATALOGUE_SOURCE)),
+    };
+  }),
+  ...ARTICLES.map((a) => {
+    const loc = `${SITE_URL}/guides/${a.slug}`;
+    return {
+      loc,
+      priority: 0.6,
+      changefreq: 'yearly',
+      // A guide states its own dates; trust those over anything inferred.
+      lastmod: a.updatedAt || a.publishedAt || freshness(loc, lastCommitDate(ARTICLE_SOURCE)),
+    };
+  }),
 ];
 
 const seen = new Set();
@@ -114,3 +181,10 @@ ${unique.map((u) => `  <url>
 
 writeFileSync(OUT, xml);
 console.log(`[sitemap] ${unique.length} URLs -> public/sitemap.xml (${SITE_URL})`);
+if (!gitDatesAreTrustworthy) {
+  console.log(
+    `[sitemap] no usable git history (shallow clone or no repo) - kept the ` +
+    `published lastmod for ${carriedOver.size} URL(s)` +
+    (datedToday.size ? `, dated ${datedToday.size} new URL(s) today` : '')
+  );
+}
