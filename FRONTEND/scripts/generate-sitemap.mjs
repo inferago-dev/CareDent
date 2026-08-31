@@ -1,9 +1,11 @@
 /**
  * Writes public/sitemap.xml from the route table and the bundled catalogue.
  *
- * Product URLs come from src/data/products.js, the same list the site falls
- * back to when the API is unreachable. If a product is added through the admin
- * content manager only, add it there too or it will not be listed here.
+ * Product URLs come from the live API when it is reachable at build time,
+ * falling back to the bundled catalogue in src/data/products.js. Anything
+ * added through the admin content manager exists only in the API, so a
+ * sitemap built from the bundle alone silently omits exactly the pages that
+ * most need crawling.
  *
  *   npm run sitemap
  */
@@ -133,6 +135,65 @@ const PAGE_SOURCE = {
   '/contact': 'src/pages/Contact.jsx',
 };
 
+/** A date field from the API as YYYY-MM-DD, or null if it is unusable. */
+const isoDate = (value) => {
+  if (!value) return null;
+  const at = new Date(value);
+  return Number.isNaN(at.getTime()) ? null : at.toISOString().slice(0, 10);
+};
+
+/**
+ * Every active product the API knows about.
+ *
+ * Products created in the admin content manager never touch this repo, so git
+ * has nothing to say about them and the bundled catalogue does not list them.
+ * The API is the only source that does.
+ *
+ * This must never fail the build: a sitemap missing the newest products is a
+ * bad day, a deploy that will not ship is a worse one. No API URL, an
+ * unreachable host, a bad status or a slow response all degrade to the
+ * bundled catalogue with a warning.
+ */
+const API_URL = (process.env.VITE_API_URL || '').replace(/\/+$/, '');
+const PAGE_LIMIT = 100;   // the API caps `limit` here
+const MAX_PAGES = 50;     // guard against a bad `meta.pages` looping forever
+
+async function fetchPublishedProducts() {
+  if (!API_URL) {
+    console.log('[sitemap] VITE_API_URL is not set - using the bundled catalogue only');
+    return [];
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  const collected = [];
+
+  try {
+    for (let page = 1; page <= MAX_PAGES; page += 1) {
+      const res = await fetch(
+        `${API_URL}/products?limit=${PAGE_LIMIT}&page=${page}`,
+        { signal: controller.signal, headers: { accept: 'application/json' } }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const body = await res.json();
+      collected.push(...(Array.isArray(body?.data) ? body.data : []));
+      if (page >= (body?.meta?.pages || 1)) break;
+    }
+  } catch (err) {
+    const reason = err.name === 'AbortError' ? 'timed out' : err.message;
+    console.warn(`[sitemap] could not read products from ${API_URL} (${reason})`);
+    console.warn('[sitemap] falling back to the bundled catalogue - admin-only products will be missing');
+    return [];
+  } finally {
+    clearTimeout(timer);
+  }
+
+  return collected.filter((p) => p?.slug);
+}
+
+const apiProducts = await fetchPublishedProducts();
+
 const urls = [
   ...Object.entries(PAGE_META).map(([path, meta]) => {
     const loc = `${SITE_URL}${path === '/' ? '/' : path}`;
@@ -142,6 +203,16 @@ const urls = [
       priority: meta.priority ?? 0.5,
       changefreq: path === '/' ? 'weekly' : 'monthly',
       lastmod: freshness(loc, lastCommitDate(...sources)),
+    };
+  }),
+  ...apiProducts.map((p) => {
+    const loc = `${SITE_URL}/products/${p.slug}`;
+    return {
+      loc,
+      priority: 0.7,
+      changefreq: 'monthly',
+      // The record says when it last changed - better than any inference.
+      lastmod: isoDate(p.updatedAt) || freshness(loc, lastCommitDate(CATALOGUE_SOURCE)),
     };
   }),
   ...[...DENTAL_CHAIRS, ...OTHER_EQUIPMENT].map((p) => {
@@ -180,7 +251,16 @@ ${unique.map((u) => `  <url>
 `;
 
 writeFileSync(OUT, xml);
+const fromApi = new Set(apiProducts.map((p) => `${SITE_URL}/products/${p.slug}`));
+const bundledOnly = unique.filter(
+  (u) => u.loc.startsWith(`${SITE_URL}/products/`) && !fromApi.has(u.loc)
+).length;
+
 console.log(`[sitemap] ${unique.length} URLs -> public/sitemap.xml (${SITE_URL})`);
+console.log(
+  `[sitemap] products: ${fromApi.size} from the API` +
+  (bundledOnly ? `, ${bundledOnly} from the bundled catalogue only` : '')
+);
 if (!gitDatesAreTrustworthy) {
   console.log(
     `[sitemap] no usable git history (shallow clone or no repo) - kept the ` +
