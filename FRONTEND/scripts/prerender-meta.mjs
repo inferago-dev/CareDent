@@ -31,6 +31,7 @@ import { DENTAL_CHAIRS, OTHER_EQUIPMENT, SERVICES_LIST } from '../src/data/produ
 import { GALLERY_ITEMS } from '../src/data/gallery.js';
 import { ARTICLES } from '../src/data/articles.js';
 import { faqsFor } from '../src/data/faqs.js';
+import { fetchPublishedProducts } from './lib/catalogue.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -114,6 +115,47 @@ const EXTRA_SCHEMA = {
   '/guides': () => [articleListSchema(ARTICLES)],
 };
 
+/**
+ * One product's prerendered head, from either source.
+ *
+ * The bundled catalogue names its image `image` where the API says
+ * `heroImage`, and only some entries carry a gallery, so both shapes are
+ * normalised before the schema is built.
+ */
+const productRoute = (p) => {
+  const slug = p.slug || p.id;
+  const path = `/products/${slug}`;
+  const product = {
+    ...p, slug,
+    heroImage: p.heroImage || p.image,
+    images: p.images?.length ? p.images : [p.heroImage || p.image].filter(Boolean),
+  };
+  return {
+    path,
+    title: p.name,
+    description: p.description || p.tagline,
+    // undefined, not '', so headFor falls back to the default share card.
+    image: product.heroImage || undefined,
+    type: 'product',
+    schema: [
+      productSchema(product),
+      crumbs([
+        { name: 'Home', path: '/' },
+        { name: 'Products', path: '/products' },
+        { name: p.name, path },
+      ]),
+    ],
+  };
+};
+
+/**
+ * Products the admin has published. Without these, a product added through the
+ * content manager is served the index shell's generic tags, so every link
+ * preview of it - WhatsApp, LinkedIn, Slack - shows the home page's card.
+ */
+const apiProducts = await fetchPublishedProducts('prerender');
+const apiSlugs = new Set(apiProducts.map((p) => p.slug));
+
 const routes = [
   ...Object.entries(PAGE_META).map(([path, meta]) => ({
     path,
@@ -128,30 +170,11 @@ const routes = [
             ...(EXTRA_SCHEMA[path]?.() ?? []),
           ],
   })),
-  ...[...DENTAL_CHAIRS, ...OTHER_EQUIPMENT].map((p) => {
-    const slug = p.slug || p.id;
-    const path = `/products/${slug}`;
-    const product = {
-      ...p, slug,
-      heroImage: p.heroImage || p.image,
-      images: p.images?.length ? p.images : [p.heroImage || p.image].filter(Boolean),
-    };
-    return {
-      path,
-      title: p.name,
-      description: p.description || p.tagline,
-      image: product.heroImage,
-      type: 'product',
-      schema: [
-        productSchema(product),
-        crumbs([
-          { name: 'Home', path: '/' },
-          { name: 'Products', path: '/products' },
-          { name: p.name, path },
-        ]),
-      ],
-    };
-  }),
+  // The API is the live catalogue, so it wins any slug the bundle also has.
+  ...apiProducts.map(productRoute),
+  ...[...DENTAL_CHAIRS, ...OTHER_EQUIPMENT]
+    .filter((p) => !apiSlugs.has(p.slug || p.id))
+    .map(productRoute),
   ...ARTICLES.map((a) => ({
     path: `/guides/${a.slug}`,
     title: a.title,
@@ -204,3 +227,4 @@ for (const route of routes) {
 write404();
 
 console.log(`[prerender] metadata baked into ${written} route(s) + 404.html under dist/`);
+console.log(`[prerender] products: ${apiSlugs.size} from the API, ${routes.filter((r) => r.type === 'product').length - apiSlugs.size} from the bundled catalogue only`);

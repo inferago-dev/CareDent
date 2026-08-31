@@ -18,6 +18,7 @@ import { SITE_URL } from '../src/lib/seo.js';
 import { PAGE_META } from '../src/lib/pageMeta.js';
 import { DENTAL_CHAIRS, OTHER_EQUIPMENT } from '../src/data/products.js';
 import { ARTICLES } from '../src/data/articles.js';
+import { fetchPublishedProducts } from './lib/catalogue.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = resolve(ROOT, 'public/sitemap.xml');
@@ -142,57 +143,7 @@ const isoDate = (value) => {
   return Number.isNaN(at.getTime()) ? null : at.toISOString().slice(0, 10);
 };
 
-/**
- * Every active product the API knows about.
- *
- * Products created in the admin content manager never touch this repo, so git
- * has nothing to say about them and the bundled catalogue does not list them.
- * The API is the only source that does.
- *
- * This must never fail the build: a sitemap missing the newest products is a
- * bad day, a deploy that will not ship is a worse one. No API URL, an
- * unreachable host, a bad status or a slow response all degrade to the
- * bundled catalogue with a warning.
- */
-const API_URL = (process.env.VITE_API_URL || '').replace(/\/+$/, '');
-const PAGE_LIMIT = 100;   // the API caps `limit` here
-const MAX_PAGES = 50;     // guard against a bad `meta.pages` looping forever
-
-async function fetchPublishedProducts() {
-  if (!API_URL) {
-    console.log('[sitemap] VITE_API_URL is not set - using the bundled catalogue only');
-    return [];
-  }
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15000);
-  const collected = [];
-
-  try {
-    for (let page = 1; page <= MAX_PAGES; page += 1) {
-      const res = await fetch(
-        `${API_URL}/products?limit=${PAGE_LIMIT}&page=${page}`,
-        { signal: controller.signal, headers: { accept: 'application/json' } }
-      );
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      const body = await res.json();
-      collected.push(...(Array.isArray(body?.data) ? body.data : []));
-      if (page >= (body?.meta?.pages || 1)) break;
-    }
-  } catch (err) {
-    const reason = err.name === 'AbortError' ? 'timed out' : err.message;
-    console.warn(`[sitemap] could not read products from ${API_URL} (${reason})`);
-    console.warn('[sitemap] falling back to the bundled catalogue - admin-only products will be missing');
-    return [];
-  } finally {
-    clearTimeout(timer);
-  }
-
-  return collected.filter((p) => p?.slug);
-}
-
-const apiProducts = await fetchPublishedProducts();
+const apiProducts = await fetchPublishedProducts('sitemap');
 
 const urls = [
   ...Object.entries(PAGE_META).map(([path, meta]) => {
