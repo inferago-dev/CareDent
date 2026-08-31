@@ -95,6 +95,13 @@ export const organizationSchema = () => ({
   logo: absoluteUrl('/Logo_Badge.png'),
   image: absoluteUrl(DEFAULT_OG_IMAGE),
   slogan: SITE_TAGLINE,
+  // Profiles Google can verify are the same business. "Caredent" is also an
+  // Australian oral-care brand, a Gurgaon equipment supplier and clinics in
+  // Mumbai and Lagos - sameAs is what separates this entity from those.
+  sameAs: ['https://www.instagram.com/caredent2023/'],
+  // The existing Google Business Profile, addressed by its CID so the link
+  // survives any change to the place's display name or address string.
+  hasMap: 'https://maps.google.com/?cid=1806503162863425912',
   foundingDate: BUSINESS.foundingDate,
   founder: { '@type': 'Person', name: BUSINESS.founder },
   email: BUSINESS.email,
