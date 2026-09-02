@@ -78,7 +78,23 @@ export const PAGE_META = {
   },
 };
 
-/** Routes deliberately kept out of the index and the sitemap. */
-export const NOINDEX_ROUTES = ['/login', '/portal', '/admin'];
+/**
+ * Routes deliberately kept out of the index and the sitemap - but which still
+ * need a served HTML document.
+ *
+ * A static host answers a path it has no file for with its 404 handler. These
+ * routes exist only inside the router, so /login came back as HTTP 404 with
+ * the "Page Not Found" head: the app still booted and drew the sign-in form,
+ * but every crawler, uptime check and cache saw a missing page. Baking a shell
+ * per route (scripts/prerender-meta.mjs) makes them 200 without putting them
+ * in the index. Titles match what <Seo> renders at runtime so the static and
+ * hydrated heads agree; there are no descriptions because nothing here is
+ * meant to appear in a result.
+ */
+export const NOINDEX_ROUTES = {
+  '/login': { title: 'Sign In' },
+  '/portal': { title: 'Customer Portal' },
+  '/admin': { title: 'Admin' },
+};
 
 export const metaFor = (path) => PAGE_META[path] || {};

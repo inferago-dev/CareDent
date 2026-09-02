@@ -167,7 +167,7 @@ export default function Services() {
                   <ArrowRight className="w-8 h-8 bg-white/15 p-2 text-white rounded-full" />
                 </Link>
                 <a
-                  href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`}
+                  href={COMPANY_DETAILS.phoneHrefs[0]}
                   className="block text-xs text-slate-400 hover:text-cyan-400 transition-colors"
                 >
                   or call {COMPANY_DETAILS.phoneNumbers[0]}

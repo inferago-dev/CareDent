@@ -270,7 +270,7 @@ export default function ClinicSetup({ onOpenQuoteModal }) {
                 </button>
               </div>
               <a
-                href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`}
+                href={COMPANY_DETAILS.phoneHrefs[0]}
                 className="block text-xs text-slate-400 hover:text-cyan-400 transition-colors pt-1"
               >
                 or call {COMPANY_DETAILS.phoneNumbers[0]}

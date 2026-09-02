@@ -1,3 +1,13 @@
+import {
+  BUSINESS,
+  BUSINESS_ADDRESS_LINE,
+  SITE_NAME,
+  SITE_TAGLINE,
+  formatPhone,
+  telHref,
+  whatsappNumber,
+} from "../lib/seo.js";
+
 export const DENTAL_CHAIRS = [
   {
     id: "gamma-overhanging",
@@ -270,15 +280,30 @@ export const SERVICES_LIST = [
   }
 ];
 
+/**
+ * The business as the UI prints it.
+ *
+ * Derived from BUSINESS in lib/seo.js rather than restated, because these are
+ * the same facts the structured data emits and Google matches the two against
+ * each other - and against the Google Business Profile - literally. Kept as
+ * its own export because the components want display strings and hrefs, not
+ * the E.164 and schema.org forms the markup wants.
+ */
 export const COMPANY_DETAILS = {
-  name: "Care Dent",
-  tagline: "We care for your precious equipments",
-  founder: "Mr. Sivakumar",
+  name: SITE_NAME,
+  tagline: SITE_TAGLINE,
+  founder: BUSINESS.founder,
   experienceYears: "30+",
   established: "January 2023",
-  address: "Roshan Villa, No.64, 2nd Street, Arumugam Nagar, Mugalivakkam, Chennai - 600 125",
-  phoneNumbers: ["+91 94441 53599", "+91 98844 18360"],
-  email: "jashvish.siva@gmail.com",
-  whatsappNumber: "+919444153599",
+  address: BUSINESS_ADDRESS_LINE,
+  phoneNumbers: BUSINESS.phones.map(formatPhone),
+  // Ready-made `tel:` URIs. Interpolating phoneNumbers into one gives
+  // "tel:+91 94441 53599", which RFC 3966 does not allow and some Android
+  // dialers open blank.
+  phoneHrefs: BUSINESS.phones.map(telHref),
+  email: BUSINESS.email,
+  // Digits only. wa.me carries a leading "+" through as a %2B in the phone
+  // parameter; the documented form is digits alone.
+  whatsappNumber: whatsappNumber(BUSINESS.phones[0]),
   workingHours: "Monday – Saturday: 9:00 AM – 7:00 PM"
 };

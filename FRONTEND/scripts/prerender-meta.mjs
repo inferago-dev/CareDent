@@ -26,7 +26,7 @@ import {
   productSchema, breadcrumbSchema, organizationSchema, websiteSchema, articleSchema,
   faqSchema, serviceSchema, imageGallerySchema, articleListSchema,
 } from '../src/lib/seo.js';
-import { PAGE_META } from '../src/lib/pageMeta.js';
+import { PAGE_META, NOINDEX_ROUTES } from '../src/lib/pageMeta.js';
 import { DENTAL_CHAIRS, OTHER_EQUIPMENT, SERVICES_LIST } from '../src/data/products.js';
 import { GALLERY_ITEMS } from '../src/data/gallery.js';
 import { ARTICLES } from '../src/data/articles.js';
@@ -169,6 +169,20 @@ const routes = [
 ];
 
 /**
+ * The same head as any other route, but withheld from the index.
+ *
+ * A page nobody should index must not name a canonical either - a canonical
+ * asserts the URL is the preferred version of a real page, which is the
+ * opposite of what a 404 or a sign-in screen is saying. `noindex, follow`
+ * takes its place: keep it out of the index, still crawl the links out of it.
+ */
+const noindexHead = (route) =>
+  headFor(route).replace(
+    /^.*<link rel="canonical".*$/m,
+    '    <meta name="robots" content="noindex, follow" />'
+  );
+
+/**
  * A 404 document for hosts that can serve one.
  *
  * A SPA answers every unknown URL with the index shell and HTTP 200, so a
@@ -179,16 +193,33 @@ const routes = [
  * way, so the file is useful even where the status stays 200.
  */
 function write404() {
-  const head = headFor({
+  const head = noindexHead({
     path: '/404',
     title: 'Page Not Found',
     description: 'That page has moved or never existed. Browse the Care Dent catalogue instead.',
-  })
-    // A 404 must not name a canonical - that asserts the URL is the preferred
-    // version of a real page. noindex,follow takes its place: keep it out of
-    // the index, still crawl the links out of it.
-    .replace(/^.*<link rel="canonical".*$/m, '    <meta name="robots" content="noindex, follow" />');
+  });
   writeFileSync(join(DIST, '404.html'), shell.replace(BLOCK, head));
+}
+
+/**
+ * A shell for each signed-in route, so the host has a real file to serve.
+ *
+ * Without these the host falls through to its 404 handler: /login answered
+ * HTTP 404 carrying the "Page Not Found" head, and only looked right because
+ * the bundle in that document booted and routed on its own. The status was
+ * still wrong for anything that reads it rather than running JavaScript.
+ *
+ * Nested paths (/admin/products, /portal/orders) cannot each have a file -
+ * they are router state, not routes - so the host is pointed at these shells
+ * for them; see FRONTEND/vercel.json.
+ */
+function writeNoindexShells() {
+  for (const [path, meta] of Object.entries(NOINDEX_ROUTES)) {
+    const target = join(DIST, path, 'index.html');
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, shell.replace(BLOCK, noindexHead({ path, ...meta })));
+  }
+  return Object.keys(NOINDEX_ROUTES).length;
 }
 
 let written = 0;
@@ -202,5 +233,9 @@ for (const route of routes) {
 }
 
 write404();
+const noindexed = writeNoindexShells();
 
-console.log(`[prerender] metadata baked into ${written} route(s) + 404.html under dist/`);
+console.log(
+  `[prerender] metadata baked into ${written} route(s) under dist/, ` +
+  `plus 404.html and ${noindexed} noindex shell(s)`
+);

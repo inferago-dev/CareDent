@@ -351,7 +351,7 @@ export default function PreInstallation({ onOpenQuoteModal }) {
               </div>
               <div className="flex flex-col sm:flex-row gap-3 shrink-0">
                 <a
-                  href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`}
+                  href={COMPANY_DETAILS.phoneHrefs[0]}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold px-6 py-3 transition-colors"
                 >
                   <Phone className="w-4 h-4" />

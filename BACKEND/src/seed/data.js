@@ -4,18 +4,14 @@
  * Images live in FRONTEND/public/products and are served by the web app.
  */
 
-export const COMPANY = {
-  name: 'Care Dent',
-  tagline: 'We care for your precious equipments',
-  founder: 'Mr. Sivakumar',
-  experienceYears: '30+',
-  established: 'January 2023',
-  address: 'Roshan Villa, No.64, 2nd Street, Arumugam Nagar, Mugalivakkam, Chennai - 600 125',
-  phoneNumbers: ['+91 94441 53599', '+91 98844 18360'],
-  email: 'jashvish.siva@gmail.com',
-  whatsappNumber: '919444153599',
-  workingHours: 'Monday - Saturday: 9:00 AM - 7:00 PM',
-};
+/*
+ * A COMPANY block used to sit here: name, address, phone numbers, hours. It
+ * was exported and never imported - nothing in the API reads the company's own
+ * contact details, only the website prints them. A copy nothing consumes is a
+ * copy that can only drift, and it already had: "No.64" against the "No. 64"
+ * the site renders. The one source is BUSINESS in FRONTEND/src/lib/seo.js,
+ * which the pages and the structured data both derive from.
+ */
 
 const commonChairSpecs = [
   { label: 'Suction System', value: 'Motorised Dryco suction with silencer, auto-drain and auto-flush' },

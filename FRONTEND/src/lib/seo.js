@@ -56,6 +56,46 @@ export const BUSINESS = {
   foundingDate: '2023-01',
 };
 
+/**
+ * The address as one line, for the footer, the contact card and anywhere else
+ * the UI prints it.
+ *
+ * Built from the same parts the PostalAddress is built from. The UI used to
+ * keep its own copy of this string in data/products.js and the two had already
+ * drifted - "No.64" against "No. 64". Google compares a business's name,
+ * address and phone literally across the site, the Business Profile and every
+ * directory listing, so two spellings of one address is two businesses as far
+ * as local search is concerned. The PIN keeps its conventional space on screen
+ * and stays unspaced in the markup, which is the form schema.org asks for.
+ */
+export const BUSINESS_ADDRESS_LINE = `${BUSINESS.street}, ${BUSINESS.locality} - ${
+  BUSINESS.postalCode.replace(/^(\d{3})(\d{3})$/, '$1 $2')
+}`;
+
+/*
+ * Phone numbers are stored once, in E.164, because that is the only form that
+ * is correct in a `tel:` URI and in JSON-LD. These render it for the places it
+ * has to look different.
+ */
+
+/** `+919444153599` -> `+91 94441 53599`, how the number is written on the page. */
+export const formatPhone = (e164) => {
+  const digits = String(e164).replace(/\D/g, '');
+  return digits.length === 12 && digits.startsWith('91')
+    ? `+91 ${digits.slice(2, 7)} ${digits.slice(7)}`
+    : e164;
+};
+
+/**
+ * A `tel:` href. RFC 3966 allows no spaces in the number, so the displayed
+ * form - "+91 94441 53599" - is not a valid URI; some Android dialers open it
+ * empty. The href carries E.164 and the spacing stays on screen.
+ */
+export const telHref = (e164) => `tel:${String(e164).replace(/[^\d+]/g, '')}`;
+
+/** wa.me takes digits only - no `+`, no spaces, no punctuation. */
+export const whatsappNumber = (e164) => String(e164).replace(/\D/g, '');
+
 export const absoluteUrl = (path = '/') =>
   /^https?:\/\//.test(path) ? path : `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 

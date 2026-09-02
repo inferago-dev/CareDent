@@ -126,10 +126,10 @@ export default function Contact() {
                   <div>
                     <strong className="text-white block">Phone Numbers</strong>
                     <div className="space-y-0.5">
-                      <a href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`} className="hover:text-cyan-400 block font-mono">
+                      <a href={COMPANY_DETAILS.phoneHrefs[0]} className="hover:text-cyan-400 block font-mono">
                         {COMPANY_DETAILS.phoneNumbers[0]}
                       </a>
-                      <a href={`tel:${COMPANY_DETAILS.phoneNumbers[1]}`} className="hover:text-cyan-400 block font-mono text-xs text-slate-400">
+                      <a href={COMPANY_DETAILS.phoneHrefs[1]} className="hover:text-cyan-400 block font-mono text-xs text-slate-400">
                         {COMPANY_DETAILS.phoneNumbers[1]}
                       </a>
                     </div>

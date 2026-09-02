@@ -182,10 +182,17 @@ library is involved. Pages pull their copy with `metaFor('/path')` and add
 their own JSON-LD.
 
 **Set the domain before deploying.** `SITE_URL` defaults to
-`https://caredent.in` and every canonical URL, sitemap entry and `og:image`
-is built from it. If the site is served from anywhere else, set
-`VITE_SITE_URL` at build time — a wrong value here is worse than none, because
-canonicals then point at a domain you do not control.
+`https://www.caredent.net` — the domain the site is served from — and every
+canonical URL, sitemap entry and `og:image` is built from it. If the site
+moves, change the default in `seo.js` *and* clear any `VITE_SITE_URL` set in
+the Vercel project, or the two disagree silently. A wrong value here is worse
+than none, because canonicals then point at a domain you do not control.
+
+The business's name, address and phone live once, in `BUSINESS` in `seo.js`.
+`COMPANY_DETAILS` in `src/data/products.js` — what the footer, contact card and
+`tel:`/`wa.me` links render — is derived from it, so the visible text and the
+structured data cannot drift apart. Google compares the two literally, and
+against the Google Business Profile.
 
 ### Build steps
 
@@ -225,15 +232,34 @@ That second half matters as much as the first. A single-page app answers every
 URL with the index shell and HTTP 200, so a mistyped or retired link looks to
 Google like a working page that happens to say "not found" — a soft 404. Those
 get recrawled indefinitely and can end up indexed. `npm run build` writes
-`dist/404.html` (noindex, no canonical) for hosts that serve one; Netlify picks
-it up with the right status automatically, and on Vercel you either name it in
-`vercel.json` or keep the SPA rewrite and accept that the page is at least
-`noindex`.
+`dist/404.html` (noindex, no canonical) for hosts that serve one; Netlify and
+Vercel both pick it up with the right status automatically.
 
-Netlify and Vercel do this by default, ahead of any SPA rewrite rule. If your
+Netlify and Vercel try the filesystem first, ahead of any rewrite rule. If your
 host rewrites everything to `index.html` unconditionally, the baked files are
 ignored and link previews go back to being generic — harmless, but you lose
 the benefit.
+
+**The signed-in routes need files too.** `/login`, `/portal` and `/admin` exist
+only inside the router, so a host with no file for them falls through to its
+404 handler: `/login` answered HTTP 404 carrying the "Page Not Found" head, and
+only looked right because the bundle in that document booted and routed on its
+own. `npm run seo:meta` now writes a `noindex` shell for each route in
+`NOINDEX_ROUTES`, which makes them 200 without putting them in the index.
+
+Their nested paths — `/admin/products`, `/portal/orders` — are router state
+rather than routes, so no file can exist for each one. `vercel.json` points
+them at the matching shell:
+
+| Rule | Why |
+|------|-----|
+| `/products/:slug` → `/index.html` | A product added through the admin manager has no prerendered file; the shell renders it from the API. |
+| `/portal/:path*` → `/portal/index.html` | Deep links and refreshes inside the portal. |
+| `/admin/:path*` → `/admin/index.html` | Same, for the back-office. |
+
+Everything else is left to fall through to `404.html`, on purpose — a
+catch-all rewrite would answer every mistyped URL with HTTP 200 and put the
+soft-404 problem straight back.
 
 ### Share cards
 
