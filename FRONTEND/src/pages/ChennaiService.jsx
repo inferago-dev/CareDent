@@ -96,7 +96,7 @@ export default function ChennaiService({ onOpenQuoteModal }) {
           <Reveal delay={180}>
             <div className="flex flex-wrap items-center justify-center gap-4 mt-9">
               <a
-                href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`}
+                href={COMPANY_DETAILS.phoneHrefs[0]}
                 className="inline-flex items-center gap-2 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-sm px-6 py-3 transition-all active:scale-[0.98]"
               >
                 <Phone className="w-4 h-4" />

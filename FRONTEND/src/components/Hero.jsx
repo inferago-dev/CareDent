@@ -93,7 +93,7 @@ export default function Hero({ onOpenQuoteModal }) {
             {/* Most enquiries for equipment at this price start as a phone call,
                 so the number is a primary action rather than a footer detail. */}
             <a
-              href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`}
+              href={COMPANY_DETAILS.phoneHrefs[0]}
               className="inline-flex items-center gap-2.5 text-sm text-slate-300 hover:text-cyan-400 transition-colors pt-1"
             >
               <Phone className="w-4 h-4 text-cyan-500" />

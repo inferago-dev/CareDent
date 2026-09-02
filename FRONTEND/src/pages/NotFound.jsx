@@ -37,7 +37,7 @@ export default function NotFound() {
         </div>
 
         <a
-          href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`}
+          href={COMPANY_DETAILS.phoneHrefs[0]}
           className="mt-8 inline-flex items-center gap-2 text-sm text-slate-400 hover:text-cyan-400 transition-colors"
         >
           <Phone className="w-3.5 h-3.5" /> Or call us on {COMPANY_DETAILS.phoneNumbers[0]}

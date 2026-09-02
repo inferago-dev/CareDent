@@ -22,7 +22,13 @@ export const env = {
     secure: bool(process.env.SMTP_SECURE, false),
     user: process.env.SMTP_USER || '',
     pass: process.env.SMTP_PASS || '',
-    from: process.env.MAIL_FROM || 'Care Dent <no-reply@caredent.com>',
+    // caredent.net is the domain the site is served from. The old default
+    // was no-reply@caredent.com, which Care Dent does not own: mail from it
+    // fails SPF and DKIM alignment at the receiver and is filtered as
+    // spoofing. Whatever this is set to must be an address the configured
+    // SMTP account is allowed to send as - Gmail, for one, rewrites From to
+    // the authenticated account unless the address is a verified alias.
+    from: process.env.MAIL_FROM || 'Care Dent <no-reply@caredent.net>',
     notifyTo: process.env.NOTIFY_EMAIL || '',
   },
   maxUploadMb: Number(process.env.MAX_UPLOAD_MB || 10),

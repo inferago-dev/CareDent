@@ -69,7 +69,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-slate-500 shrink-0" />
-                <a href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`} className="hover:text-cyan-400 transition-colors">
+                <a href={COMPANY_DETAILS.phoneHrefs[0]} className="hover:text-cyan-400 transition-colors">
                   {COMPANY_DETAILS.phoneNumbers[0]}
                 </a>
               </div>

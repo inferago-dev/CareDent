@@ -151,7 +151,7 @@ export default function TrackOrder() {
               <h3 className="text-xl font-medium text-slate-900">Nothing found for &quot;{reference.toUpperCase()}&quot;</h3>
               <p className="text-sm text-slate-500 max-w-sm mx-auto">{state.message}</p>
               <a
-                href={`tel:${COMPANY_DETAILS.phoneNumbers[0]}`}
+                href={COMPANY_DETAILS.phoneHrefs[0]}
                 className="inline-flex items-center gap-2 text-sm font-medium text-cyan-700 hover:text-cyan-800 transition-colors"
               >
                 Call {COMPANY_DETAILS.phoneNumbers[0]}
