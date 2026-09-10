@@ -11,6 +11,7 @@ import Seo from '../components/Seo';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { breadcrumbSchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
+import { trackLead } from '../lib/analytics';
 
 // Google's keyless embed and directions endpoints, both built from the one
 // address in COMPANY_DETAILS so the map can never drift from the NAP details
@@ -58,6 +59,9 @@ export default function Contact() {
         message: form.message.trim(),
       });
       setSubmitted(true);
+      trackLead('contact_message', {
+        subject: form.subject,
+      });
     } catch (err) {
       setError(err.message);
       setFieldErrors(err.fieldErrors || {});

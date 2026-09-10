@@ -67,6 +67,29 @@ export const changePasswordSchema = z.object({
   newPassword: z.string().min(8, 'New password must be at least 8 characters').max(128),
 });
 
+export const forgotPasswordSchema = z.object({ email });
+
+export const resetPasswordSchema = z.object({
+  email,
+  // 32 random bytes as base64url. Bounded so the lookup is never handed a
+  // megabyte of text to hash.
+  token: z.string().trim().min(20, 'That reset link is not valid').max(200),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
+});
+
+export const requestOtpSchema = z.object({ email });
+
+export const verifyOtpSchema = z.object({
+  email,
+  // Exactly six digits, so a wrong shape is refused before it costs a bcrypt
+  // comparison.
+  code: z.string().trim().regex(/^\d{6}$/, 'Enter the 6-digit code from your email'),
+});
+
+export const oauthExchangeSchema = z.object({
+  code: z.string().trim().min(20, 'That sign-in link is not valid').max(200),
+});
+
 /* ---------------- quotation ---------------- */
 export const quotationSchema = z.object({
   name: trimmed(2, 120, 'Name'),

@@ -104,4 +104,69 @@ export function replyEmail({ heading, intro, replyMessage, footerNote }) {
   </div>`;
 }
 
+/**
+ * A password-reset link.
+ *
+ * The link is the credential, so the copy has to carry the two things that
+ * limit the damage of it reaching the wrong inbox: how long it lasts, and what
+ * to do if the recipient did not ask for it.
+ */
+export function passwordResetEmail({ name, url, minutes }) {
+  return `
+  <div style="font-family:Inter,Segoe UI,Arial,sans-serif;background:#f8fafc;padding:24px;">
+    <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+      <div style="background:#082f49;padding:18px 24px;">
+        <div style="color:#22d3ee;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Care Dent</div>
+        <div style="color:#ffffff;font-size:18px;margin-top:4px;">Reset your password</div>
+      </div>
+      <div style="padding:24px;color:#0f172a;font-size:14px;line-height:1.6;">
+        <p style="margin:0 0 16px;">Hello ${esc(name)},</p>
+        <p style="margin:0 0 20px;color:#334155;">
+          Someone asked to reset the password on your Care Dent account. Choose
+          a new one here:
+        </p>
+        <p style="margin:0 0 20px;">
+          <a href="${esc(url)}" style="display:inline-block;background:#0891b2;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:999px;font-weight:600;">Set a new password</a>
+        </p>
+        <p style="margin:0 0 16px;color:#64748b;font-size:13px;">
+          The link works once and expires in ${esc(minutes)} minutes. If it has
+          run out, ask for another from the sign-in page.
+        </p>
+        <p style="margin:0;color:#64748b;font-size:13px;">
+          If you did not ask for this, you can ignore this email - your password
+          has not changed.
+        </p>
+      </div>
+      <div style="padding:0 24px 20px;color:#94a3b8;font-size:11px;word-break:break-all;">
+        If the button does not work, paste this into your browser:<br />${esc(url)}
+      </div>
+    </div>
+  </div>`;
+}
+
+/** A one-time sign-in code. */
+export function signInCodeEmail({ name, code, minutes }) {
+  return `
+  <div style="font-family:Inter,Segoe UI,Arial,sans-serif;background:#f8fafc;padding:24px;">
+    <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+      <div style="background:#082f49;padding:18px 24px;">
+        <div style="color:#22d3ee;font-size:11px;letter-spacing:2px;text-transform:uppercase;">Care Dent</div>
+        <div style="color:#ffffff;font-size:18px;margin-top:4px;">Your sign-in code</div>
+      </div>
+      <div style="padding:24px;color:#0f172a;font-size:14px;line-height:1.6;">
+        <p style="margin:0 0 16px;">Hello ${esc(name)},</p>
+        <p style="margin:0 0 20px;color:#334155;">Enter this code to sign in:</p>
+        <p style="margin:0 0 20px;font-size:32px;letter-spacing:10px;font-weight:700;color:#082f49;">${esc(code)}</p>
+        <p style="margin:0 0 16px;color:#64748b;font-size:13px;">
+          It expires in ${esc(minutes)} minutes and can be used once.
+        </p>
+        <p style="margin:0;color:#64748b;font-size:13px;">
+          If you did not try to sign in, ignore this email. Nobody can use the
+          code without it.
+        </p>
+      </div>
+    </div>
+  </div>`;
+}
+
 export const mailEnabled = enabled;

@@ -24,19 +24,45 @@ export function AuthProvider({ children }) {
     return () => controller.abort();
   }, []);
 
-  const login = useCallback(async (email, password) => {
-    const res = await authApi.login(email, password);
+  /** Shared tail of every way in: keep the token, adopt the account. */
+  const adopt = useCallback((res) => {
     setToken(res.token);
     setUser(res.user);
     return res.user;
   }, []);
 
-  const register = useCallback(async (data) => {
-    const res = await authApi.register(data);
-    setToken(res.token);
-    setUser(res.user);
-    return res.user;
-  }, []);
+  const login = useCallback(
+    async (email, password) => adopt(await authApi.login(email, password)),
+    [adopt]
+  );
+
+  /** Signs in with a code emailed to the address, instead of a password. */
+  const loginWithCode = useCallback(
+    async (email, code) => adopt(await authApi.verifyOtp(email, code)),
+    [adopt]
+  );
+
+  /**
+   * Finishes a Google sign-in. The callback redirects back with a one-time
+   * code rather than the session itself, so this is where the session is
+   * actually collected.
+   */
+  const completeGoogleSignIn = useCallback(
+    async (code) => adopt(await authApi.exchangeGoogleCode(code)),
+    [adopt]
+  );
+
+  const register = useCallback(async (data) => adopt(await authApi.register(data)), [adopt]);
+
+  /**
+   * Completes a reset from an emailed link. The API signs the account in on
+   * success - they have just proved they hold the mailbox, and sending them
+   * back to a login form is how people end up requesting a second link.
+   */
+  const resetPassword = useCallback(
+    async (data) => adopt(await authApi.resetPassword(data)),
+    [adopt]
+  );
 
   const logout = useCallback(async () => {
     try {
@@ -61,11 +87,14 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(user),
       isAdmin: user?.role === 'admin',
       login,
+      loginWithCode,
+      completeGoogleSignIn,
       register,
+      resetPassword,
       logout,
       updateProfile,
     }),
-    [user, loading, login, register, logout, updateProfile]
+    [user, loading, login, loginWithCode, completeGoogleSignIn, register, resetPassword, logout, updateProfile]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

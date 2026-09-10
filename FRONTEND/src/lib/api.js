@@ -96,7 +96,29 @@ export const authApi = {
   me: (opts) => api.get('/auth/me', opts),
   updateMe: (data) => api.patch('/auth/me', data),
   changePassword: (data) => api.patch('/auth/me/password', data),
+
+  /* forgotten password */
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (data) => api.post('/auth/reset-password', data),
+
+  /* sign in with an emailed code */
+  requestOtp: (email) => api.post('/auth/otp/request', { email }),
+  verifyOtp: (email, code) => api.post('/auth/otp/verify', { email, code }),
+
+  /* sign in with Google */
+  providers: (opts) => api.get('/auth/providers', opts),
+  exchangeGoogleCode: (code) => api.post('/auth/google/exchange', { code }),
 };
+
+/**
+ * Where the "Continue with Google" button sends the browser.
+ *
+ * A full navigation, not a fetch: the flow is a redirect to Google and back,
+ * so it cannot be an XHR. The API answers this with a 404 unless the OAuth
+ * client is configured, which is why the button is only rendered after
+ * authApi.providers() says the deployment has one.
+ */
+export const googleSignInUrl = () => `${BASE_URL}/auth/google`;
 
 export const catalogApi = {
   list: (params, opts) => api.get(`/products${qs(params)}`, opts),

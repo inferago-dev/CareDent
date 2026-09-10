@@ -12,7 +12,7 @@ export const env = {
   jwtSecret: process.env.JWT_SECRET || 'dev-only-insecure-secret',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   admin: {
-    email: process.env.ADMIN_EMAIL || 'admin@caredent.com',
+    email: process.env.ADMIN_EMAIL || 'caredent73@gmail.com',
     password: process.env.ADMIN_PASSWORD || 'CareDent@2025',
     name: process.env.ADMIN_NAME || 'Sivakumar',
   },
@@ -32,7 +32,56 @@ export const env = {
     notifyTo: process.env.NOTIFY_EMAIL || '',
   },
   maxUploadMb: Number(process.env.MAX_UPLOAD_MB || 10),
+  /**
+   * Object storage for uploads. Any S3-compatible bucket: AWS S3, Cloudflare
+   * R2, Backblaze B2, DigitalOcean Spaces. Leave S3_BUCKET unset and uploads
+   * fall back to ./uploads, which is right for development and lossy anywhere
+   * the filesystem is rebuilt on deploy - see config/storage.js.
+   */
+  s3: {
+    bucket: process.env.S3_BUCKET || '',
+    region: process.env.S3_REGION || 'auto',
+    // Only for non-AWS providers; AWS derives its own from the region.
+    endpoint: process.env.S3_ENDPOINT || '',
+    accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+  },
+  /**
+   * Google sign-in. Dormant until both halves are set: the button is hidden
+   * and the routes answer 404, so a deployment without a Google Cloud project
+   * behaves exactly as it did before.
+   */
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID || '',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    /**
+     * Where Google sends the browser back - an address on this API, not on
+     * the website. It has to match a redirect URI registered on the OAuth
+     * client character for character, so it is configured rather than derived
+     * from the request: a proxy header would otherwise be able to change it,
+     * and the failure surfaces as Google's opaque redirect_uri_mismatch.
+     */
+    redirectUri: process.env.GOOGLE_REDIRECT_URI || '',
+  },
 };
+
+/**
+ * Whether Google sign-in is available on this deployment.
+ *
+ * All three parts or none: a client id with no redirect URI produces a sign-in
+ * button that always ends on Google's error page, which is worse than no
+ * button at all.
+ */
+export const googleEnabled = Boolean(
+  env.google.clientId && env.google.clientSecret && env.google.redirectUri
+);
+
+if (env.google.clientId && !googleEnabled) {
+  console.warn(
+    '[startup] Google sign-in is half-configured and stays disabled. It needs\n' +
+    '          GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_REDIRECT_URI.'
+  );
+}
 
 export const isProd = env.nodeEnv === 'production';
 
@@ -47,6 +96,15 @@ if (isProd) {
   }
   if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD === 'CareDent@2025') {
     problems.push('ADMIN_PASSWORD is missing or using the default value');
+  }
+  // The reset link and the sign-in code are emailed. Without a working
+  // transport both flows accept the request, log the message to the console
+  // and leave the customer waiting for mail that will never arrive.
+  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.warn(
+      '[startup] SMTP is not configured - password reset and email sign-in codes\n' +
+      '          cannot be delivered. Set SMTP_HOST, SMTP_USER and SMTP_PASS.'
+    );
   }
   if (problems.length) {
     console.error('\n[startup] Refusing to start in production with insecure defaults:');

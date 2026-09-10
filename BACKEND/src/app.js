@@ -9,7 +9,7 @@ import routes from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middleware/error.js';
 import ApiError from './utils/ApiError.js';
 import { env, isProd } from './config/env.js';
-import { UPLOAD_ROOT } from './middleware/upload.js';
+import uploadRoutes from './routes/uploads.routes.js';
 import mongoSanitize from './middleware/sanitize.js';
 
 const app = express();
@@ -49,21 +49,13 @@ app.use(
   })
 );
 
-// Uploaded product images / brochures. Uploads only ever land here with an
-// extension derived from their mimetype (see middleware/upload.js), and these
-// options make sure nothing else in the directory can be reached: no directory
-// listings, no dotfiles, and no content-type sniffing on the way out.
-app.use(
-  '/uploads',
-  express.static(UPLOAD_ROOT, {
-    maxAge: '7d',
-    index: false,
-    dotfiles: 'deny',
-    setHeaders(res) {
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-    },
-  })
-);
+// Uploaded product images, brochures and site-assessment attachments. Read
+// back from whatever store config/storage.js is pointed at - a bucket in
+// production, ./uploads in development - rather than served straight off the
+// filesystem, so the bucket can stay private. Only the two generated path
+// segments are addressable: no directory listings and no dotfiles, because
+// there is no directory to walk.
+app.use('/uploads', uploadRoutes);
 
 app.use('/api', routes);
 

@@ -7,6 +7,7 @@ import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { Spinner } from '../components/ui';
 import { Field, FieldRow, FormError } from './form';
+import { trackLead } from '../lib/analytics';
 
 const EMPTY = {
   product: '', quantity: 1, clinicName: '', name: '', phone: '', email: '', address: '', notes: '',
@@ -98,6 +99,11 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
         notes: form.notes.trim(),
       });
       setSubmitted(res.data.reference);
+      trackLead('quote_request', {
+        product: form.product,
+        quantity: form.quantity,
+        reference: res.data.reference,
+      });
     } catch (err) {
       setError(err.message);
       setFieldErrors(err.fieldErrors || {});
