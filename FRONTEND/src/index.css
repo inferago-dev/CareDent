@@ -1,0 +1,281 @@
+@import "tailwindcss";
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Safety net: several sections use large decorative elements positioned
+   outside their own box (Hero's glow circles, floating stat cards). Each
+   already clips with overflow-hidden on its own section, but this stops
+   any stray horizontal scrollbar on narrow phones if one is ever missed. */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+/* ================================
+   Stacking order
+   ================================
+
+   Every z-index in the app comes from this list. It replaced a per-section
+   ladder on the home page (z-1 through z-7, with two sections both on z-5)
+   that ordered opaque, full-width sections against each other - sections that
+   are in normal flow with no negative margins and therefore cannot overlap at
+   all. Document order already decides those; only things that leave the flow
+   need a layer.
+
+     10   raised in-page content (footer over the hero's trailing glow)
+     20   decoration pinned inside a section (the hero's floating stat cards)
+     30   floating actions - above the page, below any menu or dialog
+     40   the fixed navbar and its mobile drawer
+     50   modal dialogs
+     60   the gallery lightbox and toasts, which may open over a dialog
+
+   The gap between steps is deliberate: it leaves room to slot something in
+   without renumbering, which is what produced the duplicate in the first place.
+================================ */
+
+/* ================================
+   Page rhythm
+   ================================
+
+   One vertical scale for every public page, so /about, /services, /guides and
+   a product page all breathe the same way. Before this each page hand-rolled
+   its own padding - heroes were py-24 sm:py-32 on most pages but pt-28 pb-16
+   on a guide and pt-28 pb-10 on a product, and every band between them was a
+   flat py-24 that never stepped down, which is why phones got 96px of empty
+   blue above and below every block of text.
+
+   Declared as @utility so they sit in Tailwind's utilities layer and can still
+   be overridden by a one-off py-* on the element itself.
+================================ */
+
+/* The dark band at the top of a page. Its top padding has to clear the fixed
+   80px navbar; py-24 left only 16px of air under it on a phone. */
+@utility page-hero {
+    padding-top: 7rem;
+    padding-bottom: 4rem;
+}
+
+/* A content band. */
+@utility section-y {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+/* Half a band - for a section that sits directly against the one before it. */
+@utility section-y-tight {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+}
+
+/* Bottom half only, for the last band before the footer. */
+@utility section-pb {
+    padding-bottom: 4rem;
+}
+
+@media (width >= 40rem) {
+    .page-hero { padding-top: 8rem; padding-bottom: 5rem; }
+    .page-band { padding-top: 8rem; padding-bottom: 2.5rem; }
+    .section-y { padding-top: 5rem; padding-bottom: 5rem; }
+    .section-y-tight { padding-top: 3rem; padding-bottom: 3rem; }
+    .section-pb { padding-bottom: 5rem; }
+}
+
+@media (width >= 64rem) {
+    .page-hero { padding-top: 9rem; padding-bottom: 6rem; }
+    .page-band { padding-top: 9rem; padding-bottom: 2.5rem; }
+    .section-y { padding-top: 6rem; padding-bottom: 6rem; }
+    .section-y-tight { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+    .section-pb { padding-bottom: 6rem; }
+}
+
+/* The slim dark bar a product page opens on - breadcrumb only, but it still
+   has to clear the navbar, so it shares the hero's top padding. */
+@utility page-band {
+    padding-top: 7rem;
+    padding-bottom: 2rem;
+}
+
+/* The gutter every page shares. Width stays inline (container-page max-w-7xl)
+   so a narrower reading column is still an explicit choice on the element. */
+@utility container-page {
+    margin-inline: auto;
+    width: 100%;
+    padding-inline: 1rem;
+}
+
+@media (width >= 40rem) {
+    .container-page { padding-inline: 1.5rem; }
+}
+
+@media (width >= 64rem) {
+    .container-page { padding-inline: 2rem; }
+}
+
+/* ================================
+   Trusted-by marquee
+================================ */
+@keyframes marquee-ltr {
+    from {
+        transform: translateX(-50%);
+    }
+    to {
+        transform: translateX(0%);
+    }
+}
+
+.animate-marquee {
+    animation: marquee-ltr 28s linear infinite;
+}
+
+/* ================================
+   Inter
+================================ */
+
+/* Inter Regular - 400 */
+@font-face {
+    font-family: 'Inter';
+    src: url('/Inter-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Inter Medium - 500 */
+@font-face {
+    font-family: 'Inter';
+    src: url('/Inter-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Inter Bold - 700 */
+@font-face {
+    font-family: 'Inter';
+    src: url('/Inter-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/* Inter Utility Classes */
+.inter-regular {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+}
+
+.inter-medium {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+}
+
+.inter-bold {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+}
+
+
+/* ================================
+   Serif accent
+================================ */
+
+/* The italic serif accent in the hero headline. No Playfair file is shipped -
+   the @font-face here pointed at /Playfair.woff2, which does not exist, so
+   every visitor paid for a 404 and got a generic serif anyway (Vite warned
+   about it on each build). This names that fallback explicitly instead. */
+.font-playfair {
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+    font-weight: 400;
+}
+
+
+/* ================================
+   Motion / Triggered UI Animations
+================================ */
+:root {
+    --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes hero-rise {
+    from { opacity: 0; transform: translateY(32px); filter: blur(8px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0px); }
+}
+
+@keyframes hero-scale {
+    from { opacity: 0; transform: scale(0.93); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes scale-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scale-out {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.95); }
+}
+
+@keyframes drop-in {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes drop-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
+@keyframes rise-in {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rise-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(16px); }
+}
+
+@keyframes pop-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pop-out {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(10px) scale(0.96); }
+}
+
+.animate-fade-in { animation: fade-in 220ms var(--ease-smooth) both; }
+.animate-fade-out { animation: fade-out 180ms var(--ease-smooth) both; }
+.animate-scale-in { animation: scale-in 240ms var(--ease-smooth) both; }
+.animate-scale-out { animation: scale-out 160ms var(--ease-smooth) both; }
+.animate-drop-in { animation: drop-in 220ms var(--ease-smooth) both; }
+.animate-drop-out { animation: drop-out 160ms var(--ease-smooth) both; }
+.animate-rise-in { animation: rise-in 360ms var(--ease-smooth) both; }
+.animate-rise-out { animation: rise-out 200ms var(--ease-smooth) both; }
+.animate-pop-in { animation: pop-in 260ms var(--ease-smooth) both; }
+.animate-pop-out { animation: pop-out 180ms var(--ease-smooth) both; }

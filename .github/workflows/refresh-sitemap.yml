@@ -1,0 +1,52 @@
+# Rebuilds the site on a schedule so the sitemap picks up admin-added products.
+#
+# public/sitemap.xml is generated during the Vercel build, from whatever the
+# API returns at that moment. A product added through the admin content manager
+# is reachable immediately - vercel.json rewrites /products/:slug to the app -
+# but it stays out of the sitemap until the next deploy. With no code change to
+# push, that could be months. This is the nudge.
+#
+# Setup, once:
+#   1. Vercel -> Project -> Settings -> Git -> Deploy Hooks: create a hook on
+#      the main branch and copy its URL.
+#   2. GitHub -> Settings -> Secrets and variables -> Actions -> New repository
+#      secret named VERCEL_DEPLOY_HOOK_URL, holding that URL.
+#
+# The hook URL is a bearer credential: anyone who has it can trigger deploys.
+# It belongs in a secret, never committed here.
+#
+# Note: GitHub disables scheduled workflows in a repository with no activity
+# for 60 days, and emails the owner first. Re-enable it from the Actions tab.
+
+name: Refresh sitemap
+
+on:
+  schedule:
+    # 01:00 UTC every Monday (06:30 IST). Change to '0 1 * * *' for daily if
+    # products are added often enough to be worth it.
+    - cron: '0 1 * * 1'
+  workflow_dispatch: # also runnable by hand from the Actions tab
+
+# Nothing here reads or writes repository contents.
+permissions: {}
+
+jobs:
+  redeploy:
+    name: Trigger a Vercel deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to the deploy hook
+        env:
+          HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${HOOK_URL:-}" ]; then
+            echo "::error::VERCEL_DEPLOY_HOOK_URL is not set - see the setup notes at the top of this workflow."
+            exit 1
+          fi
+
+          # --fail turns a non-2xx into a red run instead of a silent success.
+          response=$(curl --fail --silent --show-error --max-time 30 -X POST "$HOOK_URL")
+          echo "Deploy triggered. Vercel replied:"
+          echo "$response"
