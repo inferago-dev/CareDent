@@ -28,3 +28,6 @@ Screenshot_*.png
 
 # Claude Code scratch worktrees
 .claude/worktrees/
+
+# Local Playwright run output (videos + screenshots)
+.test-recordings/

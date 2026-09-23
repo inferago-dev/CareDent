@@ -28,9 +28,15 @@ function load() {
     .then((res) => {
       const items = res?.data || [];
       if (!items.length) return FALLBACK;
+      // Mongo documents carry `_id` and no `id`, while the bundled catalogue
+      // is keyed the other way round. Consumers read whichever they were
+      // written against, so normalise both here rather than making every
+      // call site guess - keying a list on the absent one silently yields
+      // key={undefined}, which is how this surfaced.
+      const normalise = (p) => ({ ...p, id: p.id ?? p._id, _id: p._id ?? p.id });
       return {
-        chairs: items.filter((p) => p.kind === 'chair'),
-        equipment: items.filter((p) => p.kind !== 'chair'),
+        chairs: items.filter((p) => p.kind === 'chair').map(normalise),
+        equipment: items.filter((p) => p.kind !== 'chair').map(normalise),
         live: true,
       };
     })

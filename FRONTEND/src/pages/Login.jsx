@@ -166,7 +166,9 @@ export default function Login() {
             />
           </Link>
           <div>
-            <h2 className="text-xl tracking-tight font-medium">{MODE_COPY[mode].heading}</h2>
+            {/* The page's only top-level heading - an <h2> here left the
+                document with no <h1> at all for screen readers to land on. */}
+            <h1 className="text-xl tracking-tight font-medium">{MODE_COPY[mode].heading}</h1>
             <p className="text-sm text-slate-400 mt-1">{MODE_COPY[mode].sub}</p>
           </div>
         </div>

@@ -1,8 +1,48 @@
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   SITE_NAME, DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_WIDTH, DEFAULT_OG_IMAGE_HEIGHT,
   DEFAULT_OG_IMAGE_ALT, absoluteUrl, buildTitle, clampDescription,
 } from '../lib/seo';
+
+/**
+ * The static head block the HTML shell ships with, captured at import time.
+ *
+ * index.html carries a full set of defaults between `seo:start` and `seo:end`
+ * markers, and prerender-meta.mjs rewrites that block per route, so a scraper
+ * that runs no JavaScript still gets real metadata. React then hoists the tags
+ * below into the same <head> without replacing anything, which left every page
+ * serving two <title> elements, two canonicals and two descriptions.
+ *
+ * Where the two agree that is merely invalid HTML. Where they disagree it is
+ * not: a product added through the admin has no prerendered file, so Vercel
+ * rewrites it to the shell and the baked canonical points at the home page
+ * while React names the product.
+ *
+ * The nodes are collected now, while the document still holds only the shell's
+ * own head, rather than inside the effect. React hoists its <title> into the
+ * middle of that marked range, so anything resolving the range later removes
+ * React's replacement along with the default and leaves the page with no title
+ * at all.
+ */
+const SHELL_META = (() => {
+  if (typeof document === 'undefined') return [];
+  const nodes = [...document.head.childNodes];
+  const marker = (name) => (n) => n.nodeType === Node.COMMENT_NODE && n.nodeValue.trim() === name;
+  const start = nodes.findIndex(marker('seo:start'));
+  const end = nodes.findIndex(marker('seo:end'));
+  return start === -1 || end <= start ? [] : nodes.slice(start, end + 1);
+})();
+
+/**
+ * Drop those defaults once React's own tags are in the document - in an effect,
+ * after the commit that hoists them, so the head is never briefly bare.
+ */
+function useStripShellMeta() {
+  useEffect(() => {
+    for (const node of SHELL_META) node.remove();
+  }, []);
+}
 
 /**
  * Per-route metadata. React 19 hoists <title>, <meta> and <link> rendered
@@ -30,6 +70,7 @@ export default function Seo({
   schema,
 }) {
   const { pathname } = useLocation();
+  useStripShellMeta();
   const url = absoluteUrl(canonical || pathname);
   const fullTitle = buildTitle(title);
   const desc = description ? clampDescription(description) : undefined;
