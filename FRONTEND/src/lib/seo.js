@@ -57,6 +57,24 @@ export const BUSINESS = {
 };
 
 /**
+ * Public profiles that are verifiably this business, kept here so the JSON-LD
+ * and the footer's "Find us on" row are built from one list.
+ *
+ * A profile that only appears in the markup is a one-way claim; a profile the
+ * site also links to is a claim Google can walk in both directions, which is
+ * what makes `sameAs` worth emitting at all. Keeping the two in separate files
+ * is how they end up disagreeing.
+ */
+export const PROFILES = {
+  instagram: 'https://www.instagram.com/caredent2023/',
+  justdial:
+    'https://www.justdial.com/Chennai/Care-Dent-Ramapuram-Subashree-Nagar-Mugalivakkam-Roshan-Villa-Arumugam-Nagar/044PXX44-XX44-250926050557-V9A4_BZDET',
+  // The Google Business Profile, addressed by its CID so the link survives any
+  // change to the place's display name or address string.
+  google: 'https://maps.google.com/?cid=1806503162863425912',
+};
+
+/**
  * The address as one line, for the footer, the contact card and anywhere else
  * the UI prints it.
  *
@@ -138,10 +156,8 @@ export const organizationSchema = () => ({
   // Profiles Google can verify are the same business. "Caredent" is also an
   // Australian oral-care brand, a Gurgaon equipment supplier and clinics in
   // Mumbai and Lagos - sameAs is what separates this entity from those.
-  sameAs: ['https://www.instagram.com/caredent2023/'],
-  // The existing Google Business Profile, addressed by its CID so the link
-  // survives any change to the place's display name or address string.
-  hasMap: 'https://maps.google.com/?cid=1806503162863425912',
+  sameAs: [PROFILES.instagram, PROFILES.justdial],
+  hasMap: PROFILES.google,
   foundingDate: BUSINESS.foundingDate,
   founder: { '@type': 'Person', name: BUSINESS.founder },
   email: BUSINESS.email,

@@ -1,7 +1,62 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
+import { PROFILES } from '../lib/seo';
 import useParallax from '../hooks/useParallax';
+
+/*
+ * lucide dropped its brand icons at v1, so both marks below are drawn here to
+ * lucide's 24x24 outline box rather than adding a second icon package for two
+ * glyphs. `iconProps` is what keeps them the same weight as MapPin and Phone.
+ */
+const iconProps = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.8,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+  'aria-hidden': 'true',
+};
+
+function InstagramIcon({ className }) {
+  return (
+    <svg {...iconProps} className={className}>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="3.6" />
+      <circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/** Justdial's mark is its "JD" monogram - set here rather than traced. */
+function JustdialIcon({ className }) {
+  return (
+    <svg {...iconProps} className={className}>
+      <rect x="3" y="3" width="18" height="18" rx="4.5" />
+      <text
+        x="12"
+        y="12.75"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="9.5"
+        fontWeight="700"
+        fill="currentColor"
+        stroke="none"
+      >
+        JD
+      </text>
+    </svg>
+  );
+}
+
+/* Order runs most- to least-maintained, which is the order they are worth
+   following. Each opens in a new tab: these leave the site for good. */
+const SOCIAL_LINKS = [
+  { label: 'Care Dent on Instagram', href: PROFILES.instagram, Icon: InstagramIcon },
+  { label: 'Care Dent on Justdial', href: PROFILES.justdial, Icon: JustdialIcon },
+  { label: 'Care Dent on Google Maps', href: PROFILES.google, Icon: MapPin },
+];
 
 export default function Footer() {
   const parallaxRef = useParallax(0.05);
@@ -36,6 +91,28 @@ export default function Footer() {
             >
               Message us on WhatsApp
             </a>
+
+            <div className="pt-1">
+              <h4 className="text-xs uppercase tracking-widest text-slate-500">
+                Find us on
+              </h4>
+              <ul className="flex items-center gap-4 pt-3">
+                {SOCIAL_LINKS.map(({ label, href, Icon }) => (
+                  <li key={href}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={label}
+                      title={label}
+                      className="block text-slate-400 hover:text-cyan-400 transition-colors"
+                    >
+                      <Icon className="w-5 h-5" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Links */}
