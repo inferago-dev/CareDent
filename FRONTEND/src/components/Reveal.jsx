@@ -41,6 +41,7 @@ export default function Reveal({
   style = {},
 }) {
   const [ref, inView] = useInView({ once, threshold });
+  const isBlur = variant === 'blur';
 
   return (
     <Tag
@@ -49,8 +50,11 @@ export default function Reveal({
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? 'translate3d(0,0,0) scale(1)' : hiddenTransform(variant, y, x, scale),
-        filter: variant === 'blur' && !inView ? 'blur(10px)' : 'blur(0px)',
-        transitionProperty: 'opacity, transform, filter',
+        // Only the blur variant gets a filter. Any filter value - even blur(0px) -
+        // makes this element a backdrop root, which stops backdrop-blur glass
+        // panels inside it from blurring the page behind them.
+        ...(isBlur ? { filter: inView ? 'blur(0px)' : 'blur(10px)' } : {}),
+        transitionProperty: isBlur ? 'opacity, transform, filter' : 'opacity, transform',
         transitionDuration: `${duration}ms`,
         transitionTimingFunction: EASE,
         transitionDelay: inView ? `${delay}ms` : '0ms',

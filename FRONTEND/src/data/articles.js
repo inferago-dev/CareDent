@@ -165,6 +165,54 @@ export const ARTICLES = [
       { type: 'p', text: 'Every item above can be checked before anything is ordered. Care Dent does this as a free site assessment — measurements, access, electrical, plumbing, air and suction, checked against the specific equipment you are buying — and gives your contractors a written list of what to prepare.' },
     ],
   },
+
+  {
+    slug: 'how-to-choose-dental-x-ray-equipment',
+    title: 'Choosing dental X-ray equipment: what the specs don\'t tell you',
+    summary:
+      'Intraoral sensors, PSP plates, OPG machines — what each is actually good for, and the room requirements, regulatory paperwork and running costs buyers routinely underestimate.',
+    readingMinutes: 7,
+    publishedAt: '2026-09-01',
+    category: 'Buying guide',
+    body: [
+      { type: 'p', text: 'Dental X-ray equipment is bought less often than a handpiece and costs far more to get wrong. The choice between intraoral sensors, phosphor plate systems and a panoramic unit is not just a budget question — it is a workflow question, a room question, and in India, a regulatory question with real consequences.' },
+
+      { type: 'h2', text: '1. Intraoral sensors vs. phosphor plates' },
+      { type: 'p', text: 'Digital intraoral sensors give instant images, require no processing and have no consumables beyond hygiene sleeves. Their disadvantage is patient comfort — the rigid sensor is thicker than film and can be difficult in small mouths or for posterior bitewings. Phosphor plate systems use flexible plates that behave more like traditional film, but require a separate scanner and plates that scratch and degrade over time.' },
+
+      { type: 'h2', text: '2. What an OPG machine actually adds' },
+      { type: 'p', text: 'A panoramic X-ray is not a substitute for intraoral imaging — it gives a wide survey, not a diagnostic periapical. It earns its cost in practices that see significant orthodontic, surgical or paediatric work. Before buying one, calculate how many scans per week would justify the capital, the service contract, and the dedicated space it requires.' },
+
+      { type: 'h2', text: '3. Room and installation requirements' },
+      { type: 'list', items: [
+        'OPG machines need a clear rotation radius — check the manufacturer\'s room minimum',
+        'Wall-mounted intraoral X-ray arms need structural backing at the right height',
+        'Radiation safety: lead lining, scatter barriers and a clear protected operator position',
+        'Dedicated electrical points — X-ray equipment should not share circuits',
+        'AERB registration is required before the unit is used clinically in India',
+      ] },
+
+      { type: 'note', text: 'AERB (Atomic Energy Regulatory Board) approval is not optional. Operating X-ray equipment without a valid licence is a criminal offence under the Atomic Energy Act. The application process takes time — start it before the equipment arrives, not after.' },
+
+      { type: 'h2', text: '4. Running costs nobody mentions at the time of sale' },
+      { type: 'list', items: [
+        'Annual AERB licence renewal',
+        'Radiation safety officer designation and training',
+        'Detector calibration and quality assurance checks',
+        'Phosphor plate replacement (plates degrade; budget for periodic replacement)',
+        'Service contract — X-ray equipment needs specialist engineers, not general technicians',
+      ] },
+
+      { type: 'h2', text: 'Questions to ask before you buy' },
+      { type: 'list', items: [
+        'Who handles AERB registration assistance — you or the supplier?',
+        'Is a service engineer based in your city, or do parts and visits come from elsewhere?',
+        'What does a sensor replacement cost if it is dropped?',
+        'Can the software integrate with your practice management system?',
+        'What is the warranty period and what does it exclude?',
+      ] },
+    ],
+  },
 ];
 
 export const findArticle = (slug) => ARTICLES.find((a) => a.slug === slug) || null;

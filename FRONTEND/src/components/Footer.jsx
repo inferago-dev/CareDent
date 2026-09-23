@@ -104,15 +104,18 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <Reveal delay={300} y={12}>
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400 tracking-tight">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-200 tracking-tight">
             <span>© {new Date().getFullYear()} Care Dent. All rights reserved.</span>
             <div className="flex items-center gap-6">
               <Link to="/login" className="hover:text-cyan-400 transition-colors">Portal Login</Link>
               <Link to="/contact" className="hover:text-cyan-400 transition-colors">Contact</Link>
             </div>
+            <div className="flex items-center gap-2 text-slate-400">
+              
+              <span className="text-xs">Made by</span>
+              <img src="/Infer_Full.png" alt="Inferago logo" className="h-7 w-auto" />
+            </div>
           </div>
-        </Reveal>
 
       </div>
     </footer>

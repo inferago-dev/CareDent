@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { Spinner } from '../components/ui';
 import { FieldError } from '../components/form';
 import Seo from '../components/Seo';
+import Reveal from '../components/Reveal';
 
 /**
  * The far end of a reset email.
@@ -66,7 +67,7 @@ export default function ResetPassword() {
       <Seo title="Choose a New Password" noindex />
       <div className="w-full max-w-md space-y-8">
 
-        <div className="text-center space-y-3">
+        <Reveal className="text-center space-y-3">
           <Link to="/" className="inline-block">
             <img
               src="/Logo_White_Lockup.png"
@@ -81,8 +82,9 @@ export default function ResetPassword() {
               {linkIsUsable ? `for ${email}` : 'This link is incomplete'}
             </p>
           </div>
-        </div>
+        </Reveal>
 
+        <Reveal delay={120} className="space-y-8">
         {!linkIsUsable ? (
           <div className="space-y-5">
             <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
@@ -161,6 +163,7 @@ export default function ResetPassword() {
             </div>
           </>
         )}
+        </Reveal>
 
       </div>
     </div>

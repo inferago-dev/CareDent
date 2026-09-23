@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Wrench, Send, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Wrench, Phone, CheckCircle2, ArrowUpRight } from 'lucide-react';
 import { publicApi } from '../lib/api';
+import { COMPANY_DETAILS } from '../data/products';
 import { useAuth } from '../context/AuthContext';
 import { Spinner } from './ui';
 import { Field, FieldRow, FormError } from './form';
@@ -57,24 +59,35 @@ export default function ServiceRequestForm() {
 
   if (reference) {
     return (
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-10 text-center space-y-4">
-        <div className="w-16 h-16 bg-cyan-50 text-cyan-600 rounded-full flex items-center justify-center mx-auto">
-          <CheckCircle2 className="w-10 h-10" />
+      <div className="bg-white rounded-2xl border border-slate-200 p-8 sm:p-10 text-center space-y-6 animate-pop-in">
+        <div className="w-16 h-16 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center mx-auto">
+          <CheckCircle2 className="w-8 h-8 text-cyan-600" />
         </div>
-        <h3 className="text-2xl font-semibold text-slate-900">Service request logged</h3>
-        <p className="text-sm text-slate-600 max-w-md mx-auto">
-          An engineer will call you to confirm a visit slot. Keep this reference — you can check
-          progress any time on the Track page.
-        </p>
-        <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl inline-block">
-          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Reference</div>
-          <div className="text-xl font-mono font-bold text-cyan-600">{reference}</div>
+        <div className="space-y-2">
+          <h3 className="text-2xl sm:text-3xl tracking-tighter font-medium text-blue-950">Service request logged</h3>
+          <p className="text-slate-500 leading-relaxed max-w-md mx-auto">
+            An engineer will call you to confirm a visit slot. Keep this reference — you can check
+            progress any time on the Track page.
+          </p>
         </div>
-        <div>
+        <div className="inline-block bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4">
+          <div className="text-xs uppercase tracking-widest text-slate-400">Reference</div>
+          <div className="text-xl font-mono font-medium text-blue-950 mt-1">{reference}</div>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/track-order"
+            className="group inline-flex items-center gap-3 rounded-full bg-blue-950 hover:bg-blue-900 text-white font-medium text-sm py-1.5 pl-6 pr-1.5 transition-all active:scale-[0.98]"
+          >
+            <span>Track this request</span>
+            <span className="w-8 h-8 rounded-full bg-white text-blue-950 flex items-center justify-center">
+              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </span>
+          </Link>
           <button
             type="button"
             onClick={() => { setReference(null); setForm((f) => ({ ...EMPTY, contactName: f.contactName, clinicName: f.clinicName, phone: f.phone, email: f.email })); }}
-            className="text-sm font-medium text-cyan-700 hover:text-cyan-800 transition-colors"
+            className="inline-flex items-center rounded-full border border-slate-200 hover:border-cyan-300 hover:bg-slate-50 text-slate-700 font-medium text-sm px-6 py-3 transition-all active:scale-[0.98]"
           >
             Log another request
           </button>
@@ -84,22 +97,24 @@ export default function ServiceRequestForm() {
   }
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-10 space-y-6">
-      <div className="flex items-start gap-3">
-        <div className="w-11 h-11 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0">
+    <div className="bg-white rounded-2xl border border-slate-200 p-7 sm:p-9 space-y-7">
+      <div className="flex items-start gap-4">
+        <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 text-blue-950 flex items-center justify-center shrink-0">
           <Wrench className="w-5 h-5" />
         </div>
-        <div>
-          <h3 className="text-2xl font-semibold text-slate-900">Book a service visit</h3>
-          <p className="text-xs text-slate-500 mt-1">
+        <div className="space-y-1">
+          <h3 className="text-2xl tracking-tighter font-medium text-blue-950">Book a service visit</h3>
+          <p className="text-sm text-slate-500 leading-relaxed">
             Breakdown, routine check or an installation visit — tell us what is wrong and we will call to confirm a slot.
           </p>
         </div>
       </div>
 
+      <div className="border-t border-slate-200" />
+
       <FormError message={error} />
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <FieldRow>
           <Field label="Your Name" required type="text" placeholder="Dr. Sivakumar" autoComplete="name"
                  value={form.contactName} onChange={set('contactName')} disabled={submitting} error={fieldErrors.contactName} />
@@ -133,13 +148,32 @@ export default function ServiceRequestForm() {
                placeholder="e.g. Suction has weakened over the last week and the auto-flush is not running."
                value={form.issue} onChange={set('issue')} disabled={submitting} error={fieldErrors.issue} />
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-cyan-600 hover:bg-cyan-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 rounded-full shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition-all text-base active:scale-[0.98]"
-        >
-          {submitting ? <><Spinner className="w-5 h-5 text-white" /><span>Sending…</span></> : <><Send className="w-5 h-5" /><span>Log service request</span></>}
-        </button>
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4 pt-5 border-t border-slate-200">
+          <a href={COMPANY_DETAILS.phoneHrefs[0]} className="group inline-flex items-center gap-3">
+            <span className="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-600 group-hover:bg-cyan-600 group-hover:border-cyan-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+              <Phone className="w-4 h-4" />
+            </span>
+            <span className="leading-tight">
+              <span className="block text-xs text-slate-400">Urgent? Call us</span>
+              <span className="block text-sm font-medium text-blue-950 group-hover:text-cyan-700 transition-colors">{COMPANY_DETAILS.phoneNumbers[0]}</span>
+            </span>
+          </a>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="group self-end sm:self-auto inline-flex items-center gap-3 bg-blue-950 hover:bg-blue-900 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium text-sm py-1.5 pl-6 pr-1.5 rounded-full transition-all active:scale-[0.98]"
+          >
+            <span>{submitting ? 'Sending…' : 'Log service request'}</span>
+            <span className="w-8 h-8 rounded-full bg-white text-blue-950 flex items-center justify-center">
+              {submitting ? (
+                <Spinner className="w-4 h-4 text-blue-950" />
+              ) : (
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              )}
+            </span>
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -1,4 +1,5 @@
-import { AlertCircle } from 'lucide-react';
+import { useState, useEffect, useRef, useId } from 'react';
+import { AlertCircle, ChevronDown, Check } from 'lucide-react';
 import { LABEL, inputClass } from './styles';
 
 /**
@@ -67,6 +68,88 @@ export function FormError({ message }) {
     <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
       <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
       <p className="text-sm text-red-700">{message}</p>
+    </div>
+  );
+}
+
+/**
+ * Label + custom dropdown + error - the styled alternative to a native
+ * <select>, first built for the contact form.
+ *
+ * `options` is [{ value, label, group? }]. Consecutive options sharing a
+ * `group` are listed under that heading, the way <optgroup> would. The list
+ * scrolls past a fixed height so a long catalogue stays usable.
+ */
+export function SelectField({ label, required = false, value, onChange, options, disabled = false, error }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const id = useId();
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onClick = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, [open]);
+
+  const selected = options.find((o) => o.value === value) || options[0];
+
+  return (
+    <div className="space-y-1">
+      <div className="space-y-1">
+        <label htmlFor={id} className={`block ${LABEL}`}>
+          {label}
+          {required && ' *'}
+        </label>
+        <div className="relative" ref={ref}>
+          <button
+            id={id}
+            type="button"
+            disabled={disabled}
+            aria-haspopup="listbox"
+            aria-expanded={open}
+            onClick={() => setOpen((o) => !o)}
+            className={`flex items-center justify-between gap-3 w-full px-4 py-3 bg-slate-50 border rounded-xl text-sm text-left transition-colors ${
+              open ? 'border-cyan-500 ring-2 ring-cyan-500' : 'border-slate-200'
+            } ${disabled ? 'opacity-60 cursor-not-allowed' : 'hover:border-cyan-400 cursor-pointer'}`}
+          >
+            <span className="text-slate-700 truncate">{selected?.label}</span>
+            <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+          </button>
+
+          {open && (
+            <div
+              role="listbox"
+              className="absolute z-20 w-full mt-2 py-1 max-h-64 overflow-y-auto overscroll-contain bg-white border border-slate-200 rounded-xl shadow-xl animate-drop-in origin-top"
+            >
+              {options.map((opt, i) => {
+                const startsGroup = opt.group && opt.group !== options[i - 1]?.group;
+                const isSelected = opt.value === value;
+                return (
+                  <div key={opt.value}>
+                    {startsGroup && (
+                      <div className="px-4 pt-3 pb-1.5 text-xs uppercase tracking-widest text-slate-400">{opt.group}</div>
+                    )}
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => { onChange(opt.value); setOpen(false); }}
+                      className={`w-full flex items-center justify-between gap-3 px-4 py-2.5 text-sm text-left transition-colors ${
+                        isSelected ? 'text-cyan-700 font-medium bg-cyan-50' : 'text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="truncate">{opt.label}</span>
+                      {isSelected && <Check className="w-4 h-4 shrink-0" />}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+      <FieldError message={error} />
     </div>
   );
 }

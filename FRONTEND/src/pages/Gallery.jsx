@@ -201,11 +201,10 @@ export default function Gallery({ onOpenQuoteModal }) {
                 <button
                   key={category}
                   onClick={() => { setFilter(category); setLightbox(null); }}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                    filter === category
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${filter === category
                       ? 'bg-blue-950 text-white'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
+                    }`}
                 >
                   {category}
                 </button>
@@ -227,7 +226,7 @@ export default function Gallery({ onOpenQuoteModal }) {
                 <Reveal key={item.id} delay={(idx % 3) * 70} variant="scale">
                   <button
                     onClick={() => setLightbox(idx)}
-                    className="group relative w-full aspect-4/3 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 text-left"
+                    className="group relative w-full aspect-4/3 rounded-2xl overflow-hidden border border-neutral-200 text-left"
                   >
                     <img
                       src={item.src}
@@ -237,10 +236,10 @@ export default function Gallery({ onOpenQuoteModal }) {
                     />
 
                     {/* Caption sheet, revealed on hover / always on touch */}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-blue-950/90 via-blue-950/60 to-transparent px-4 sm:px-5 pt-10 pb-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-all duration-300">
-                      <div className="text-sm font-medium text-white tracking-tight">{item.title}</div>
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-500/80 via-slate-500/50 to-transparent px-4 sm:px-5 pt-20 pb-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-all duration-300">
+                      <div className="text-sm font-medium text-white tracking-tight bg-black/30 w-fit px-2 py-0.5 rounded-lg">{item.title}</div>
                       {item.caption && (
-                        <p className="text-xs text-slate-300 mt-0.5 line-clamp-2 leading-snug">{item.caption}</p>
+                        <p className="text-xs text-white/70 mt-0.5 line-clamp-2 leading-snug">{item.caption}</p>
                       )}
                     </div>
 
@@ -272,7 +271,7 @@ export default function Gallery({ onOpenQuoteModal }) {
               <div className="flex flex-col sm:flex-row gap-3 shrink-0">
                 <button
                   onClick={() => onOpenQuoteModal && onOpenQuoteModal()}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold px-6 py-3 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white text-sm px-6 py-3 transition-colors"
                 >
                   <span>Request a quote</span>
                   <ArrowUpRight className="w-4 h-4" />

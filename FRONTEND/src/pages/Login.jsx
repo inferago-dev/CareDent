@@ -1,11 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId, cloneElement } from 'react';
 import { useNavigate, Link, useLocation, useSearchParams, Navigate } from 'react-router-dom';
-import { Lock, Mail, ArrowRight, User, Building2, Phone, AlertCircle, KeyRound, CheckCircle2, ArrowLeft } from 'lucide-react';
+import {
+  Lock, Mail, ArrowUpRight, User, Building2, Phone, KeyRound, CheckCircle2, ArrowLeft, Package, FileText, Wrench,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { authApi, googleSignInUrl } from '../lib/api';
+import { COMPANY_DETAILS } from '../data/products';
 import { Spinner } from '../components/ui';
-import { FieldError } from '../components/form';
+import { FieldError, FormError } from '../components/form';
+import { LABEL, inputClass } from '../components/form/styles';
 import Seo from '../components/Seo';
+import Reveal from '../components/Reveal';
 
 /**
  * Four ways in, one screen.
@@ -140,8 +145,6 @@ export default function Login() {
 
   const isRegister = mode === 'register';
   const isPasswordMode = mode === 'signin' || mode === 'register';
-  const inputClass =
-    'w-full pl-10 pr-4 py-3 bg-slate-50/80 border border-slate-200/90 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all disabled:opacity-50';
 
   const submitLabel = {
     signin: 'Sign in',
@@ -151,73 +154,107 @@ export default function Login() {
   }[mode];
 
   return (
-    <div className="relative min-h-screen bg-white text-slate-900 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+    <div className="min-h-screen bg-white text-slate-800">
       <Seo title="Sign In" noindex />
 
-      {/* Decorative Concentric Circles background — Top Right (Dark Blue) */}
-      <svg
-        className="absolute -top-32 -right-32 w-[600px] h-[600px] pointer-events-none opacity-40"
-        viewBox="0 0 600 600"
-        fill="none"
-      >
-        {[60, 110, 160, 210, 260, 310, 360, 410, 460].map((r, i) => (
-          <circle
-            key={r}
-            cx="300"
-            cy="300"
-            r={r}
-            stroke="#0b132b"
-            strokeOpacity={0.12 - i * 0.009}
-            strokeWidth="1.5"
-          />
-        ))}
-      </svg>
+      {/* ── BRAND PANEL ─────────────────────────────────────── */}
+      {/* Fixed rather than sticky: it holds still while the form beside it scrolls. */}
+      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-1/2 h-screen flex-col justify-between overflow-hidden bg-blue-950 text-white p-12 xl:p-16">
+        {/* Concentric circles pattern — same motif as the home hero and CTA */}
+        <svg
+          className="absolute -right-48 top-1/2 -translate-y-1/2 w-[900px] h-[900px] pointer-events-none mask-[linear-gradient(to_right,transparent,black_40%)]"
+          viewBox="0 0 800 800"
+          fill="none"
+        >
+          {[100, 140, 180, 220, 260, 300, 340, 380, 420, 460, 500, 540, 580].map((r, i) => (
+            <circle
+              key={r}
+              cx="400"
+              cy="400"
+              r={r}
+              stroke="white"
+              strokeOpacity={0.12 - i * 0.008}
+              strokeWidth="1"
+            />
+          ))}
+        </svg>
 
-      {/* Decorative Concentric Circles background — Bottom Left (Cyan) */}
-      <svg
-        className="absolute -bottom-32 -left-32 w-[600px] h-[600px] pointer-events-none opacity-30"
-        viewBox="0 0 600 600"
-        fill="none"
-      >
-        {[60, 110, 160, 210, 260, 310, 360, 410].map((r, i) => (
-          <circle
-            key={r}
-            cx="300"
-            cy="300"
-            r={r}
-            stroke="#06b6d4"
-            strokeOpacity={0.15 - i * 0.015}
-            strokeWidth="1.5"
-          />
-        ))}
-      </svg>
+        {/* Glassmorphism blur glow */}
+        <div className="absolute inset-x-0 bottom-0 h-64 pointer-events-none">
+          <div className="absolute -bottom-16 right-0 w-[400px] h-[400px] bg-cyan-500/20 rounded-full blur-[100px]" />
+          <div className="absolute -bottom-20 left-1/4 w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-[100px]" />
+          <div className="absolute inset-0 backdrop-blur-2xl mask-[linear-gradient(to_top,black,transparent)]" />
+        </div>
 
-      {/* Soft Ambient Blur */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none" />
+        {/* The panel itself is fixed, so the animations go on its contents - a
+            transform on the <aside> would pin it to the page instead of the screen. */}
+        <Reveal y={16} className="relative flex items-center justify-between gap-4 pb-6">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            Back to website
+          </Link>
+        </Reveal>
 
-      {/* Container without box background */}
-      <div className="relative z-10 w-full max-w-md">
-        <div className="space-y-7">
+        <div className="relative space-y-8">
+          <Reveal delay={80} variant="blur">
+            <h1 className="max-w-md text-4xl xl:text-5xl tracking-tighter font-medium leading-[1.1]">
+              Your equipment, orders and service visits in one place
+            </h1>
+          </Reveal>
+          <Reveal delay={160} y={0}>
+            <div className="border-t border-white/10" />
+          </Reveal>
+          <ul className="w-full grid grid-cols-3 gap-3">
+            {PORTAL_PERKS.map(({ icon: Icon, title, text }, idx) => (
+              <Reveal as="li" key={title} delay={220 + idx * 80} variant="scale" scale={0.97} className="h-full">
+                <div className="group h-full flex flex-col gap-4 backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 hover:border-cyan-400/40 transition-all duration-300">
+                  <span className="flex items-center gap-3">
+                    <span className="w-10 h-10 rounded-full bg-white text-blue-950 flex items-center justify-center shrink-0 group-hover:text-cyan-600 transition-colors duration-300">
+                      <Icon className="w-4 h-4" />
+                    </span>
+                    <span className="text-sm text-white">{title}</span>
+                  </span>
+                  <span className="border-t border-white/10" />
+                  <span className="text-sm text-slate-400">{text}</span>
+                </div>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
 
-          {/* Brand Header — Clean Logo without background block */}
-          <div className="text-center space-y-4">
+        <Reveal as="p" delay={480} y={12} className="relative pt-6 text-sm text-slate-400">
+          Need help? Call{' '}
+          <a href={COMPANY_DETAILS.phoneHrefs[0]} className="text-slate-300 hover:text-cyan-400 transition-colors">
+            {COMPANY_DETAILS.phoneNumbers[0]}
+          </a>
+        </Reveal>
+      </aside>
+
+      {/* ── FORM PANEL ──────────────────────────────────────── */}
+      <main className="lg:ml-[50%] min-h-screen flex items-center justify-center px-5 py-12 sm:px-8">
+        <div className="w-full max-w-md space-y-7">
+
+          <Reveal className="space-y-6">
             <Link to="/" className="inline-block">
               <img
                 src="/Logo_Lockup.png"
                 alt="Care Dent"
                 width="152" height="192"
-                className="h-16 mx-auto w-auto object-contain"
+                className="h-14 w-auto object-contain"
               />
             </Link>
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight text-blue-950">{MODE_COPY[mode].heading}</h2>
-              <p className="text-sm text-slate-500 mt-1 tracking-tight">{MODE_COPY[mode].sub}</p>
+            <div className="space-y-2">
+              <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium text-blue-950 leading-[1.1]">
+                {MODE_COPY[mode].heading}
+              </h2>
+              <p className="text-slate-500 leading-relaxed">{MODE_COPY[mode].sub}</p>
             </div>
-          </div>
+          </Reveal>
 
+          <Reveal delay={120} className="space-y-7">
           {/* Mode toggle */}
-          {isPasswordMode && (
-            <div className="grid grid-cols-2 gap-1 bg-slate-100/90 rounded-xl p-1 text-sm font-medium tracking-tight">
+          {isPasswordMode ? (
+            <div className="grid grid-cols-2 rounded-full border border-slate-200 bg-slate-50 p-1 text-sm font-medium">
               {[
                 { id: 'signin', label: 'Sign In' },
                 { id: 'register', label: 'Create Account' },
@@ -226,119 +263,94 @@ export default function Login() {
                   key={tab.id}
                   type="button"
                   onClick={() => switchMode(tab.id)}
-                  className={`py-2 rounded-lg transition-all duration-300 cursor-pointer tracking-tight ${
-                    mode === tab.id
-                      ? 'bg-blue-950 text-white shadow-sm shadow-blue-950/20'
-                      : 'text-slate-500 hover:text-blue-950'
+                  className={`py-2.5 rounded-full transition-colors cursor-pointer ${
+                    mode === tab.id ? 'bg-blue-950 text-white' : 'text-slate-500 hover:text-blue-950'
                   }`}
                 >
                   {tab.label}
                 </button>
               ))}
             </div>
-          )}
-
-          {!isPasswordMode && (
+          ) : (
             <button
               type="button"
               onClick={() => switchMode('signin')}
-              className="inline-flex items-center gap-2 text-sm font-medium tracking-tight text-cyan-600 hover:text-cyan-700 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 text-sm font-medium text-cyan-600 hover:text-cyan-700 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to sign in</span>
             </button>
           )}
 
-          {error && (
-            <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50/80 px-4 py-3">
-              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-              <p className="text-sm tracking-tight text-red-700">{error}</p>
-            </div>
-          )}
+          <FormError message={error} />
 
           {notice && (
-            <div className="flex items-start gap-2.5 rounded-xl border border-cyan-200 bg-cyan-50/80 px-4 py-3">
+            <div className="flex items-start gap-2.5 rounded-xl border border-cyan-200 bg-cyan-50 px-4 py-3">
               <CheckCircle2 className="w-4 h-4 text-cyan-600 shrink-0 mt-0.5" />
-              <p className="text-sm tracking-tight text-cyan-800">{notice}</p>
+              <p className="text-sm text-cyan-800">{notice}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
 
             {isRegister && (
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase tracking-tight text-slate-500">Your Name</label>
-                <div className="relative">
-                  <User className="w-4 h-4 text-cyan-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text" required autoComplete="name" disabled={submitting}
-                    placeholder="Dr. Sivakumar" value={form.name} onChange={set('name')}
-                    className={inputClass}
-                  />
-                </div>
-                <FieldError message={fieldErrors.name} />
-              </div>
+              <IconField label="Your Name" icon={User} error={fieldErrors.name}>
+                <input
+                  type="text" required autoComplete="name" disabled={submitting}
+                  placeholder="Dr. Sivakumar" value={form.name} onChange={set('name')}
+                  className={ICON_INPUT}
+                />
+              </IconField>
             )}
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-tight text-slate-500">Email Address</label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-cyan-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="email" required autoComplete="email"
-                  disabled={submitting || codeSent}
-                  placeholder="you@clinic.com" value={form.email} onChange={set('email')}
-                  className={inputClass}
-                />
-              </div>
-              <FieldError message={fieldErrors.email} />
-            </div>
+            <IconField label="Email Address" icon={Mail} error={fieldErrors.email}>
+              <input
+                type="email" required autoComplete="email"
+                disabled={submitting || codeSent}
+                placeholder="you@clinic.com" value={form.email} onChange={set('email')}
+                className={ICON_INPUT}
+              />
+            </IconField>
 
             {isPasswordMode && (
-              <div className="space-y-1.5">
-                <div className="flex items-baseline justify-between gap-3">
-                  <label className="text-xs font-semibold uppercase tracking-tight text-slate-500">Password</label>
-                  {mode === 'signin' && (
-                    <button
-                      type="button"
-                      onClick={() => switchMode('forgot')}
-                      className="text-xs text-cyan-600 font-medium tracking-tight hover:text-cyan-700 hover:underline cursor-pointer"
-                    >
-                      Forgot password?
-                    </button>
-                  )}
-                </div>
-                <div className="relative">
-                  <Lock className="w-4 h-4 text-cyan-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="password" required disabled={submitting}
-                    autoComplete={isRegister ? 'new-password' : 'current-password'}
-                    placeholder={isRegister ? 'At least 8 characters' : '••••••••'}
-                    value={form.password} onChange={set('password')}
-                    className={inputClass}
-                  />
-                </div>
-                <FieldError message={fieldErrors.password} />
-              </div>
+              <IconField
+                label="Password"
+                icon={Lock}
+                error={fieldErrors.password}
+                action={mode === 'signin' && (
+                  <button
+                    type="button"
+                    onClick={() => switchMode('forgot')}
+                    className="text-xs text-cyan-600 font-medium hover:text-cyan-700 transition-colors cursor-pointer"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              >
+                <input
+                  type="password" required disabled={submitting}
+                  autoComplete={isRegister ? 'new-password' : 'current-password'}
+                  placeholder={isRegister ? 'At least 8 characters' : '••••••••'}
+                  value={form.password} onChange={set('password')}
+                  className={ICON_INPUT}
+                />
+              </IconField>
             )}
 
             {mode === 'code' && codeSent && (
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase tracking-tight text-slate-500">6-Digit Code</label>
-                <div className="relative">
-                  <KeyRound className="w-4 h-4 text-cyan-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <div className="space-y-2">
+                <IconField label="6-Digit Code" icon={KeyRound} error={fieldErrors.code}>
                   <input
                     type="text" required disabled={submitting}
                     inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6}
                     placeholder="000000" value={form.code} onChange={set('code')}
-                    className={`${inputClass} tracking-[0.5em] font-mono`}
+                    className={`${ICON_INPUT} tracking-[0.5em] font-mono`}
                   />
-                </div>
-                <FieldError message={fieldErrors.code} />
+                </IconField>
                 <button
                   type="button"
                   onClick={() => { setCodeSent(false); setNotice(null); setForm((f) => ({ ...f, code: '' })); }}
-                  className="text-xs text-cyan-600 font-medium tracking-tight hover:underline cursor-pointer"
+                  className="text-xs text-cyan-600 font-medium hover:text-cyan-700 transition-colors cursor-pointer"
                 >
                   Use a different address, or send another code
                 </button>
@@ -346,109 +358,127 @@ export default function Login() {
             )}
 
             {isRegister && (
-              <>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-tight text-slate-500">Clinic Name</label>
-                  <div className="relative">
-                    <Building2 className="w-4 h-4 text-cyan-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text" disabled={submitting} placeholder="Care Dental Clinic"
-                      value={form.clinicName} onChange={set('clinicName')} className={inputClass}
-                    />
-                  </div>
-                  <FieldError message={fieldErrors.clinicName} />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase tracking-tight text-slate-500">Phone</label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 text-cyan-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="tel" disabled={submitting} placeholder="+91 94441 53599"
-                      value={form.phone} onChange={set('phone')} className={inputClass}
-                    />
-                  </div>
-                  <FieldError message={fieldErrors.phone} />
-                </div>
-              </>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <IconField label="Clinic Name" icon={Building2} error={fieldErrors.clinicName}>
+                  <input
+                    type="text" disabled={submitting} placeholder="Care Dental Clinic"
+                    value={form.clinicName} onChange={set('clinicName')} className={ICON_INPUT}
+                  />
+                </IconField>
+                <IconField label="Phone" icon={Phone} error={fieldErrors.phone}>
+                  <input
+                    type="tel" disabled={submitting} placeholder="+91 94441 53599"
+                    value={form.phone} onChange={set('phone')} className={ICON_INPUT}
+                  />
+                </IconField>
+              </div>
             )}
 
             <button
               type="submit"
               disabled={submitting}
-              className="w-full rounded-xl bg-blue-950 text-white font-medium py-3.5 flex items-center justify-center gap-2 tracking-tight hover:bg-blue-900 active:scale-[0.99] shadow-md shadow-blue-950/15 transition-all text-sm cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="group w-full inline-flex items-center justify-between gap-3 bg-blue-950 hover:bg-blue-900 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium text-sm py-1.5 pl-6 pr-1.5 rounded-full transition-all active:scale-[0.98] cursor-pointer"
             >
-              {submitting ? (
-                <><Spinner className="w-4 h-4 text-white" /><span>Please wait…</span></>
-              ) : (
-                <><span>{submitLabel}</span><ArrowRight className="w-4 h-4" /></>
-              )}
+              <span>{submitting ? 'Please wait…' : submitLabel}</span>
+              <span className="w-9 h-9 rounded-full bg-white text-blue-950 flex items-center justify-center">
+                {submitting ? (
+                  <Spinner className="w-4 h-4 text-blue-950" />
+                ) : (
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                )}
+              </span>
             </button>
           </form>
 
           {/* Other ways in */}
           {mode !== 'forgot' && (
             <div className="space-y-3">
-              <div className="flex items-center gap-3 text-[11px] uppercase tracking-tight text-slate-400">
+              <div className="flex items-center gap-3 text-xs uppercase tracking-widest text-slate-400">
                 <span className="h-px flex-1 bg-slate-200" />
                 <span>or</span>
                 <span className="h-px flex-1 bg-slate-200" />
               </div>
 
-              {googleAvailable && (
-                <a
-                  href={googleSignInUrl()}
-                  className="w-full rounded-xl border border-slate-200 py-3 flex items-center justify-center gap-2.5 text-sm tracking-tight text-slate-700 hover:bg-slate-50 hover:border-cyan-300 transition-all"
-                >
-                  <GoogleMark />
-                  <span>Continue with Google</span>
-                </a>
-              )}
-
-              {mode !== 'code' && (
-                <button
-                  type="button"
-                  onClick={() => switchMode('code')}
-                  className="w-full rounded-xl border border-slate-200 py-3 flex items-center justify-center gap-2.5 text-sm tracking-tight text-slate-700 hover:bg-cyan-50/50 hover:border-cyan-300 transition-all cursor-pointer"
-                >
-                  <KeyRound className="w-4 h-4 text-cyan-600" />
-                  <span>Email me a sign-in code</span>
-                </button>
-              )}
-
-              {mode === 'code' && (
-                <button
-                  type="button"
-                  onClick={() => switchMode('signin')}
-                  className="w-full rounded-xl border border-slate-200 py-3 flex items-center justify-center gap-2.5 text-sm tracking-tight text-slate-700 hover:bg-cyan-50/50 hover:border-cyan-300 transition-all cursor-pointer"
-                >
-                  <Lock className="w-4 h-4 text-cyan-600" />
-                  <span>Use my password instead</span>
-                </button>
-              )}
+              <div className={`grid gap-3 ${googleAvailable ? 'sm:grid-cols-2' : ''}`}>
+                {googleAvailable && (
+                  <a href={googleSignInUrl()} className={ALT_BUTTON}>
+                    <GoogleMark />
+                    <span>Google</span>
+                  </a>
+                )}
+                {mode === 'code' ? (
+                  <button type="button" onClick={() => switchMode('signin')} className={ALT_BUTTON}>
+                    <Lock className="w-4 h-4 text-cyan-600" />
+                    <span>Use my password</span>
+                  </button>
+                ) : (
+                  <button type="button" onClick={() => switchMode('code')} className={ALT_BUTTON}>
+                    <KeyRound className="w-4 h-4 text-cyan-600" />
+                    <span>Email me a code</span>
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
-          <div className="text-center pt-5 text-xs text-slate-500 border-t border-slate-100 tracking-tight">
+          <div className="pt-6 border-t border-slate-200 text-sm text-slate-500 space-y-2">
             {isPasswordMode && (
-              <span className="block">
+              <p>
                 {isRegister ? 'Already have an account?' : 'Need a clinic portal account?'}{' '}
                 <button
                   type="button"
                   onClick={() => switchMode(isRegister ? 'signin' : 'register')}
-                  className="text-cyan-600 font-semibold tracking-tight hover:text-cyan-700 hover:underline cursor-pointer"
+                  className="text-cyan-600 font-medium hover:text-cyan-700 transition-colors cursor-pointer"
                 >
                   {isRegister ? 'Sign in instead' : 'Create one now'}
                 </button>
-              </span>
+              </p>
             )}
-            <span className="block mt-2">
-              Prefer to talk to us? <Link to="/contact" className="text-cyan-600 font-semibold tracking-tight hover:text-cyan-700 hover:underline">Contact Care Dent</Link>
-            </span>
+            <p>
+              Prefer to talk to us?{' '}
+              <Link to="/contact" className="text-cyan-600 font-medium hover:text-cyan-700 transition-colors">
+                Contact Care Dent
+              </Link>
+            </p>
           </div>
+          </Reveal>
 
         </div>
+      </main>
+    </div>
+  );
+}
+
+const PORTAL_PERKS = [
+  { icon: Package, title: 'Orders', text: 'Follow every order from confirmation to installation' },
+  { icon: FileText, title: 'Quotations', text: 'Keep all your quotations and invoices together' },
+  { icon: Wrench, title: 'Service', text: 'Book visits and see engineer updates live' },
+];
+
+/** The shared input skin, with room on the left for the field's icon. */
+const ICON_INPUT = `${inputClass()} pl-11 text-slate-900 placeholder:text-slate-400 focus:bg-white transition-colors`;
+
+const ALT_BUTTON =
+  'w-full rounded-full border border-slate-200 py-3 px-5 flex items-center justify-center gap-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-cyan-300 transition-all active:scale-[0.98] cursor-pointer';
+
+/**
+ * Label + icon + input. The optional `action` (e.g. "Forgot password?") sits
+ * beside the label rather than inside it, so a click on the label still
+ * focuses the input instead of the button.
+ */
+function IconField({ label, icon: Icon, error, action, children }) {
+  const id = useId();
+  return (
+    <div className="space-y-1">
+      <div className="flex items-baseline justify-between gap-3">
+        <label htmlFor={id} className={LABEL}>{label}</label>
+        {action}
       </div>
+      <div className="relative">
+        <Icon className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+        {cloneElement(children, { id })}
+      </div>
+      <FieldError message={error} />
     </div>
   );
 }

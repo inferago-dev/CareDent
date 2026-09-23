@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Package, Clock, Truck, MapPin, CheckCircle2, XCircle, Wrench, FileText } from 'lucide-react';
+import { Search, Package, Clock, Truck, MapPin, CheckCircle2, XCircle, Wrench, FileText, Phone, ArrowUpRight } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import { publicApi } from '../lib/api';
 import { Spinner, StatusPill } from '../components/ui';
 import { formatDate, formatDateTime } from '../lib/format';
 import Seo from '../components/Seo';
 import Breadcrumbs from '../components/Breadcrumbs';
+import Reveal from '../components/Reveal';
 import { breadcrumbSchema } from '../lib/seo';
 import { metaFor } from '../lib/pageMeta';
 
@@ -73,51 +74,66 @@ export default function TrackOrder() {
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
 
         <div className="relative container-page max-w-3xl text-center">
-          <Breadcrumbs trail={BREADCRUMB_TRAIL} align="center" />
-          <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
-            Track
-          </span>
-          <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1]">
-            Where&apos;s your equipment right now?
-          </h1>
-          <p className="text-slate-400 text-base leading-relaxed max-w-xl mx-auto mt-6">
-            Enter the reference from your confirmation to see live status — from order
-            confirmation through to certified installation.
-          </p>
+          <Reveal>
+            <Breadcrumbs trail={BREADCRUMB_TRAIL} align="center" />
+            <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
+              Track
+            </span>
+            <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1]">
+              Where&apos;s your equipment right now?
+            </h1>
+          </Reveal>
+          <Reveal delay={100}>
+            <p className="text-slate-400 text-base leading-relaxed max-w-xl mx-auto mt-6">
+              Enter the reference from your confirmation to see live status — from order
+              confirmation through to certified installation.
+            </p>
+          </Reveal>
 
+          <Reveal delay={180} y={16}>
           {/* Mode switch */}
-          <div className="mt-8 inline-flex rounded-full border border-white/10 bg-white/5 p-1 text-xs font-medium">
-            {MODES.map((m) => (
+          <div className="mt-10 inline-flex flex-wrap justify-center rounded-full border border-white/10 bg-white/5 p-1 text-sm font-medium">
+            {MODES.map(({ id, label, icon: Icon }) => (
               <button
-                key={m.id}
+                key={id}
                 type="button"
-                onClick={() => switchMode(m.id)}
-                className={`px-4 py-2 rounded-full transition-colors ${
-                  mode === m.id ? 'bg-cyan-600 text-white' : 'text-slate-300 hover:text-white'
+                onClick={() => switchMode(id)}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full transition-colors ${
+                  mode === id ? 'bg-white text-blue-950' : 'text-slate-300 hover:text-white'
                 }`}
               >
-                {m.label}
+                <Icon className="w-4 h-4" />
+                {label}
               </button>
             ))}
           </div>
 
-          <form onSubmit={handleTrack} className="mt-6 flex flex-col sm:flex-row items-stretch gap-3 max-w-lg mx-auto">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={reference}
-                onChange={(e) => setReference(e.target.value)}
-                placeholder={active.placeholder}
-                className="w-full pl-11 pr-4 py-3.5 backdrop-blur-xl bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-500 focus:border-cyan-400 focus:bg-white/10 outline-none transition-colors"
-              />
-            </div>
+          <form
+            onSubmit={handleTrack}
+            className="mt-5 max-w-xl mx-auto flex items-center gap-2 rounded-full backdrop-blur-xl bg-white/5 border border-white/10 p-1.5 pl-5 focus-within:border-cyan-400 focus-within:bg-white/10 transition-colors"
+          >
+            <Search className="w-4 h-4 text-slate-400 shrink-0" />
+            <input
+              type="text"
+              aria-label={`${active.label} reference`}
+              value={reference}
+              onChange={(e) => setReference(e.target.value)}
+              placeholder={active.placeholder}
+              className="flex-1 min-w-0 bg-transparent py-2.5 text-white text-sm placeholder:text-slate-500 outline-none"
+            />
             <button
               type="submit"
               disabled={state.status === 'loading' || !reference.trim()}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm px-6 py-3.5 transition-all active:scale-[0.98] shrink-0"
+              className="group inline-flex items-center gap-3 rounded-full bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm py-1.5 pl-5 pr-1.5 transition-all active:scale-[0.98] shrink-0"
             >
-              {state.status === 'loading' ? <Spinner className="w-4 h-4 text-white" /> : 'Track'}
+              <span>Track</span>
+              <span className="w-8 h-8 rounded-full bg-white text-blue-950 flex items-center justify-center">
+                {state.status === 'loading' ? (
+                  <Spinner className="w-4 h-4 text-blue-950" />
+                ) : (
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                )}
+              </span>
             </button>
           </form>
 
@@ -126,6 +142,7 @@ export default function TrackOrder() {
             <Link to="/portal" className="text-slate-300 hover:text-cyan-400 transition-colors">customer portal</Link>{' '}
             to see everything at once.
           </p>
+          </Reveal>
         </div>
       </section>
 
@@ -134,8 +151,28 @@ export default function TrackOrder() {
         <div className="container-page max-w-3xl">
 
           {state.status === 'idle' && (
-            <div className="text-center text-sm text-slate-400 py-10">
-              Enter a reference above to see its live status.
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {MODES.map(({ id, label, placeholder, icon: Icon }, idx) => (
+                <Reveal key={id} delay={idx * 80} y={24}>
+                <button
+                  type="button"
+                  onClick={() => switchMode(id)}
+                  className={`group w-full h-full text-left bg-white border rounded-2xl p-6 space-y-4 transition-all duration-500 hover:border-cyan-200 hover:shadow-xl hover:shadow-cyan-900/5 ${
+                    mode === id ? 'border-cyan-300' : 'border-slate-200'
+                  }`}
+                >
+                  <span className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
+                    mode === id ? 'bg-cyan-600 text-white' : 'bg-slate-50 border border-slate-200 text-slate-600 group-hover:text-cyan-600'
+                  }`}>
+                    <Icon className="w-5 h-5" />
+                  </span>
+                  <span className="block">
+                    <span className="block font-medium text-slate-900">{label}</span>
+                    <span className="block text-sm text-slate-500 mt-1">Reference looks like {placeholder.replace('e.g. ', '')}</span>
+                  </span>
+                </button>
+                </Reveal>
+              ))}
             </div>
           )}
 
@@ -144,16 +181,21 @@ export default function TrackOrder() {
           )}
 
           {state.status === 'error' && (
-            <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center space-y-4 animate-rise-in">
-              <div className="w-14 h-14 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
+            <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center space-y-5 animate-rise-in">
+              <div className="w-14 h-14 rounded-2xl bg-red-50 border border-red-100 text-red-500 flex items-center justify-center mx-auto">
                 <XCircle className="w-7 h-7" />
               </div>
-              <h3 className="text-xl font-medium text-slate-900">Nothing found for &quot;{reference.toUpperCase()}&quot;</h3>
-              <p className="text-sm text-slate-500 max-w-sm mx-auto">{state.message}</p>
+              <div className="space-y-2">
+                <h3 className="text-2xl tracking-tighter font-medium text-blue-950">
+                  Nothing found for &quot;{reference.toUpperCase()}&quot;
+                </h3>
+                <p className="text-slate-500 max-w-sm mx-auto">{state.message}</p>
+              </div>
               <a
                 href={COMPANY_DETAILS.phoneHrefs[0]}
-                className="inline-flex items-center gap-2 text-sm font-medium text-cyan-700 hover:text-cyan-800 transition-colors"
+                className="inline-flex items-center gap-2 rounded-full bg-blue-950 hover:bg-blue-900 text-white font-medium text-sm px-6 py-3 transition-all active:scale-[0.98]"
               >
+                <Phone className="w-4 h-4" />
                 Call {COMPANY_DETAILS.phoneNumbers[0]}
               </a>
             </div>
@@ -171,11 +213,11 @@ export default function TrackOrder() {
 
 function SummaryCard({ label, title, subtitle, status }) {
   return (
-    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="bg-blue-950 text-white rounded-2xl p-7 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div className="min-w-0">
-        <div className="text-xs text-slate-400 uppercase tracking-widest mb-1">{label}</div>
-        <div className="text-lg font-medium text-slate-900 break-words">{title}</div>
-        {subtitle && <div className="text-sm text-slate-500 mt-1">{subtitle}</div>}
+        <div className="text-xs uppercase tracking-widest text-cyan-400 font-bold mb-3">{label}</div>
+        <div className="text-2xl sm:text-3xl tracking-tighter font-medium leading-[1.15] break-words">{title}</div>
+        {subtitle && <div className="text-sm text-slate-400 mt-2">{subtitle}</div>}
       </div>
       <StatusPill status={status} className="w-fit shrink-0" />
     </div>
@@ -192,7 +234,8 @@ function Timeline({ entries, currentStatus }) {
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8">
+    <div className="bg-white border border-slate-200 rounded-2xl p-7 sm:p-8">
+      <div className="text-xs uppercase tracking-widest text-slate-400 mb-6">Status history</div>
       {entries.map((entry, idx) => {
         const Icon = STEP_ICON[entry.status] || CheckCircle2;
         const isLast = idx === entries.length - 1;
@@ -283,8 +326,8 @@ function QuoteResult({ data }) {
 
 function Fact({ label, value }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-xl px-4 py-3">
-      <div className="text-[11px] uppercase tracking-widest text-slate-400">{label}</div>
+    <div className="bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4">
+      <div className="text-xs uppercase tracking-widest text-slate-400">{label}</div>
       <div className="text-slate-900 font-medium mt-1 text-sm">{value}</div>
     </div>
   );

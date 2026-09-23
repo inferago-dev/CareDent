@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, Phone } from 'lucide-react';
 import { COMPANY_DETAILS } from '../data/products';
 import Seo from '../components/Seo';
+import Reveal from '../components/Reveal';
 
 export default function NotFound() {
   return (
@@ -10,17 +11,22 @@ export default function NotFound() {
       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen -translate-y-1/2" />
 
       <div className="relative container-page max-w-2xl section-y text-center">
-        <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
-          Error 404
-        </span>
-        <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1]">
-          This page has been moved or never existed
-        </h1>
-        <p className="text-slate-400 text-base leading-relaxed max-w-md mx-auto mt-6">
-          Check the address, or jump back to the catalogue — every chair and every piece of
-          equipment we supply is listed there.
-        </p>
+        <Reveal>
+          <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
+            Error 404
+          </span>
+          <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1]">
+            This page has been moved or never existed
+          </h1>
+        </Reveal>
+        <Reveal delay={100}>
+          <p className="text-slate-400 text-base leading-relaxed max-w-md mx-auto mt-6">
+            Check the address, or jump back to the catalogue — every chair and every piece of
+            equipment we supply is listed there.
+          </p>
+        </Reveal>
 
+        <Reveal delay={180} y={16}>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             to="/"
@@ -42,6 +48,7 @@ export default function NotFound() {
         >
           <Phone className="w-3.5 h-3.5" /> Or call us on {COMPANY_DETAILS.phoneNumbers[0]}
         </a>
+        </Reveal>
       </div>
     </div>
   );

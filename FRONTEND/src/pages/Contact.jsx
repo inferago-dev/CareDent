@@ -1,11 +1,12 @@
 import { useState } from 'react';
 
-import { MapPin, Phone, Mail, Clock, MessageSquare, Send, CheckCircle2, Stethoscope, ArrowUpRight, Sparkles } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, CheckCircle2, ArrowUpRight } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { COMPANY_DETAILS } from '../data/products';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { Spinner } from '../components/ui';
-import { Field, FieldRow, FormError } from '../components/form';
+import { Field, FieldRow, FormError, SelectField } from '../components/form';
 import usePrefillFromUser from '../hooks/usePrefillFromUser';
 import Seo from '../components/Seo';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -26,6 +27,13 @@ const MAP_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=$
 const BREADCRUMB_TRAIL = [{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact' }];
 
 const EMPTY = { name: '', email: '', phone: '', subject: 'Equipment Inquiry', message: '' };
+
+const SUBJECT_OPTIONS = [
+  { value: 'Equipment Inquiry', label: 'New Chair / Equipment Inquiry' },
+  { value: 'Service Maintenance', label: 'Maintenance / Service Visit' },
+  { value: 'Spare Parts', label: 'Spare Parts & Handpieces' },
+  { value: 'Other', label: 'General Question' },
+];
 
 const CONTACT_ITEMS = [
   {
@@ -107,46 +115,24 @@ export default function Contact() {
 
       {/* ── HERO ────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-blue-950 text-white page-hero">
-
-        {/* Concentric circles */}
-        <svg
-          className="absolute -right-48 top-1/2 -translate-y-1/2 w-[700px] h-[700px] pointer-events-none opacity-60 mask-[linear-gradient(to_right,transparent,black_40%)]"
-          viewBox="0 0 700 700" fill="none"
-        >
-          {[60, 110, 160, 210, 260, 310, 360, 410, 460].map((r, i) => (
-            <circle key={r} cx="350" cy="350" r={r}
-              stroke="white" strokeOpacity={0.12 - i * 0.01} strokeWidth="1" />
-          ))}
-        </svg>
-
-        {/* Glow blobs */}
-        <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none -translate-y-1/2" />
-        <div className="absolute bottom-0 right-1/3 w-[300px] h-[300px] bg-blue-400/10 rounded-full blur-[80px] pointer-events-none translate-y-1/3" />
-
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen transform -translate-y-1/2 translate-x-1/4" />
+        <div className="absolute bottom-0 left-1/3 w-[300px] h-[300px] bg-blue-400/10 rounded-full blur-[80px] pointer-events-none translate-y-1/3" />
         <div className="relative container-page max-w-4xl text-center">
           <Breadcrumbs trail={BREADCRUMB_TRAIL} align="center" />
-
-          <div style={{ animation: 'fade-in 500ms cubic-bezier(0.22,1,0.36,1) 100ms both' }}>
-            <span className="inline-flex items-center gap-2 text-xs font-bold text-cyan-400 uppercase tracking-widest mb-6 bg-cyan-400/10 border border-cyan-400/20 px-3 py-1.5 rounded-full">
-              <Sparkles className="w-3 h-3" />
-              Get In Touch
+          <Reveal>
+            <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
+              Contact Care Dent
             </span>
-          </div>
-
-          <h1
-            style={{ animation: 'hero-rise 900ms cubic-bezier(0.22,1,0.36,1) 180ms both' }}
-            className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1] text-white mb-6"
-          >
-            Let&apos;s talk about your clinic
-          </h1>
-
-          <p
-            style={{ animation: 'fade-in 700ms cubic-bezier(0.22,1,0.36,1) 320ms both' }}
-            className="text-slate-400 text-base leading-relaxed max-w-xl mx-auto tracking-tight"
-          >
-            Reach out to Mr. Sivakumar and our team in Mugalivakkam, Chennai.
-            We typically respond within a few hours.
-          </p>
+            <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1]">
+              Let&apos;s talk about your clinic
+            </h1>
+          </Reveal>
+          <Reveal delay={100}>
+            <p className="text-slate-400 text-base leading-relaxed max-w-xl mx-auto mt-6">
+              Reach out to Mr. Sivakumar and our team in Mugalivakkam, Chennai.
+              We typically respond within a few hours.
+            </p>
+          </Reveal>
         </div>
       </section>
 
@@ -156,58 +142,37 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
           {/* ── LEFT COLUMN ─────────────────────────────────── */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-5">
 
             {/* Contact info card */}
             <Reveal variant="left" x={30}>
-              <div className="relative bg-blue-950 text-white rounded-3xl overflow-hidden shadow-2xl shadow-blue-950/20">
-
-                {/* Decorative circles inside card */}
-                <svg
-                  className="absolute -right-20 -top-20 w-[280px] h-[280px] pointer-events-none"
-                  viewBox="0 0 300 300" fill="none"
-                >
-                  {[40, 80, 120, 160, 200].map((r, i) => (
-                    <circle key={r} cx="150" cy="150" r={r}
-                      stroke="white" strokeOpacity={0.08 - i * 0.01} strokeWidth="1" />
-                  ))}
-                </svg>
-
-                {/* Glow accent */}
-                <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-cyan-500/20 rounded-full blur-[60px] pointer-events-none" />
-
-                <div className="relative z-10 p-8 space-y-8">
-
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                <div className="p-7 space-y-6">
                   {/* Header */}
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center">
-                      <Stethoscope className="w-6 h-6 text-cyan-400" />
-                    </div>
+                  <div className="flex items-center gap-3">
+                    <img src="/Logo_Badge.png" alt="Care Dent" className="w-10 h-10 object-contain shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-lg text-white tracking-tight">Care Dent</h3>
-                      <p className="text-xs text-cyan-400 tracking-wide">Founded by Mr. Sivakumar</p>
+                      <h3 className="font-medium tracking-tight text-slate-900">Care Dent</h3>
+                      <p className="text-xs text-slate-500 tracking-tight">Founded by Mr. Sivakumar</p>
                     </div>
                   </div>
 
-                  {/* Divider */}
-                  <div className="border-t border-white/10" />
-
                   {/* Contact items */}
-                  <div className="space-y-6">
+                  <div className="space-y-2">
                     {CONTACT_ITEMS.map(({ icon: Icon, label, value, href }, i) => (
-                      <Reveal key={label} delay={80 + i * 70} y={16}>
-                        <div className="flex items-start gap-4 group">
-                          <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-cyan-500/20 group-hover:border-cyan-400/30 transition-all duration-300">
-                            <Icon className="w-4 h-4 text-cyan-400" />
+                      <Reveal key={label} delay={80 + i * 60} y={12}>
+                        <div className="flex items-center gap-3.5 group bg-slate-50 border border-slate-200 rounded-xl p-3 hover:border-cyan-200 hover:bg-white transition-all duration-300">
+                          <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 group-hover:bg-cyan-50 group-hover:border-cyan-200 transition-colors duration-200">
+                            <Icon className="w-4 h-4 text-slate-600 group-hover:text-cyan-600 transition-colors" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-[10px] uppercase tracking-widest text-slate-400 font-medium mb-0.5">{label}</p>
+                            <p className="text-xs uppercase tracking-widest text-slate-400 mb-0.5">{label}</p>
                             {href ? (
-                              <a href={href} className="text-sm text-slate-200 hover:text-cyan-300 transition-colors leading-snug break-all">
+                              <a href={href} className="text-sm tracking-tight text-slate-700 hover:text-cyan-600 transition-colors leading-snug break-all">
                                 {value}
                               </a>
                             ) : (
-                              <p className="text-sm text-slate-200 leading-snug">{value}</p>
+                              <p className="text-sm tracking-tight text-slate-700 leading-snug">{value}</p>
                             )}
                           </div>
                         </div>
@@ -215,34 +180,34 @@ export default function Contact() {
                     ))}
                   </div>
 
-                  {/* Divider */}
-                  <div className="border-t border-white/10" />
-
                   {/* WhatsApp CTA */}
-                  <Reveal delay={360} y={12}>
+                  <Reveal delay={320} y={10}>
                     <a
                       href={`https://wa.me/${COMPANY_DETAILS.whatsappNumber}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="group w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-white font-semibold py-3.5 px-5 rounded-2xl flex items-center justify-center gap-3 transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:-translate-y-0.5"
+                      className="group w-full bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-slate-800 font-medium text-sm p-1.5 rounded-full flex items-center gap-3 transition-all active:scale-[0.98]"
                     >
-                      <MessageSquare className="w-5 h-5 fill-current" />
-                      <span className="tracking-tight">Chat on WhatsApp</span>
-                      <ArrowUpRight className="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity ml-auto" />
+                      <span className="w-9 h-9 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                        <FaWhatsapp className="w-5 h-5" />
+                      </span>
+                      <span>Chat on WhatsApp</span>
+                      <span className="ml-auto w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-700 group-hover:text-emerald-600 flex items-center justify-center transition-colors">
+                        <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      </span>
                     </a>
                   </Reveal>
-
                 </div>
               </div>
             </Reveal>
 
             {/* Map card */}
-            <Reveal delay={120} y={24}>
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden">
-                <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-slate-100">
-                  <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                    <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-                      <MapPin className="w-3.5 h-3.5 text-blue-950" />
+            <Reveal delay={120} y={20}>
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-slate-200">
+                  <div className="flex items-center gap-2 text-sm font-medium tracking-tight text-slate-700">
+                    <div className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                      <MapPin className="w-3.5 h-3.5 text-slate-600" />
                     </div>
                     Showroom location
                   </div>
@@ -250,23 +215,21 @@ export default function Contact() {
                     href={MAP_DIRECTIONS_URL}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-cyan-600 hover:text-cyan-700 transition-colors"
+                    className="inline-flex items-center gap-1 text-xs font-medium tracking-tight text-slate-700 bg-white border border-slate-200 hover:border-cyan-300 hover:text-cyan-700 px-3 py-1.5 rounded-full transition-colors"
                   >
                     Get directions
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </a>
                 </div>
-
                 <iframe
                   title="Care Dent showroom on the map"
                   src={MAP_EMBED_URL}
-                  className="w-full h-56"
+                  className="w-full h-52"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   allowFullScreen
                 />
-
-                <p className="text-[11px] text-slate-400 leading-snug px-5 py-3">
+                <p className="text-xs text-slate-500 leading-snug px-5 py-3.5">
                   {COMPANY_DETAILS.address}
                 </p>
               </div>
@@ -277,30 +240,25 @@ export default function Contact() {
           {/* ── RIGHT COLUMN: Form ───────────────────────────── */}
           <div className="lg:col-span-7">
             <Reveal variant="right" x={30}>
-              <div className="relative bg-white rounded-3xl border border-slate-100 shadow-2xl shadow-slate-900/5 overflow-hidden">
-
-                {/* Top accent strip */}
-                <div className="h-1.5 w-full bg-gradient-to-r from-blue-950 via-cyan-500 to-blue-950" />
-
-                <div className="p-8 sm:p-10 space-y-8">
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                <div className="p-7 sm:p-9 space-y-7">
 
                   {/* Form header */}
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs font-bold text-cyan-600 uppercase tracking-widest">Enquiry Form</span>
-                    </div>
-                    <h2 className="text-2xl sm:text-3xl font-medium tracking-tighter text-blue-950">
+                  <div className="space-y-2">
+                    <h2 className="text-2xl sm:text-3xl tracking-tighter font-medium text-blue-950 leading-[1.1]">
                       Send us a message
                     </h2>
-                    <p className="text-sm text-slate-500 tracking-tight leading-relaxed">
+                    <p className="text-slate-500 leading-relaxed">
                       Questions about pricing, delivery, or spare parts? We reply within a few hours.
                     </p>
                   </div>
 
+                  <div className="border-t border-slate-200" />
+
                   {submitted ? (
                     <div key="success" className="py-12 text-center space-y-5 animate-pop-in">
-                      <div className="w-20 h-20 bg-gradient-to-br from-cyan-50 to-blue-50 border border-cyan-100 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
-                        <CheckCircle2 className="w-10 h-10 text-cyan-500" />
+                      <div className="w-16 h-16 bg-white border border-slate-200 rounded-2xl flex items-center justify-center mx-auto">
+                        <CheckCircle2 className="w-8 h-8 text-cyan-600" />
                       </div>
                       <div>
                         <h4 className="text-2xl font-medium tracking-tighter text-blue-950">Message received!</h4>
@@ -311,7 +269,7 @@ export default function Contact() {
                       </div>
                       <button
                         onClick={() => { setSubmitted(false); setForm((f) => ({ ...f, subject: EMPTY.subject, message: '' })); }}
-                        className="inline-flex items-center gap-2 bg-blue-950 hover:bg-blue-900 text-white text-sm font-semibold px-6 py-3 rounded-full transition-all tracking-tight"
+                        className="inline-flex items-center gap-2 bg-blue-950 hover:bg-blue-900 text-white text-sm font-medium px-6 py-3 rounded-full transition-all active:scale-[0.98]"
                       >
                         Send another message
                       </button>
@@ -340,16 +298,13 @@ export default function Contact() {
                           value={form.phone} onChange={set('phone')}
                           disabled={submitting} error={fieldErrors.phone} autoComplete="tel"
                         />
-                        <Field
-                          label="Subject" as="select" required
-                          value={form.subject} onChange={set('subject')}
+                        <SelectField
+                          label="Subject" required
+                          value={form.subject}
+                          onChange={(val) => setForm((f) => ({ ...f, subject: val }))}
+                          options={SUBJECT_OPTIONS}
                           disabled={submitting} error={fieldErrors.subject}
-                        >
-                          <option value="Equipment Inquiry">New Chair / Equipment Inquiry</option>
-                          <option value="Service Maintenance">Maintenance / Service Visit</option>
-                          <option value="Spare Parts">Spare Parts &amp; Handpieces</option>
-                          <option value="Other">General Question</option>
-                        </Field>
+                        />
                       </FieldRow>
 
                       <Field
@@ -359,28 +314,35 @@ export default function Contact() {
                         disabled={submitting} error={fieldErrors.message}
                       />
 
-                      <button
-                        type="submit"
-                        disabled={submitting}
-                        className="group w-full bg-blue-950 hover:bg-blue-900 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-2xl shadow-lg shadow-blue-950/20 hover:shadow-blue-950/30 flex items-center justify-center gap-3 transition-all duration-300 hover:-translate-y-0.5 text-sm tracking-tight active:scale-[0.99]"
-                      >
-                        {submitting ? (
-                          <><Spinner className="w-5 h-5 text-white" /><span>Sending…</span></>
-                        ) : (
-                          <>
-                            <Send className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                            <span>Send Inquiry</span>
-                            <ArrowUpRight className="w-4 h-4 ml-auto opacity-50 group-hover:opacity-100 transition-opacity" />
-                          </>
-                        )}
-                      </button>
-
-                      <p className="text-[11px] text-slate-400 text-center tracking-tight">
-                        Or call us directly at{' '}
-                        <a href={COMPANY_DETAILS.phoneHrefs[0]} className="text-blue-950 font-semibold hover:text-cyan-600 transition-colors">
-                          {COMPANY_DETAILS.phoneNumbers[0]}
+                      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4 pt-5 border-t border-slate-200">
+                        <a
+                          href={COMPANY_DETAILS.phoneHrefs[0]}
+                          className="group inline-flex items-center gap-3"
+                        >
+                          <span className="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-600 group-hover:bg-cyan-600 group-hover:border-cyan-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+                            <Phone className="w-4 h-4" />
+                          </span>
+                          <span className="leading-tight">
+                            <span className="block text-xs text-slate-400 tracking-tight">Prefer to talk? Call us</span>
+                            <span className="block text-sm font-medium tracking-tight text-blue-950 group-hover:text-cyan-700 transition-colors">{COMPANY_DETAILS.phoneNumbers[0]}</span>
+                          </span>
                         </a>
-                      </p>
+
+                        <button
+                          type="submit"
+                          disabled={submitting}
+                          className="group self-end sm:self-auto inline-flex items-center gap-3 bg-blue-950 hover:bg-blue-900 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium text-sm py-1.5 pl-6 pr-1.5 rounded-full transition-all active:scale-[0.98]"
+                        >
+                          <span>{submitting ? 'Sending…' : 'Send Inquiry'}</span>
+                          <span className="w-8 h-8 rounded-full bg-white text-blue-950 flex items-center justify-center">
+                            {submitting ? (
+                              <Spinner className="w-4 h-4 text-blue-950" />
+                            ) : (
+                              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                            )}
+                          </span>
+                        </button>
+                      </div>
 
                     </form>
                   )}

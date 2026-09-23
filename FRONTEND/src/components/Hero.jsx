@@ -18,9 +18,11 @@ const heroEnter = {
   ctas:    { animation: 'fade-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 440ms both' },
   phone:   { animation: 'fade-in 600ms cubic-bezier(0.22, 1, 0.36, 1) 560ms both' },
   image:   { animation: 'hero-scale 1000ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both' },
-  card0:   { animation: 'fade-in 600ms cubic-bezier(0.22, 1, 0.36, 1) 600ms both' },
-  card1:   { animation: 'fade-in 600ms cubic-bezier(0.22, 1, 0.36, 1) 720ms both' },
-  card2:   { animation: 'fade-in 600ms cubic-bezier(0.22, 1, 0.36, 1) 840ms both' },
+  // `backwards`, not `both`: the cards hold their start state through the delay,
+  // then hand control back so their hover lift still works afterwards.
+  card0:   { animation: 'hero-zoom 900ms cubic-bezier(0.22, 1, 0.36, 1) 600ms backwards' },
+  card1:   { animation: 'hero-zoom 900ms cubic-bezier(0.22, 1, 0.36, 1) 740ms backwards' },
+  card2:   { animation: 'hero-zoom 900ms cubic-bezier(0.22, 1, 0.36, 1) 880ms backwards' },
 };
 
 export default function Hero({ onOpenQuoteModal }) {
@@ -159,9 +161,10 @@ export default function Hero({ onOpenQuoteModal }) {
 
             {/* Phone layout for the same three facts. */}
             <ul className="sm:hidden grid grid-cols-3 gap-2 w-full mt-6">
-              {HERO_FACTS.map(({ icon: Icon, title, detail }) => (
+              {HERO_FACTS.map(({ icon: Icon, title, detail }, i) => (
                 <li
                   key={title}
+                  style={heroEnter[`card${i}`]}
                   className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-3 text-center"
                 >
                   <Icon className="w-5 h-5 text-cyan-500 mx-auto" />

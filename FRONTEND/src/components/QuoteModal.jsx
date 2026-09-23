@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { X, CheckCircle2, Send, Stethoscope } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { X, CheckCircle2, ArrowUpRight, Phone } from 'lucide-react';
+import { COMPANY_DETAILS } from '../data/products';
 import useCatalogue from '../hooks/useCatalogue';
 import useMountedTransition from '../hooks/useMountedTransition';
 import useBodyScrollLock from '../hooks/useBodyScrollLock';
 import { publicApi } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { Spinner } from '../components/ui';
-import { Field, FieldRow, FormError } from './form';
+import { Field, FieldRow, FormError, SelectField } from './form';
 import { trackLead } from '../lib/analytics';
 
 const EMPTY = {
@@ -78,6 +80,13 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
 
   if (!shouldRender) return null;
 
+  // Same grouping the native <optgroup>s used to give.
+  const productOptions = [
+    ...chairs.map((c) => ({ value: c.name, label: c.name, group: 'Dental Chairs' })),
+    ...equipment.map((p) => ({ value: p.name, label: p.name, group: 'Other Equipment' })),
+    ...['Pre-Installation Site Assessment', 'Complete Clinic Setup'].map((s) => ({ value: s, label: s, group: 'Services' })),
+  ];
+
   const set = (key) => (e) =>
     setForm((f) => ({ ...f, [key]: key === 'quantity' ? Number(e.target.value) : e.target.value }));
 
@@ -115,109 +124,141 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 ${isOpen ? 'animate-fade-in' : 'animate-fade-out'}`}
+      className={`fixed inset-0 z-50 bg-blue-950/60 backdrop-blur-md flex items-center justify-center p-4 ${isOpen ? 'animate-fade-in' : 'animate-fade-out'}`}
       onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
       role="dialog"
       aria-modal="true"
       aria-label="Request a quotation"
     >
-      <div className={`bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[calc(100dvh-2rem)] ${isOpen ? 'animate-scale-in' : 'animate-scale-out'}`}>
+      <div className={`bg-white w-full max-w-2xl rounded-3xl overflow-hidden flex flex-col max-h-[calc(100dvh-2rem)] ${isOpen ? 'animate-scale-in' : 'animate-scale-out'}`}>
 
         {/* Header */}
-        <div className="bg-blue-950 p-6 text-white flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan-600 flex items-center justify-center text-white shadow-md">
-              <Stethoscope className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold">Request Official Quotation</h3>
-              <p className="text-xs text-cyan-200">Delivery &amp; Certified Installation All Over Tamil Nadu</p>
-            </div>
+        <div className="flex items-start justify-between gap-4 px-7 pt-7 pb-6 sm:px-9 border-b border-slate-200 shrink-0">
+          <div>
+            <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-3 font-bold">
+              Request a Quotation
+            </span>
+            <h3 className="text-2xl sm:text-3xl tracking-tighter font-medium text-blue-950 leading-[1.1]">
+              {submitted ? 'Request received' : 'Get pricing for your clinic'}
+            </h3>
+            <p className="text-sm text-slate-500 mt-2">
+              Delivery &amp; certified installation all over Tamil Nadu.
+            </p>
           </div>
-          <button onClick={handleClose} aria-label="Close" className="p-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors">
-            <X className="w-5 h-5" />
+          <button
+            onClick={handleClose}
+            aria-label="Close"
+            className="w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:text-blue-950 hover:bg-slate-50 flex items-center justify-center shrink-0 transition-colors"
+          >
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {submitted ? (
-          <div className="p-8 text-center space-y-4 overflow-y-auto">
-            <div className="w-16 h-16 bg-cyan-50 text-cyan-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-              <CheckCircle2 className="w-10 h-10" />
+          <div className="p-8 sm:p-10 text-center space-y-6 overflow-y-auto animate-pop-in">
+            <div className="w-16 h-16 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-8 h-8 text-cyan-600" />
             </div>
-            <h4 className="text-2xl font-bold text-slate-900">Quotation request received</h4>
-            <p className="text-sm text-slate-600 max-w-md mx-auto">
-              Thank you, Doctor. Mr. Sivakumar and our sales engineering team will reach out within
-              24 hours with exact pricing, tax breakup and delivery lead time.
-            </p>
-            <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl inline-block text-left">
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Reference code</div>
-              <div className="text-xl font-mono font-bold text-cyan-600">{submitted}</div>
-              <div className="text-[11px] text-slate-500 mt-1">Track it any time from the Track page.</div>
+            <div className="space-y-2">
+              <h4 className="text-2xl sm:text-3xl tracking-tighter font-medium text-blue-950">Thank you, Doctor.</h4>
+              <p className="text-slate-500 leading-relaxed max-w-md mx-auto">
+                {COMPANY_DETAILS.founder} and our sales engineering team will reach out within
+                24 hours with exact pricing, tax breakup and delivery lead time.
+              </p>
             </div>
-            <div className="pt-4">
+            <div className="inline-block bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4">
+              <div className="text-xs uppercase tracking-widest text-slate-400">Reference code</div>
+              <div className="text-xl font-mono font-medium text-blue-950 mt-1">{submitted}</div>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link
+                to="/track-order"
+                onClick={handleClose}
+                className="group inline-flex items-center gap-3 rounded-full bg-blue-950 hover:bg-blue-900 text-white font-medium text-sm py-1.5 pl-6 pr-1.5 transition-all active:scale-[0.98]"
+              >
+                <span>Track this request</span>
+                <span className="w-8 h-8 rounded-full bg-white text-blue-950 flex items-center justify-center">
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </span>
+              </Link>
               <button
                 onClick={handleClose}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold px-6 py-2.5 rounded-full shadow-md transition-all"
+                className="inline-flex items-center rounded-full border border-slate-200 hover:border-cyan-300 hover:bg-slate-50 text-slate-700 font-medium text-sm px-6 py-3 transition-all active:scale-[0.98]"
               >
-                Close &amp; continue browsing
+                Continue browsing
               </button>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
+          <form onSubmit={handleSubmit} className="flex-1 min-h-0 flex flex-col">
 
-            <FormError message={error} />
+            {/* Fields scroll; the footer with the submit button stays in view. */}
+            <div className="flex-1 min-h-0 overflow-y-auto px-7 py-7 sm:px-9 space-y-5">
+              <FormError message={error} />
 
-            {/* Product & quantity */}
-            <FieldRow cols={3}>
-              <Field
-                label="Selected Equipment" as="select" required variant="subtle"
-                className="sm:col-span-2"
-                value={form.product} onChange={set('product')}
-                disabled={submitting} error={fieldErrors.product}
-              >
-                <optgroup label="Dental Chairs">
-                  {chairs.map((c) => <option key={c._id || c.id} value={c.name}>{c.name}</option>)}
-                </optgroup>
-                <optgroup label="Other Equipment">
-                  {equipment.map((p) => <option key={p._id || p.id} value={p.name}>{p.name}</option>)}
-                </optgroup>
-                <option value="Pre-Installation Site Assessment">Pre-Installation Site Assessment</option>
-                <option value="Complete Clinic Setup">Complete Clinic Setup</option>
-              </Field>
-              <Field
-                label="Quantity" required variant="subtle" type="number" min="1" max="99"
-                value={form.quantity} onChange={set('quantity')}
-                disabled={submitting} error={fieldErrors.quantity}
-              />
-            </FieldRow>
+              {/* Product & quantity */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="sm:col-span-2">
+                  <SelectField
+                    label="Selected Equipment" required
+                    value={form.product}
+                    onChange={(val) => setForm((f) => ({ ...f, product: val }))}
+                    options={productOptions}
+                    disabled={submitting} error={fieldErrors.product}
+                  />
+                </div>
+                <Field
+                  label="Quantity" required type="number" min="1" max="99"
+                  value={form.quantity} onChange={set('quantity')}
+                  disabled={submitting} error={fieldErrors.quantity}
+                />
+              </div>
 
-            <FieldRow>
-              <Field label="Your Name" required variant="subtle" type="text" placeholder="Dr. Sivakumar" autoComplete="name"
-                     value={form.name} onChange={set('name')} disabled={submitting} error={fieldErrors.name} />
-              <Field label="Clinic Name" variant="subtle" type="text" placeholder="Care Dental Clinic" autoComplete="organization"
-                     value={form.clinicName} onChange={set('clinicName')} disabled={submitting} error={fieldErrors.clinicName} />
-              <Field label="Phone" required variant="subtle" type="tel" placeholder="+91 94441 53599" autoComplete="tel"
-                     value={form.phone} onChange={set('phone')} disabled={submitting} error={fieldErrors.phone} />
-              <Field label="Email" required variant="subtle" type="email" placeholder="doctor@clinic.com" autoComplete="email"
-                     value={form.email} onChange={set('email')} disabled={submitting} error={fieldErrors.email} />
-            </FieldRow>
+              <FieldRow>
+                <Field label="Your Name" required type="text" placeholder="Dr. Sivakumar" autoComplete="name"
+                       value={form.name} onChange={set('name')} disabled={submitting} error={fieldErrors.name} />
+                <Field label="Clinic Name" type="text" placeholder="Care Dental Clinic" autoComplete="organization"
+                       value={form.clinicName} onChange={set('clinicName')} disabled={submitting} error={fieldErrors.clinicName} />
+                <Field label="Phone" required type="tel" placeholder="+91 94441 53599" autoComplete="tel"
+                       value={form.phone} onChange={set('phone')} disabled={submitting} error={fieldErrors.phone} />
+                <Field label="Email" required type="email" placeholder="doctor@clinic.com" autoComplete="email"
+                       value={form.email} onChange={set('email')} disabled={submitting} error={fieldErrors.email} />
+              </FieldRow>
 
-            <Field label="Installation Address" variant="subtle" type="text" autoComplete="street-address"
-                   placeholder="Street address, City, Pincode (e.g. Mugalivakkam, Chennai)"
-                   value={form.address} onChange={set('address')} disabled={submitting} error={fieldErrors.address} />
+              <Field label="Installation Address" type="text" autoComplete="street-address"
+                     placeholder="Street address, City, Pincode (e.g. Mugalivakkam, Chennai)"
+                     value={form.address} onChange={set('address')} disabled={submitting} error={fieldErrors.address} />
 
-            <Field label="Additional Requirements" as="textarea" variant="subtle" rows={3}
-                   placeholder="Custom color, compressor requirement, room dimensions..."
-                   value={form.notes} onChange={set('notes')} disabled={submitting} error={fieldErrors.notes} />
+              <Field label="Additional Requirements" as="textarea" rows={3}
+                     placeholder="Custom color, compressor requirement, room dimensions..."
+                     value={form.notes} onChange={set('notes')} disabled={submitting} error={fieldErrors.notes} />
+            </div>
 
-            <div className="pt-3">
+            {/* Footer — the same call-link + navy pill pairing as the Contact form */}
+            <div className="shrink-0 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4 px-7 py-5 sm:px-9 border-t border-slate-200 bg-slate-50">
+              <a href={COMPANY_DETAILS.phoneHrefs[0]} className="group inline-flex items-center gap-3">
+                <span className="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-600 group-hover:bg-cyan-600 group-hover:border-cyan-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors">
+                  <Phone className="w-4 h-4" />
+                </span>
+                <span className="leading-tight">
+                  <span className="block text-xs text-slate-400">Prefer to talk? Call us</span>
+                  <span className="block text-sm text-blue-950 group-hover:text-cyan-700 transition-colors">{COMPANY_DETAILS.phoneNumbers[0]}</span>
+                </span>
+              </a>
+
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-cyan-600 hover:bg-cyan-700 active:bg-cyan-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3 rounded-full shadow-md shadow-cyan-600/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                className="group self-end sm:self-auto inline-flex items-center gap-3 bg-blue-950 hover:bg-blue-900 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium text-sm py-1.5 pl-6 pr-1.5 rounded-full transition-all active:scale-[0.98]"
               >
-                {submitting ? <><Spinner className="w-4 h-4 text-white" /><span>Sending…</span></> : <><Send className="w-4 h-4" /><span>Submit quotation request</span></>}
+                <span>{submitting ? 'Sending…' : 'Request quotation'}</span>
+                <span className="w-8 h-8 rounded-full bg-white text-blue-950 flex items-center justify-center">
+                  {submitting ? (
+                    <Spinner className="w-4 h-4 text-blue-950" />
+                  ) : (
+                    <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  )}
+                </span>
               </button>
             </div>
           </form>

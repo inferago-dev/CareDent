@@ -1,12 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  User, ArrowRight, Menu, X, ChevronDown, LogOut, LayoutDashboard,
+  User, ArrowRight, ArrowUpRight, Menu, X, ChevronDown, LogOut, LayoutDashboard,
 } from 'lucide-react';
 import useCatalogue from '../hooks/useCatalogue';
 import useMountedTransition from '../hooks/useMountedTransition';
 import useBodyScrollLock from '../hooks/useBodyScrollLock';
 import { useAuth } from '../context/AuthContext';
+
+const PRODUCT_CATEGORIES = [
+  { label: 'Dental Chairs', query: 'chairs' },
+  { label: 'X-Ray Units', query: 'xray' },
+  { label: 'Autoclaves', query: 'autoclaves' },
+  { label: 'Compressors', query: 'compressors' },
+  { label: 'Ultrasonic Scalers', query: 'scalers' },
+];
+
+// One row style for every dropdown item, so the products and account menus match.
+const MENU_ITEM =
+  'group/item flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white transition-colors';
+const MENU_ARROW =
+  'w-3.5 h-3.5 shrink-0 text-white/0 group-hover/item:text-white -translate-x-1 group-hover/item:translate-x-0 transition-all';
 
 const initials = (name = '') =>
   name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('') || 'U';
@@ -110,7 +124,11 @@ export default function Navbar({ onOpenQuoteModal }) {
   return (
     <>
       {/* Main Header Navbar */}
-      <header className={`fixed w-full top-0 z-40 transition-all duration-500 ${headerBg}`}>
+      <header className="fixed w-full top-0 z-40">
+        {/* The header's glass lives on its own layer, not the <header> itself: an
+            ancestor with backdrop-filter stops the dropdowns' own backdrop-blur
+            from reaching the page behind them. */}
+        <div aria-hidden="true" className={`absolute inset-0 -z-10 pointer-events-none transition-all duration-500 ${headerBg}`} />
         <div className="container-page max-w-7xl">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
@@ -150,44 +168,52 @@ export default function Navbar({ onOpenQuoteModal }) {
                       {/* Products Mega-Menu — unified transparent glass panel, no split */}
                       {shouldRenderMegaMenu && (
                         <div
-                          className={`absolute top-20 left-1/2 -translate-x-1/2 w-[520px] backdrop-blur-2xl bg-blue-950/60 border border-white/10 shadow-2xl shadow-blue-950/40 p-7 grid grid-cols-2 gap-x-10 gap-y-1 rounded-2xl overflow-hidden ${megaMenuOpen ? 'animate-drop-in' : 'animate-drop-out'}`}
+                          className={`absolute top-20 left-1/2 -translate-x-1/2 w-[560px] backdrop-blur-2xl bg-blue-950/60 border border-white/10 rounded-2xl overflow-hidden ${megaMenuOpen ? 'animate-drop-in' : 'animate-drop-out'}`}
                         >
-                          {/* Popular Models */}
-                          <div>
-                            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-4">Popular Models</p>
-                            <div className="space-y-3">
-                              {chairs.slice(0, 4).map(chair => (
+                          <div className="grid grid-cols-2 divide-x divide-white/10">
+                            {/* Popular Models */}
+                            <div className="p-4">
+                              <p className="px-3 pt-1 pb-3 text-xs uppercase tracking-widest text-slate-400">Popular Models</p>
+                              {chairs.slice(0, 4).map((chair) => (
                                 <Link
                                   key={chair._id || chair.id}
                                   to={`/products/${chair.slug}`}
-                                  className="group/item flex items-center justify-between gap-2 transition-colors"
                                   onClick={() => setMegaMenuOpen(false)}
+                                  className={MENU_ITEM}
                                 >
-                                  <span className="text-sm font-medium text-white/80 group-hover/item:text-cyan-400 transition-colors">{chair.name}</span>
-                                  <ArrowRight className="w-3.5 h-3.5 text-transparent group-hover/item:text-cyan-400 -translate-x-1 group-hover/item:translate-x-0 transition-all shrink-0" />
+                                  <span className="truncate">{chair.name}</span>
+                                  <ArrowUpRight className={MENU_ARROW} />
                                 </Link>
                               ))}
                             </div>
-                            <Link
-                              to="/products"
-                              onClick={() => setMegaMenuOpen(false)}
-                              className="inline-flex items-center gap-1 mt-5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
-                            >
-                              View All Products →
-                            </Link>
-                          </div>
 
-                          {/* Categories */}
-                          <div>
-                            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-4">Categories</p>
-                            <div className="space-y-3">
-                              <Link to="/products?category=chairs" onClick={() => setMegaMenuOpen(false)} className="block text-sm font-medium text-white/80 hover:text-cyan-400 transition-colors">Dental Chairs</Link>
-                              <Link to="/products?category=xray" onClick={() => setMegaMenuOpen(false)} className="block text-sm font-medium text-white/80 hover:text-cyan-400 transition-colors">X-Ray Units</Link>
-                              <Link to="/products?category=autoclaves" onClick={() => setMegaMenuOpen(false)} className="block text-sm font-medium text-white/80 hover:text-cyan-400 transition-colors">Autoclaves</Link>
-                              <Link to="/products?category=compressors" onClick={() => setMegaMenuOpen(false)} className="block text-sm font-medium text-white/80 hover:text-cyan-400 transition-colors">Compressors</Link>
-                              <Link to="/products?category=scalers" onClick={() => setMegaMenuOpen(false)} className="block text-sm font-medium text-white/80 hover:text-cyan-400 transition-colors">Ultrasonic Scalers</Link>
+                            {/* Categories */}
+                            <div className="p-4">
+                              <p className="px-3 pt-1 pb-3 text-xs uppercase tracking-widest text-slate-400">Categories</p>
+                              {PRODUCT_CATEGORIES.map(({ label, query }) => (
+                                <Link
+                                  key={query}
+                                  to={`/products?category=${query}`}
+                                  onClick={() => setMegaMenuOpen(false)}
+                                  className={MENU_ITEM}
+                                >
+                                  <span className="truncate">{label}</span>
+                                  <ArrowUpRight className={MENU_ARROW} />
+                                </Link>
+                              ))}
                             </div>
                           </div>
+
+                          <Link
+                            to="/products"
+                            onClick={() => setMegaMenuOpen(false)}
+                            className="group/all flex items-center justify-between gap-3 px-7 py-4 border-t border-white/10 text-sm font-medium text-white hover:bg-white/5 transition-colors"
+                          >
+                            <span>View all products</span>
+                            <span className="w-7 h-7 rounded-full bg-white text-blue-950 flex items-center justify-center">
+                              <ArrowUpRight className="w-3.5 h-3.5 group-hover/all:translate-x-0.5 group-hover/all:-translate-y-0.5 transition-transform" />
+                            </span>
+                          </Link>
                         </div>
                       )}
                     </div>
@@ -225,26 +251,36 @@ export default function Navbar({ onOpenQuoteModal }) {
                   </button>
 
                   {accountMenuOpen && (
-                    <div className="absolute right-0 top-full mt-3 w-52 backdrop-blur-2xl bg-blue-950/70 border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-drop-in">
-                      <div className="px-4 py-3 border-b border-white/10">
-                        <div className="text-sm font-semibold text-white truncate">{user?.name}</div>
-                        <div className="text-xs text-slate-400 truncate">{user?.email}</div>
+                    <div className="absolute right-0 top-full mt-3 w-64 backdrop-blur-2xl bg-blue-950/60 border border-white/10 rounded-2xl overflow-hidden animate-drop-in">
+                      <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10">
+                        <span className="w-9 h-9 rounded-full bg-white text-blue-950 flex items-center justify-center text-xs font-bold shrink-0">
+                          {initials(user?.name)}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium text-white truncate">{user?.name}</div>
+                          <div className="text-xs text-slate-400 truncate">{user?.email}</div>
+                        </div>
                       </div>
-                      <Link
-                        to={isAdmin ? '/admin' : '/portal'}
-                        onClick={() => setAccountMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-3 text-sm text-white/80 hover:bg-white/5 hover:text-cyan-400 transition-colors"
-                      >
-                        <LayoutDashboard className="w-4 h-4" />
-                        <span>{isAdmin ? 'Admin Dashboard' : 'My Account'}</span>
-                      </Link>
-                      <button
-                        onClick={handleSignOut}
-                        className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-400 hover:bg-red-950/30 transition-colors"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>Sign out</span>
-                      </button>
+                      <div className="p-2">
+                        <Link
+                          to={isAdmin ? '/admin' : '/portal'}
+                          onClick={() => setAccountMenuOpen(false)}
+                          className={MENU_ITEM}
+                        >
+                          <span className="flex items-center gap-2.5">
+                            <LayoutDashboard className="w-4 h-4" />
+                            {isAdmin ? 'Admin Dashboard' : 'My Account'}
+                          </span>
+                          <ArrowUpRight className={MENU_ARROW} />
+                        </Link>
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          <span>Sign out</span>
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

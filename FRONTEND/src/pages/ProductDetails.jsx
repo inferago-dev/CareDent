@@ -13,6 +13,7 @@ import { LoadingBlock } from '../components/ui';
 import NotFound from './NotFound';
 import Seo from '../components/Seo';
 import Breadcrumbs from '../components/Breadcrumbs';
+import Reveal from '../components/Reveal';
 import { productSchema, breadcrumbSchema } from '../lib/seo';
 
 /** Bundled catalogue, used only when the API cannot be reached. */
@@ -121,6 +122,7 @@ export default function ProductDetails({ onOpenQuoteModal }) {
       <div className="container-page max-w-7xl space-y-12 py-12">
 
         {/* GALLERY + INFO */}
+        <Reveal y={24}>
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden p-6 lg:p-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
@@ -233,9 +235,11 @@ export default function ProductDetails({ onOpenQuoteModal }) {
             </div>
           </div>
         </div>
+        </Reveal>
 
         {/* SPECIFICATIONS */}
         {specs.length > 0 && (
+          <Reveal y={24}>
           <div className="bg-white rounded-3xl border border-slate-200 shadow-lg p-6 lg:p-10 space-y-6">
             <div className="border-b border-slate-100 pb-4">
               <h2 className="text-2xl font-semibold text-slate-900">Technical specifications</h2>
@@ -260,9 +264,11 @@ export default function ProductDetails({ onOpenQuoteModal }) {
               </table>
             </div>
           </div>
+          </Reveal>
         )}
 
         {/* INSTALLATION REQUIREMENTS */}
+        <Reveal y={24}>
         <div className="bg-white rounded-3xl border border-slate-200 shadow-lg p-6 lg:p-10 space-y-8">
           <div className="border-b border-slate-100 pb-4 flex items-start gap-4">
             <div className="w-11 h-11 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0">
@@ -311,8 +317,10 @@ export default function ProductDetails({ onOpenQuoteModal }) {
             </Link>
           </p>
         </div>
+        </Reveal>
 
         {/* BROCHURE */}
+        <Reveal variant="scale" scale={0.97}>
         <div className="bg-blue-950 text-white rounded-3xl p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-center md:text-left">
             <div className="flex items-center gap-2 justify-center md:justify-start">
@@ -347,17 +355,20 @@ export default function ProductDetails({ onOpenQuoteModal }) {
             </a>
           )}
         </div>
+        </Reveal>
 
         {/* RELATED */}
         {related.length > 0 && (
           <div className="space-y-6">
-            <h3 className="text-2xl font-semibold text-slate-900">Explore related models</h3>
+            <Reveal>
+              <h3 className="text-2xl font-semibold text-slate-900">Explore related models</h3>
+            </Reveal>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {related.slice(0, 3).map((rc) => (
+              {related.slice(0, 3).map((rc, idx) => (
+                <Reveal key={rc.slug} delay={idx * 80} y={24}>
                 <Link
-                  key={rc.slug}
                   to={`/products/${rc.slug}`}
-                  className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:border-cyan-500 transition-all group"
+                  className="block h-full bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:border-cyan-500 transition-all group"
                 >
                   <img
                     src={rc.heroImage}
@@ -371,6 +382,7 @@ export default function ProductDetails({ onOpenQuoteModal }) {
                   <h4 className="text-base font-medium text-slate-900 mt-1 group-hover:text-cyan-600">{rc.name}</h4>
                   {rc.tagline && <p className="text-xs text-slate-500 mt-1 line-clamp-1">{rc.tagline}</p>}
                 </Link>
+                </Reveal>
               ))}
             </div>
           </div>

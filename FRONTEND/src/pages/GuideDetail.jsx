@@ -13,7 +13,7 @@ function Block({ block }) {
   switch (block.type) {
     case 'h2':
       return (
-        <h2 className="text-2xl sm:text-3xl tracking-tighter font-medium text-blue-950 leading-snug mt-14 mb-5">
+        <h2 className="text-xl sm:text-2xl tracking-tight font-medium text-blue-950 leading-snug mt-12 mb-4 inline-flex items-center gap-2 border border-neutral-200 bg-transparent px-4 py-2 rounded-full">
           {block.text}
         </h2>
       );
@@ -30,14 +30,14 @@ function Block({ block }) {
       );
     case 'note':
       return (
-        <div className="my-8 flex items-start gap-4 bg-cyan-50/60 border border-cyan-100 rounded-2xl p-6">
+        <div className="my-8 flex items-start gap-4 bg-neutral-100 border border-neutral-200 rounded-2xl p-6">
           <Info className="w-5 h-5 text-cyan-600 shrink-0 mt-0.5" />
-          <p className="text-sm text-slate-600 leading-relaxed">{block.text}</p>
+          <p className="text-sm text-slate-600 tracking-tight">{block.text}</p>
         </div>
       );
     case 'p':
     default:
-      return <p className="text-slate-600 leading-relaxed my-5">{block.text}</p>;
+      return <p className="text-slate-600 leading-relaxed tracking-tight my-5">{block.text}</p>;
   }
 }
 
@@ -47,7 +47,7 @@ export default function GuideDetail({ onOpenQuoteModal }) {
 
   if (!article) return <NotFound />;
 
-  const others = sortedArticles().filter((a) => a.slug !== slug).slice(0, 2);
+  const others = sortedArticles().filter((a) => a.slug !== slug).slice(0, 3);
   const published = new Date(article.publishedAt).toLocaleDateString('en-IN', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
@@ -79,7 +79,7 @@ export default function GuideDetail({ onOpenQuoteModal }) {
         <div className="relative container-page max-w-3xl">
           <Breadcrumbs trail={trail} />
           <Reveal>
-            <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-5 font-bold">
+            <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-5 ">
               {article.category}
             </span>
             <h1 className="text-4xl sm:text-5xl tracking-tighter font-medium leading-[1.1]">
@@ -90,10 +90,10 @@ export default function GuideDetail({ onOpenQuoteModal }) {
             <p className="text-slate-400 leading-relaxed mt-6">{article.summary}</p>
           </Reveal>
           <Reveal delay={160}>
-            <div className="flex items-center gap-4 text-xs text-slate-500 mt-7">
+            <div className="flex items-center gap-4 text-sm text-slate-500 mt-7">
               <span className="inline-flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5" />
-                {article.readingMinutes} min read
+                {article.readingMinutes} min
               </span>
               <span className="text-slate-700">·</span>
               <time dateTime={article.publishedAt}>{published}</time>
@@ -105,7 +105,9 @@ export default function GuideDetail({ onOpenQuoteModal }) {
       <article className="section-y">
         <div className="container-page max-w-3xl">
           {article.body.map((block, idx) => (
-            <Block key={`${block.type}-${idx}`} block={block} />
+            <Reveal key={`${block.type}-${idx}`} delay={idx * 40} y={16}>
+              <Block key={`${block.type}-${idx}`} block={block} />
+            </Reveal>
           ))}
         </div>
       </article>
@@ -147,18 +149,19 @@ export default function GuideDetail({ onOpenQuoteModal }) {
             <h2 className="text-xs uppercase tracking-widest text-slate-400 font-bold mb-6">
               More guides
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {others.map((other) => (
-                <Link
-                  key={other.slug}
-                  to={`/guides/${other.slug}`}
-                  className="group bg-white border border-slate-200 rounded-2xl p-6 space-y-2 hover:border-cyan-200 hover:shadow-lg hover:shadow-cyan-900/5 transition-all"
-                >
-                  <span className="text-xs font-semibold uppercase tracking-widest text-cyan-700">
-                    {other.category}
-                  </span>
-                  <h3 className="font-medium text-slate-900 leading-snug">{other.title}</h3>
-                </Link>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {others.map((other, idx) => (
+                <Reveal key={other.slug} delay={idx * 80} y={20} x={-16}>
+                  <Link
+                    to={`/guides/${other.slug}`}
+                    className="group bg-neutral-100 border border-neutral-200 rounded-2xl p-6 space-y-2 hover:border-cyan-200 hover:bg-white hover:shadow-lg hover:shadow-cyan-900/5 transition-all"
+                  >
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-cyan-700 bg-cyan-50 border border-cyan-100 px-2.5 py-1 rounded-full">
+                      {other.category}
+                    </span>
+                    <h3 className="font-medium tracking-tight text-slate-900 leading-snug pt-1">{other.title}</h3>
+                  </Link>
+                </Reveal>
               ))}
             </div>
           </div>
