@@ -99,9 +99,12 @@ export const whatsappNumber = (e164) => String(e164).replace(/\D/g, '');
 export const absoluteUrl = (path = '/') =>
   /^https?:\/\//.test(path) ? path : `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 
-/** Page titles read "<page> | Care Dent"; the home page stands alone. */
+/**
+ * Page titles read "<page> | Care Dent". A title that already starts with the
+ * brand - the home page's - stands alone rather than getting it twice.
+ */
 export const buildTitle = (title) =>
-  !title || title === SITE_NAME ? title || SITE_NAME : `${title} | ${SITE_NAME}`;
+  !title || title.startsWith(SITE_NAME) ? title || SITE_NAME : `${title} | ${SITE_NAME}`;
 
 /** Descriptions over ~160 chars get truncated in results - cut on a word. */
 export const clampDescription = (text = '', max = 158) => {
@@ -175,8 +178,12 @@ export const websiteSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   '@id': `${SITE_URL}/#website`,
+  // Google reads the site name shown in results from this item's name and
+  // alternateName. Without an alternateName it was falling back to the bare
+  // domain ("caredent.net").
   name: SITE_NAME,
-  url: SITE_URL,
+  alternateName: ['Caredent', 'CareDent'],
+  url: `${SITE_URL}/`,
   publisher: { '@id': `${SITE_URL}/#organization` },
   potentialAction: {
     '@type': 'SearchAction',

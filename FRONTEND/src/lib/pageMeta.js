@@ -11,7 +11,9 @@
  */
 export const PAGE_META = {
   '/': {
-    title: 'Dental Equipment Supplier & Service in Chennai',
+    // Leads with the brand: Google draws the site name partly from the home
+    // page title, so it backs up the WebSite markup's "Care Dent".
+    title: 'Care Dent | Dental Equipment Supplier & Service in Chennai',
     description:
       'Care Dent, Mugalivakkam, Chennai — dental chairs, X-ray units, compressors and autoclaves supplied, installed and serviced all over Tamil Nadu by our own engineers.',
     priority: 1.0,
