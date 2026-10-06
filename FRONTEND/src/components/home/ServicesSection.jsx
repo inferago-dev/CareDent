@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Ruler, Wrench, ShieldCheck, Zap, Phone, ClipboardCheck } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
-import { COMPANY_DETAILS } from '../../data/products';
+import { COMPANY_DETAILS, SERVICES_LIST } from '../../data/products';
 import Reveal from '../Reveal';
 import useParallax from '../../hooks/useParallax';
 
@@ -14,14 +14,21 @@ const ICONS = {
   inspection: ClipboardCheck,
 };
 
-const SERVICES = [
-  { id: 'pre-installation', label: 'Pre-Installation', desc: 'Free site survey before you buy.', to: '/services/pre-installation' },
-  { id: 'installation', label: 'Installation', desc: 'Certified precision setup by engineers.', to: '/services' },
-  { id: 'maintenance', label: 'Maintenance', desc: 'Scheduled preventive service visits.', to: '/services' },
-  { id: 'repair', label: 'Repair', desc: 'Rapid fault response, all types.', to: '/services' },
-  { id: 'support', label: 'Support', desc: 'Direct access to our experts.', to: '/services' },
-  { id: 'inspection', label: 'Inspection', desc: 'Pre-purchase safety audits.', to: '/services' },
+// Short tile copy for the home page. Titles come from SERVICES_LIST, the same
+// list the Services page renders, so the two always name a service the same way.
+const TILES = [
+  { id: 'pre-installation', desc: 'Free site survey before you buy.', to: '/services/pre-installation' },
+  { id: 'installation', desc: 'Certified precision setup by engineers.', to: '/services' },
+  { id: 'maintenance', desc: 'Scheduled preventive service visits.', to: '/services' },
+  { id: 'repair', desc: 'Rapid fault response, all types.', to: '/services' },
+  { id: 'support', desc: 'Direct access to our experts.', to: '/services' },
+  { id: 'inspection', desc: 'Pre-purchase safety audits.', to: '/services' },
 ];
+
+const SERVICES = TILES.map((tile) => ({
+  ...tile,
+  label: SERVICES_LIST.find((s) => s.id === tile.id)?.title ?? tile.id,
+}));
 
 export default function ServicesSection() {
   const parallaxRef = useParallax(0.04);
@@ -74,9 +81,9 @@ export default function ServicesSection() {
                     </div>
 
                     <div className="mt-auto pt-6">
-                      <div className="flex items-center justify-between gap-2">
-                        <h3 className="text-lg font-medium tracking-tight text-slate-900">{s.label}</h3>
-                        <ArrowUpRight className="w-4 h-4 shrink-0 text-slate-300 group-hover:text-cyan-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-base sm:text-lg font-medium tracking-tight leading-snug text-slate-900">{s.label}</h3>
+                        <ArrowUpRight className="w-4 h-4 shrink-0 mt-1 text-slate-300 group-hover:text-cyan-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
                       </div>
                       <p className="text-sm text-slate-500 mt-1 leading-snug">{s.desc}</p>
                     </div>
