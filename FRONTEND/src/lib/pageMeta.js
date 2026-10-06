@@ -6,14 +6,14 @@
  * scripts/prerender-meta.mjs bakes them into per-route HTML. Editing a
  * description in one place updates the page, the sitemap and the link preview.
  *
- * Titles are written to survive the " | Care Dent" suffix inside ~60
+ * Titles are written to survive the " | CareDent" suffix inside ~60
  * characters; descriptions aim for 140-158 so Google shows them whole.
  */
 export const PAGE_META = {
   '/': {
     // Leads with the brand: Google draws the site name partly from the home
-    // page title, so it backs up the WebSite markup's "Care Dent".
-    title: 'Care Dent | Dental Equipment Supplier & Service in Chennai',
+    // page title, so it backs up the WebSite markup's "CareDent".
+    title: 'CareDent | Dental Equipment Supplier & Service in Chennai',
     description:
       'Care Dent, Mugalivakkam, Chennai — dental chairs, X-ray units, compressors and autoclaves supplied, installed and serviced all over Tamil Nadu by our own engineers.',
     priority: 1.0,

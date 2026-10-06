@@ -135,7 +135,7 @@ export default function QuoteModal({ isOpen, onClose, initialProduct = '' }) {
         {/* Header */}
         <div className="flex items-start justify-between gap-4 px-7 pt-7 pb-6 sm:px-9 border-b border-slate-200 shrink-0">
           <div>
-            <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-3 font-bold">
+            <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-3 font-medium">
               Request a Quotation
             </span>
             <h3 className="text-2xl sm:text-3xl tracking-tighter font-medium text-blue-950 leading-[1.1]">

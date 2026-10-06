@@ -22,7 +22,11 @@ export const SITE_URL = (
   'https://www.caredent.net'
 ).replace(/\/+$/, '');
 
-export const SITE_NAME = 'Care Dent';
+// Written as one word: this is the site name Google shows above every search
+// result, so the WebSite markup, Organization markup, og:site_name and the
+// title suffix all carry the same "CareDent". The spaced spelling stays an
+// alternateName below so Google still matches it.
+export const SITE_NAME = 'CareDent';
 export const SITE_TAGLINE = 'We care for your precious equipments';
 /**
  * The share card. Scrapers crop a `summary_large_image` to roughly 1.91:1, so
@@ -72,6 +76,16 @@ export const BUSINESS_ADDRESS_LINE = `${BUSINESS.street}, ${BUSINESS.locality} -
   BUSINESS.postalCode.replace(/^(\d{3})(\d{3})$/, '$1 $2')
 }`;
 
+/**
+ * The business's own listings elsewhere. The footer links to each one, and the
+ * Organization markup lists them as sameAs. An empty URL hides that link and
+ * leaves it out of the markup, so a profile can be added just by filling it in.
+ */
+export const SOCIAL_LINKS = {
+  instagram: 'https://www.instagram.com/caredent2023/',
+  justdial: 'https://www.justdial.com/Chennai/Care-Dent-Ramapuram-Subashree-Nagar-Mugalivakkam-Roshan-Villa-Arumugam-Nagar/044PXX44-XX44-250926050557-V9A4_BZDET',
+};
+
 /*
  * Phone numbers are stored once, in E.164, because that is the only form that
  * is correct in a `tel:` URI and in JSON-LD. These render it for the places it
@@ -100,7 +114,7 @@ export const absoluteUrl = (path = '/') =>
   /^https?:\/\//.test(path) ? path : `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 
 /**
- * Page titles read "<page> | Care Dent". A title that already starts with the
+ * Page titles read "<page> | CareDent". A title that already starts with the
  * brand - the home page's - stands alone rather than getting it twice.
  */
 export const buildTitle = (title) =>
@@ -127,10 +141,10 @@ export const organizationSchema = () => ({
   '@id': `${SITE_URL}/#organization`,
   name: SITE_NAME,
   legalName: BUSINESS.legalName,
-  // The mark is written "Care Dent"; almost every search for it is typed as
-  // one word. Listing the variants is what lets Google treat them as one
-  // entity rather than as unrelated strings.
-  alternateName: ['Caredent', 'CareDent', 'Care Dent Chennai'],
+  // Listing the spellings is what lets Google treat them as one entity rather
+  // than as unrelated strings - including the spaced "Care Dent" the Google
+  // Business Profile and the rest of the site use.
+  alternateName: ['Care Dent', 'Caredent', 'Care Dent Chennai'],
   description:
     'Dental equipment supply, installation and service in Chennai - dental chairs, ' +
     'X-ray units, compressors and autoclaves, backed by in-house certified engineers.',
@@ -141,7 +155,7 @@ export const organizationSchema = () => ({
   // Profiles Google can verify are the same business. "Caredent" is also an
   // Australian oral-care brand, a Gurgaon equipment supplier and clinics in
   // Mumbai and Lagos - sameAs is what separates this entity from those.
-  sameAs: ['https://www.instagram.com/caredent2023/'],
+  sameAs: Object.values(SOCIAL_LINKS).filter(Boolean),
   // The existing Google Business Profile, addressed by its CID so the link
   // survives any change to the place's display name or address string.
   hasMap: 'https://maps.google.com/?cid=1806503162863425912',
@@ -178,11 +192,11 @@ export const websiteSchema = () => ({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   '@id': `${SITE_URL}/#website`,
-  // Google reads the site name shown in results from this item's name and
-  // alternateName. Without an alternateName it was falling back to the bare
+  // Google reads the site name shown above results from this item's name,
+  // with alternateName as its fallback - without them it shows the bare
   // domain ("caredent.net").
   name: SITE_NAME,
-  alternateName: ['Caredent', 'CareDent'],
+  alternateName: ['Care Dent', 'Caredent'],
   url: `${SITE_URL}/`,
   publisher: { '@id': `${SITE_URL}/#organization` },
   potentialAction: {

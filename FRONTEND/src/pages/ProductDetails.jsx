@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
-  CheckCircle2, Download, MessageSquare, ArrowRight, ShieldCheck,
-  Sparkles, FileText, ChevronLeft, Ruler, ClipboardCheck,
+  CheckCircle2, Download, ArrowUpRight, ShieldCheck,
+  Sparkles, FileText, ChevronLeft, Ruler,
 } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { DENTAL_CHAIRS, OTHER_EQUIPMENT, COMPANY_DETAILS } from '../data/products';
 import { requirementsFor } from '../data/preInstallation';
 import downloadPreInstallationPdf from '../lib/preInstallationPdf';
@@ -111,7 +112,7 @@ export default function ProductDetails({ onOpenQuoteModal }) {
           <Breadcrumbs trail={trail} className="mb-0 min-w-0" />
           <button
             onClick={() => navigate('/products')}
-            className="text-xs font-semibold text-slate-300 hover:text-cyan-400 flex items-center gap-1 shrink-0 transition-colors"
+            className="text-xs text-slate-300 hover:text-cyan-400 flex items-center gap-1 shrink-0 transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Back to Products</span>
@@ -119,21 +120,20 @@ export default function ProductDetails({ onOpenQuoteModal }) {
         </div>
       </section>
 
-      <div className="container-page max-w-7xl space-y-12 py-12">
+      <div className="container-page max-w-7xl space-y-16 section-y-tight">
 
         {/* GALLERY + INFO */}
         <Reveal y={24}>
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden p-6 lg:p-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
 
             <div className="lg:col-span-7 space-y-4">
-              <div className="relative h-80 sm:h-96 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 group">
+              <div className="relative aspect-[4/3] bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 group">
                 {selectedImage ? (
                   <img
                     key={selectedImage}
                     src={selectedImage}
                     alt={product.name}
-                    className="w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-500 animate-fade-in"
+                    className="w-full h-full object-contain p-8 mix-blend-multiply group-hover:scale-105 transition-transform duration-700 ease-out animate-fade-in"
                     fetchPriority="high"
                     decoding="async"
                   />
@@ -143,7 +143,7 @@ export default function ProductDetails({ onOpenQuoteModal }) {
                   </div>
                 )}
                 {product.badge && (
-                  <span className="absolute top-4 left-4 bg-cyan-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                  <span className="absolute top-4 left-4 text-xs uppercase tracking-widest text-white bg-blue-950 px-3 py-1 rounded-full">
                     {product.badge}
                   </span>
                 )}
@@ -155,239 +155,285 @@ export default function ProductDetails({ onOpenQuoteModal }) {
                     <button
                       key={`${img}-${idx}`}
                       onClick={() => setPicked({ slug, src: img })}
-                      className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 bg-slate-50 ${
-                        selectedImage === img ? 'border-cyan-600 scale-95 shadow-md' : 'border-slate-200 opacity-70 hover:opacity-100'
+                      className={`w-20 h-20 rounded-xl overflow-hidden border transition-all shrink-0 bg-slate-50 ${
+                        selectedImage === img ? 'border-blue-950 ring-2 ring-blue-950/10' : 'border-slate-200 opacity-70 hover:opacity-100'
                       }`}
                     >
-                      <img src={img} alt={`${product.name} — view ${idx + 1}`} className="w-full h-full object-contain p-1" loading="lazy" decoding="async" />
+                      <img src={img} alt={`${product.name} — view ${idx + 1}`} className="w-full h-full object-contain p-1.5 mix-blend-multiply" loading="lazy" decoding="async" />
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            <div className="lg:col-span-5 space-y-6 flex flex-col justify-between">
+            <div className="lg:col-span-5 flex flex-col gap-8">
               <div>
-                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <div className="flex items-center gap-3 mb-5 flex-wrap">
                   {(product.series || product.category) && (
-                    <span className="text-xs font-bold text-cyan-700 uppercase tracking-widest bg-cyan-50 border border-cyan-100 px-2.5 py-1 rounded-full">
+                    <span className="text-xs uppercase tracking-widest text-cyan-600 font-bold">
                       {product.series || product.category}
                     </span>
                   )}
-                  <span className="text-xs text-slate-400 font-medium">
-                    Model Code: CD-{String(product.slug).toUpperCase()}
+                  <span className="text-xs text-slate-400">
+                    Model code CD-{String(product.slug).toUpperCase()}
                   </span>
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl tracking-tighter font-medium leading-[1.1] text-slate-900">
+                <h1 className="text-3xl sm:text-4xl tracking-tighter font-medium leading-[1.1] text-blue-950">
                   {product.name}
                 </h1>
 
-                {product.tagline && <p className="text-cyan-700 font-semibold text-base mt-2">{product.tagline}</p>}
+                {product.tagline && <p className="text-cyan-700 text-base mt-3">{product.tagline}</p>}
 
-                <p className="text-slate-600 text-sm mt-4 leading-relaxed">{product.description}</p>
-
-                {features.length > 0 && (
-                  <div className="mt-6 space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                    <div className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
-                      Key features &amp; inclusions
-                    </div>
-                    {features.map((feat, i) => (
-                      <div key={i} className="flex items-start gap-2 text-xs text-slate-700">
-                        <CheckCircle2 className="w-4 h-4 text-cyan-600 shrink-0 mt-0.5" />
-                        <span>{feat}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <p className="text-slate-500 mt-4 leading-relaxed">{product.description}</p>
               </div>
 
-              <div className="space-y-3 pt-4 border-t border-slate-100">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {features.length > 0 && (
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4">
+                  <div className="text-xs uppercase tracking-widest text-slate-400">Key features &amp; inclusions</div>
+                  <ul className="space-y-3">
+                    {features.map((feat, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-slate-700 leading-snug">
+                        <span className="w-5 h-5 rounded-full bg-blue-950 text-white flex items-center justify-center shrink-0 mt-px">
+                          <CheckCircle2 className="w-3 h-3" />
+                        </span>
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="mt-auto space-y-5">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => onOpenQuoteModal && onOpenQuoteModal(product.name)}
-                    className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 pl-4 pr-2 rounded-full shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                    className="group flex-1 inline-flex items-center justify-between gap-3 rounded-full bg-blue-950 hover:bg-blue-900 text-white text-sm py-1.5 pl-6 pr-1.5 transition-all active:scale-[0.98]"
                   >
                     <span>Request Quotation</span>
-                    <ArrowRight className="w-8 h-8 bg-white/15 p-2 text-white rounded-full" />
+                    <span className="w-9 h-9 rounded-full bg-white text-blue-950 flex items-center justify-center">
+                      <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </span>
                   </button>
 
                   <a
                     href={`https://wa.me/${COMPANY_DETAILS.whatsappNumber}?text=${encodeURIComponent(`Hello Care Dent, I am interested in ${product.name}.`)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="w-full bg-blue-950 hover:bg-blue-900 text-white font-bold py-3.5 px-4 rounded-full shadow flex items-center justify-center gap-2 transition-all text-xs"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-slate-800 font-medium text-sm px-6 py-3 transition-all active:scale-[0.98]"
                   >
-                    <MessageSquare className="w-4 h-4 text-cyan-400" />
-                    <span>WhatsApp Inquiry</span>
+                    <FaWhatsapp className="w-4 h-4 text-emerald-600" />
+                    <span>WhatsApp</span>
                   </a>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-slate-500 pt-2">
-                  <span className="flex items-center gap-1">
-                    <ShieldCheck className="w-4 h-4 text-cyan-600" /> Free installation included
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Sparkles className="w-4 h-4 text-cyan-600" /> 1-year full warranty
-                  </span>
+                <div className="grid grid-cols-2 gap-3 pt-5 border-t border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <span className="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-blue-950 flex items-center justify-center shrink-0">
+                      <ShieldCheck className="w-4 h-4" />
+                    </span>
+                    <span className="text-sm text-slate-600 leading-tight">Free installation included</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 text-blue-950 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-4 h-4" />
+                    </span>
+                    <span className="text-sm text-slate-600 leading-tight">1-year full warranty</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
         </Reveal>
 
         {/* SPECIFICATIONS */}
         {specs.length > 0 && (
           <Reveal y={24}>
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-lg p-6 lg:p-10 space-y-6">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-2xl font-semibold text-slate-900">Technical specifications</h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Manufacturer specification chart for {product.name}
-              </p>
+            <div className="bg-white rounded-2xl border border-slate-200 p-7 sm:p-9 space-y-7">
+              <SectionHeading
+                eyebrow="Specifications"
+                title="Technical specifications"
+                sub={`Manufacturer specification chart for ${product.name}.`}
+              />
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="w-full text-left border-collapse">
+                  <tbody>
+                    {specs.map((spec, idx) => (
+                      <tr key={idx} className="odd:bg-slate-50 even:bg-white">
+                        <td className="py-3.5 px-5 text-sm text-slate-500 w-1/3 border-b border-slate-100">
+                          {spec.label}
+                        </td>
+                        <td className="py-3.5 px-5 text-sm text-slate-800 border-b border-slate-100">
+                          {spec.value}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <tbody>
-                  {specs.map((spec, idx) => (
-                    <tr key={idx} className={idx % 2 === 0 ? 'bg-slate-50/70' : 'bg-white'}>
-                      <td className="py-3.5 px-4 text-xs font-bold text-slate-700 w-1/3 border-b border-slate-100">
-                        {spec.label}
-                      </td>
-                      <td className="py-3.5 px-4 text-xs text-slate-800 font-medium border-b border-slate-100">
-                        {spec.value}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
           </Reveal>
         )}
 
         {/* INSTALLATION REQUIREMENTS */}
         <Reveal y={24}>
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-lg p-6 lg:p-10 space-y-8">
-          <div className="border-b border-slate-100 pb-4 flex items-start gap-4">
-            <div className="w-11 h-11 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center shrink-0">
-              <Ruler className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-semibold text-slate-900">Installation requirements</h2>
-              <p className="text-xs text-slate-500 mt-1">
-                What the room needs before {product.name} can be installed. Figures are typical — the site
-                assessment confirms them against your clinic.
-              </p>
-            </div>
-          </div>
+          <div className="bg-white rounded-2xl border border-slate-200 p-7 sm:p-9 space-y-7">
+            <SectionHeading
+              icon={Ruler}
+              eyebrow="Site readiness"
+              title="Installation requirements"
+              sub={`What the room needs before ${product.name} can be installed. Figures are typical — the site assessment confirms them against your clinic.`}
+            />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-            {installRequirements.map((requirement) => (
-              <div key={requirement} className="flex items-start gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0 mt-2" />
-                <span className="text-sm text-slate-600 leading-relaxed">{requirement}</span>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {installRequirements.map((requirement) => (
+                <li key={requirement} className="flex items-start gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                  <span className="w-5 h-5 rounded-full bg-white border border-slate-200 text-cyan-600 flex items-center justify-center shrink-0 mt-px">
+                    <CheckCircle2 className="w-3 h-3" />
+                  </span>
+                  <span className="text-sm text-slate-600 leading-relaxed">{requirement}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-slate-200">
+              <Link
+                to="/services/pre-installation"
+                className="text-sm text-slate-500 hover:text-blue-950 transition-colors"
+              >
+                Full checklist, including optional Vastu layout guidance →
+              </Link>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => downloadPreInstallationPdf(product)}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 hover:border-cyan-300 hover:bg-slate-50 text-slate-700 font-medium text-sm px-5 py-3 transition-all active:scale-[0.98]"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download PDF</span>
+                </button>
+                <Link
+                  to={`/services/pre-installation?equipment=${encodeURIComponent(product.name)}#request-assessment`}
+                  className="group inline-flex items-center justify-between gap-3 rounded-full bg-blue-950 hover:bg-blue-900 text-white font-medium text-sm py-1.5 pl-6 pr-1.5 transition-all active:scale-[0.98]"
+                >
+                  <span>Request site assessment</span>
+                  <span className="w-8 h-8 rounded-full bg-white text-blue-950 flex items-center justify-center">
+                    <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </span>
+                </Link>
               </div>
-            ))}
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            <button
-              onClick={() => downloadPreInstallationPdf(product)}
-              className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs px-6 py-3.5 rounded-full flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"
-            >
-              <Download className="w-4 h-4 text-cyan-600" />
-              <span>Download pre-installation PDF</span>
-            </button>
-
-            <Link
-              to={`/services/pre-installation?equipment=${encodeURIComponent(product.name)}#request-assessment`}
-              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs px-6 py-3.5 rounded-full shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-            >
-              <ClipboardCheck className="w-4 h-4" />
-              <span>Request site assessment</span>
-            </Link>
-          </div>
-
-          <p className="text-xs text-slate-400 flex items-center gap-1.5">
-            <span>Full checklist, including optional Vastu layout guidance:</span>
-            <Link to="/services/pre-installation" className="font-semibold text-cyan-700 hover:text-cyan-800 transition-colors">
-              Pre-installation requirements →
-            </Link>
-          </p>
-        </div>
         </Reveal>
 
-        {/* BROCHURE */}
+        {/* BROCHURE — the same navy panel as the site's other dark sections */}
         <Reveal variant="scale" scale={0.97}>
-        <div className="bg-blue-950 text-white rounded-3xl p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="flex items-center gap-2 justify-center md:justify-start">
-              <FileText className="w-5 h-5 text-cyan-400" />
-              <span className="text-xs font-bold uppercase tracking-wider text-cyan-300">Technical datasheet</span>
-            </div>
-            <h3 className="text-xl font-semibold">{product.name} specification sheet</h3>
-            <p className="text-xs text-slate-300">
-              {hasBrochure
-                ? 'Includes dimension drawings, utility pipeline specs and colour options.'
-                : 'Not published online yet — request it and we will email it to you the same day.'}
-            </p>
-          </div>
+          <div className="relative overflow-hidden rounded-3xl bg-blue-950 text-white px-8 py-10 sm:px-12 sm:py-12">
+            <svg
+              className="absolute -right-24 -top-32 w-[520px] h-[520px] pointer-events-none"
+              viewBox="0 0 600 600"
+              fill="none"
+            >
+              {[60, 110, 160, 210, 260, 310, 360].map((r, i) => (
+                <circle key={r} cx="300" cy="300" r={r} stroke="white" strokeOpacity={0.12 - i * 0.006} strokeWidth="1" />
+              ))}
+            </svg>
+            <div className="absolute -bottom-24 left-1/4 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
 
-          {hasBrochure ? (
-            <a
-              href={product.brochureUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs px-6 py-3 rounded-full shadow-lg flex items-center gap-2 shrink-0"
-            >
-              <Download className="w-4 h-4" />
-              <span>Download brochure PDF</span>
-            </a>
-          ) : (
-            <a
-              href={`mailto:${COMPANY_DETAILS.email}?subject=${encodeURIComponent(`Datasheet request: ${product.name}`)}`}
-              className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs px-6 py-3 rounded-full shadow-lg flex items-center gap-2 shrink-0"
-            >
-              <FileText className="w-4 h-4" />
-              <span>Request the datasheet</span>
-            </a>
-          )}
-        </div>
+            <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="space-y-3 max-w-xl">
+                <span className="block text-xs uppercase tracking-widest text-cyan-400 font-bold">Technical datasheet</span>
+                <h2 className="text-2xl sm:text-3xl tracking-tighter font-medium leading-[1.15]">
+                  {product.name} specification sheet
+                </h2>
+                <p className="text-slate-400 leading-relaxed">
+                  {hasBrochure
+                    ? 'Includes dimension drawings, utility pipeline specs and colour options.'
+                    : 'Not published online yet — request it and we will email it to you the same day.'}
+                </p>
+              </div>
+
+              <a
+                href={hasBrochure
+                  ? product.brochureUrl
+                  : `mailto:${COMPANY_DETAILS.email}?subject=${encodeURIComponent(`Datasheet request: ${product.name}`)}`}
+                {...(hasBrochure ? { target: '_blank', rel: 'noreferrer' } : {})}
+                className="group inline-flex items-center justify-between gap-3 rounded-full bg-white hover:bg-cyan-50 text-blue-950 font-medium text-sm py-1.5 pl-6 pr-1.5 shrink-0 transition-all active:scale-[0.98]"
+              >
+                <span>{hasBrochure ? 'Download brochure PDF' : 'Request the datasheet'}</span>
+                <span className="w-9 h-9 rounded-full bg-blue-950 text-white flex items-center justify-center">
+                  {hasBrochure ? <Download className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
+                </span>
+              </a>
+            </div>
+          </div>
         </Reveal>
 
         {/* RELATED */}
         {related.length > 0 && (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <Reveal>
-              <h3 className="text-2xl font-semibold text-slate-900">Explore related models</h3>
+              <div className="flex items-end justify-between gap-4 pb-6 border-b border-slate-200">
+                <div>
+                  <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-4 font-bold">Keep browsing</span>
+                  <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium text-blue-950 leading-[1.1]">
+                    Explore related models
+                  </h2>
+                </div>
+                <Link to="/products" className="hidden sm:inline-flex text-sm text-slate-500 hover:text-blue-950 transition-colors">
+                  View all products →
+                </Link>
+              </div>
             </Reveal>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {related.slice(0, 3).map((rc, idx) => (
                 <Reveal key={rc.slug} delay={idx * 80} y={24}>
-                <Link
-                  to={`/products/${rc.slug}`}
-                  className="block h-full bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:border-cyan-500 transition-all group"
-                >
-                  <img
-                    src={rc.heroImage}
-                    alt={rc.name}
-                    loading="lazy"
-                    className="w-full h-40 object-contain bg-slate-50 rounded-xl mb-4 p-2 group-hover:scale-105 transition-transform"
-                  />
-                  <div className="text-xs text-cyan-700 font-semibold uppercase tracking-widest">
-                    {rc.series || rc.category}
-                  </div>
-                  <h4 className="text-base font-medium text-slate-900 mt-1 group-hover:text-cyan-600">{rc.name}</h4>
-                  {rc.tagline && <p className="text-xs text-slate-500 mt-1 line-clamp-1">{rc.tagline}</p>}
-                </Link>
+                  <Link
+                    to={`/products/${rc.slug}`}
+                    className="group h-full flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-cyan-200 hover:shadow-xl hover:shadow-cyan-900/5 transition-all duration-500"
+                  >
+                    <div className="h-48 bg-slate-50 overflow-hidden">
+                      <img
+                        src={rc.heroImage}
+                        alt={rc.name}
+                        loading="lazy"
+                        className="w-full h-full object-contain p-5 mix-blend-multiply group-hover:scale-[1.06] transition-transform duration-700 ease-out"
+                      />
+                    </div>
+                    <div className="p-6 flex items-end justify-between gap-3 flex-1">
+                      <div className="min-w-0">
+                        <div className="text-xs uppercase tracking-widest text-slate-400">{rc.series || rc.category}</div>
+                        <h3 className="text-lg font-medium tracking-tight text-blue-950 mt-1 group-hover:text-cyan-700 transition-colors">{rc.name}</h3>
+                        {rc.tagline && <p className="text-sm text-slate-500 mt-1 line-clamp-1">{rc.tagline}</p>}
+                      </div>
+                      <span className="w-8 h-8 rounded-full border border-slate-200 text-slate-500 flex items-center justify-center shrink-0 group-hover:bg-blue-950 group-hover:border-blue-950 group-hover:text-white transition-colors duration-300">
+                        <ArrowUpRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </Link>
                 </Reveal>
               ))}
             </div>
           </div>
         )}
 
+      </div>
+    </div>
+  );
+}
+
+/** Card heading in the site's eyebrow + title pattern, with an optional icon box. */
+function SectionHeading({ icon: Icon, eyebrow, title, sub }) {
+  return (
+    <div className="flex items-start gap-4 pb-6 border-b border-slate-200">
+      {Icon && (
+        <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 text-blue-950 flex items-center justify-center shrink-0">
+          <Icon className="w-5 h-5" />
+        </div>
+      )}
+      <div className="space-y-2">
+        <span className="block text-xs uppercase tracking-widest text-cyan-600 font-bold">{eyebrow}</span>
+        <h2 className="text-2xl sm:text-3xl tracking-tighter font-medium text-blue-950 leading-[1.1]">{title}</h2>
+        {sub && <p className="text-sm text-slate-500 leading-relaxed max-w-2xl">{sub}</p>}
       </div>
     </div>
   );

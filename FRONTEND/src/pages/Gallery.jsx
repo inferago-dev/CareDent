@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { X, ChevronLeft, ChevronRight, ArrowUpRight, ImageOff } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, ArrowUpRight, ImageOff, Maximize2 } from 'lucide-react';
 import { GALLERY_ITEMS } from '../data/gallery';
 import { COMPANY_DETAILS } from '../data/products';
 import useCatalogue from '../hooks/useCatalogue';
@@ -79,17 +79,17 @@ function Lightbox({ items, index, onClose, onStep }) {
         </div>
         <button
           onClick={onClose}
-          className="p-2 text-slate-300 hover:text-white transition-colors"
+          className="w-10 h-10 rounded-full border border-white/15 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors"
           aria-label="Close"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
       </div>
 
       <div className="flex-1 flex items-center justify-center gap-2 sm:gap-6 px-4 pb-4 min-h-0">
         <button
           onClick={(e) => { e.stopPropagation(); onStep(-1); }}
-          className="p-2 sm:p-3 rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+          className="w-11 h-11 rounded-full bg-white/5 border border-white/15 text-slate-300 hover:text-blue-950 hover:bg-white flex items-center justify-center transition-colors shrink-0"
           aria-label="Previous"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -110,20 +110,24 @@ function Lightbox({ items, index, onClose, onStep }) {
             <div className="text-lg font-medium text-white tracking-tight">{item.title}</div>
             {item.caption && <p className="text-sm text-slate-400 leading-relaxed">{item.caption}</p>}
             {item.href && (
-              <Link
-                to={item.href}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors pt-1"
-              >
-                <span>View product</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
+              <div className="pt-3">
+                <Link
+                  to={item.href}
+                  className="group inline-flex items-center gap-3 rounded-full bg-white hover:bg-cyan-50 text-blue-950 font-medium text-sm py-1.5 pl-5 pr-1.5 transition-all active:scale-[0.98]"
+                >
+                  <span>View product</span>
+                  <span className="w-8 h-8 rounded-full bg-blue-950 text-white flex items-center justify-center">
+                    <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </span>
+                </Link>
+              </div>
             )}
           </figcaption>
         </figure>
 
         <button
           onClick={(e) => { e.stopPropagation(); onStep(1); }}
-          className="p-2 sm:p-3 rounded-full bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+          className="w-11 h-11 rounded-full bg-white/5 border border-white/15 text-slate-300 hover:text-blue-950 hover:bg-white flex items-center justify-center transition-colors shrink-0"
           aria-label="Next"
         >
           <ChevronRight className="w-5 h-5" />
@@ -173,7 +177,7 @@ export default function Gallery({ onOpenQuoteModal }) {
 
         <div className="relative container-page max-w-4xl text-center">
           <Reveal>
-            <Breadcrumbs trail={BREADCRUMB_TRAIL} />
+            <Breadcrumbs trail={BREADCRUMB_TRAIL} align="center" />
             <span className="block text-xs uppercase tracking-widest text-cyan-400 mb-6 font-bold">
               Gallery
             </span>
@@ -195,57 +199,77 @@ export default function Gallery({ onOpenQuoteModal }) {
         <div className="container-page max-w-7xl">
 
           <Reveal>
-            <div className="flex flex-wrap items-center gap-2 mb-10">
-              {/* Filtering closes the lightbox: its index points into `visible`. */}
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => { setFilter(category); setLightbox(null); }}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${filter === category
-                      ? 'bg-blue-950 text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 pb-8 mb-10 border-b border-slate-200">
+              <div>
+                <span className="block text-xs uppercase tracking-widest text-cyan-600 mb-4 font-bold">Browse</span>
+                <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium text-blue-950 leading-[1.1]">
+                  {filter === ALL ? 'Every photo' : filter}
+                </h2>
+                <p className="text-sm text-slate-500 mt-2 tabular-nums">
+                  {visible.length} {visible.length === 1 ? 'photo' : 'photos'}
+                </p>
+              </div>
+
+              {/* Category switch. Filtering closes the lightbox: its index points into `visible`. */}
+              <div className="inline-flex flex-wrap rounded-full border border-slate-200 bg-slate-50 p-1 text-sm font-medium w-fit">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => { setFilter(category); setLightbox(null); }}
+                    className={`px-4 py-2 rounded-full transition-colors ${
+                      filter === category ? 'bg-blue-950 text-white' : 'text-slate-500 hover:text-blue-950'
                     }`}
-                >
-                  {category}
-                </button>
-              ))}
-              <span className="text-xs text-slate-400 ml-auto tabular-nums">
-                {visible.length} {visible.length === 1 ? 'photo' : 'photos'}
-              </span>
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
             </div>
           </Reveal>
 
           {visible.length === 0 ? (
-            <div className="text-center py-24 text-slate-400">
-              <ImageOff className="w-8 h-8 mx-auto mb-3" />
-              <p className="text-sm">No photos in this category yet.</p>
+            <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center mx-auto">
+                <ImageOff className="w-6 h-6" />
+              </div>
+              <p className="text-slate-500">No photos in this category yet.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {visible.map((item, idx) => (
-                <Reveal key={item.id} delay={(idx % 3) * 70} variant="scale">
+                <Reveal key={item.id} delay={(idx % 3) * 80} variant="scale" scale={0.97}>
                   <button
                     onClick={() => setLightbox(idx)}
-                    className="group relative w-full aspect-4/3 rounded-2xl overflow-hidden border border-neutral-200 text-left"
+                    className="group w-full h-full flex flex-col text-left bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-cyan-200 hover:shadow-xl hover:shadow-cyan-900/5 transition-all duration-500"
                   >
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      loading="lazy"
-                      className="w-full h-full object-contain p-4 sm:p-6 group-hover:scale-105 transition-transform duration-700 ease-out"
-                    />
-
-                    {/* Caption sheet, revealed on hover / always on touch */}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-500/80 via-slate-500/50 to-transparent px-4 sm:px-5 pt-20 pb-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-all duration-300">
-                      <div className="text-sm font-medium text-white tracking-tight bg-black/30 w-fit px-2 py-0.5 rounded-lg">{item.title}</div>
-                      {item.caption && (
-                        <p className="text-xs text-white/70 mt-0.5 line-clamp-2 leading-snug">{item.caption}</p>
-                      )}
+                    <div className="relative w-full aspect-4/3 bg-slate-50 overflow-hidden">
+                      <img
+                        src={item.src}
+                        alt={item.title}
+                        loading="lazy"
+                        className="w-full h-full object-contain p-6 mix-blend-multiply group-hover:scale-[1.06] transition-transform duration-700 ease-out"
+                      />
+                      <span className="absolute top-4 left-4 text-xs uppercase tracking-widest text-slate-600 bg-white/90 backdrop-blur-sm border border-slate-200 px-3 py-1 rounded-full">
+                        {item.category}
+                      </span>
+                      <span className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white border border-slate-200 text-blue-950 flex items-center justify-center opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 transition-all duration-300">
+                        <Maximize2 className="w-4 h-4" />
+                      </span>
                     </div>
 
-                    <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-white/85 backdrop-blur px-2 py-1 rounded-full">
-                      {item.category}
-                    </span>
+                    <div className="flex items-end justify-between gap-3 p-5 flex-1">
+                      <div className="min-w-0">
+                        <h3 className="text-lg font-medium tracking-tight text-blue-950 group-hover:text-cyan-700 transition-colors truncate">
+                          {item.title}
+                        </h3>
+                        {item.caption && (
+                          <p className="text-sm text-slate-500 mt-1 line-clamp-1">{item.caption}</p>
+                        )}
+                      </div>
+                      <span className="w-8 h-8 rounded-full border border-slate-200 text-slate-500 flex items-center justify-center shrink-0 group-hover:bg-blue-950 group-hover:border-blue-950 group-hover:text-white transition-colors duration-300">
+                        <ArrowUpRight className="w-4 h-4" />
+                      </span>
+                    </div>
                   </button>
                 </Reveal>
               ))}
@@ -254,34 +278,53 @@ export default function Gallery({ onOpenQuoteModal }) {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA — the same navy panel as the site's other closing sections */}
       <section className="section-pb">
         <div className="container-page max-w-7xl">
-          <Reveal>
-            <div className="rounded-3xl bg-blue-950 text-white p-10 sm:p-14 flex flex-col lg:flex-row items-center justify-between gap-8">
-              <div className="space-y-3 text-center lg:text-left">
-                <h2 className="text-2xl sm:text-3xl tracking-tighter font-medium leading-snug">
-                  Seen something that fits your clinic?
-                </h2>
-                <p className="text-slate-400 text-sm leading-relaxed max-w-xl">
-                  Tell us the model and the room, and we will come back with a price and a site plan.
-                  Or call {COMPANY_DETAILS.founder} directly on {COMPANY_DETAILS.phoneNumbers[0]}.
-                </p>
+          <Reveal variant="scale" scale={0.97}>
+            <div className="relative overflow-hidden rounded-3xl bg-blue-950 text-white px-8 py-12 sm:px-14 sm:py-14">
+              <svg
+                className="absolute -right-24 -top-32 w-[560px] h-[560px] pointer-events-none"
+                viewBox="0 0 600 600"
+                fill="none"
+              >
+                {[60, 110, 160, 210, 260, 310, 360].map((r, i) => (
+                  <circle key={r} cx="300" cy="300" r={r} stroke="white" strokeOpacity={0.12 - i * 0.006} strokeWidth="1" />
+                ))}
+              </svg>
+              <div className="absolute inset-x-0 bottom-0 h-40 pointer-events-none">
+                <div className="absolute -bottom-16 left-1/4 w-72 h-72 bg-cyan-500/25 rounded-full blur-3xl" />
+                <div className="absolute -bottom-20 right-1/4 w-72 h-72 bg-blue-400/15 rounded-full blur-3xl" />
               </div>
-              <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-                <button
-                  onClick={() => onOpenQuoteModal && onOpenQuoteModal()}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white text-sm px-6 py-3 transition-colors"
-                >
-                  <span>Request a quote</span>
-                  <ArrowUpRight className="w-4 h-4" />
-                </button>
-                <Link
-                  to="/products"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 text-white text-sm font-medium px-6 py-3 hover:bg-white/10 transition-colors"
-                >
-                  Browse all products
-                </Link>
+
+              <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+                <div className="max-w-xl space-y-4">
+                  <span className="block text-xs uppercase tracking-widest text-cyan-400 font-bold">Like what you see?</span>
+                  <h2 className="text-3xl sm:text-4xl tracking-tighter font-medium leading-[1.1]">
+                    Seen something that fits your clinic?
+                  </h2>
+                  <p className="text-slate-400 leading-relaxed">
+                    Tell us the model and the room, and we will come back with a price and a site plan.
+                    Or call {COMPANY_DETAILS.founder} directly on {COMPANY_DETAILS.phoneNumbers[0]}.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                  <button
+                    onClick={() => onOpenQuoteModal && onOpenQuoteModal()}
+                    className="group inline-flex items-center justify-between gap-3 rounded-full bg-white hover:bg-cyan-50 text-blue-950 text-sm py-1.5 pl-6 pr-1.5 transition-all active:scale-[0.98]"
+                  >
+                    <span>Request a Quote</span>
+                    <span className="w-9 h-9 rounded-full bg-blue-950 text-white flex items-center justify-center">
+                      <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </span>
+                  </button>
+                  <Link
+                    to="/products"
+                    className="inline-flex items-center justify-center rounded-full backdrop-blur-xl bg-white/5 border border-white/15 hover:bg-white/10 text-white font-medium text-sm px-6 py-3 transition-all active:scale-[0.98]"
+                  >
+                    Browse all products
+                  </Link>
+                </div>
               </div>
             </div>
           </Reveal>

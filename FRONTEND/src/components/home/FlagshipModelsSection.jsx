@@ -103,7 +103,7 @@ export default function FlagshipModelsSection({ onOpenQuoteModal }) {
                   <div className="mt-auto border-t border-slate-100 pt-4 flex items-center justify-between gap-3">
                     <button
                       onClick={() => onOpenQuoteModal(chair.name)}
-                      className="flex-1 text-xs font-semibold text-white bg-blue-950 hover:bg-cyan-600 px-4 py-2.5 rounded-full transition-all duration-300 tracking-tight text-center"
+                      className="flex-1 text-xs text-white bg-blue-950 hover:bg-cyan-600 px-4 py-2.5 rounded-full transition-all duration-300 tracking-tight text-center"
                     >
                       Get Quote
                     </button>

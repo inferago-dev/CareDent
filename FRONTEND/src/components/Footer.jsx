@@ -1,8 +1,19 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail } from 'lucide-react';
+import { FaInstagram } from 'react-icons/fa';
 import { COMPANY_DETAILS } from '../data/products';
+import { SOCIAL_LINKS } from '../lib/seo';
 import useParallax from '../hooks/useParallax';
 import Reveal from './Reveal';
+
+/** JustDial has no icon in the icon set, so it gets a lettermark sized like one. */
+function JustdialIcon({ className = 'w-4 h-4' }) {
+  return (
+    <span className={`${className} inline-flex items-center justify-center text-[11px] leading-none tracking-tighter font-medium`} aria-hidden="true">
+      Jd
+    </span>
+  );
+}
 
 function WhatsAppIcon({ className = "w-4 h-4" }) {
   return (
@@ -11,6 +22,13 @@ function WhatsAppIcon({ className = "w-4 h-4" }) {
     </svg>
   );
 }
+
+// Links with no URL yet are skipped when rendering - see SOCIAL_LINKS.
+const SOCIALS = [
+  { label: 'WhatsApp', href: `https://wa.me/${COMPANY_DETAILS.whatsappNumber}`, Icon: WhatsAppIcon },
+  { label: 'Instagram', href: SOCIAL_LINKS.instagram, Icon: FaInstagram },
+  { label: 'JustDial', href: SOCIAL_LINKS.justdial, Icon: JustdialIcon },
+];
 
 export default function Footer() {
   const parallaxRef = useParallax(0.05);
@@ -37,20 +55,31 @@ export default function Footer() {
               Dental equipment sales, installation, and technical support led by
               Mr. Sivakumar, {COMPANY_DETAILS.experienceYears} years in the industry.
             </p>
-            <a
-              href={`https://wa.me/${COMPANY_DETAILS.whatsappNumber}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 text-sm bg-cyan-600/20 hover:bg-cyan-600/50 text-cyan-400 px-3.5 py-2 rounded-full transition-all tracking-tight"
-            >
-              <WhatsAppIcon className="w-4 h-4" />
-              <span>Message us on WhatsApp</span>
-            </a>
+
+            {/* Follow / message — one row of round icon buttons */}
+            <div className="pt-2 space-y-3">
+              <span className="block text-xs uppercase tracking-widest text-slate-400">Find us on</span>
+              <div className="flex items-center gap-2.5">
+                {SOCIALS.filter((s) => s.href).map(({ label, href, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={label}
+                    title={label}
+                    className="w-10 h-10 rounded-full border border-white/15 bg-white/5 text-slate-300 flex items-center justify-center hover:bg-white hover:text-blue-950 hover:border-white transition-colors"
+                  >
+                    <Icon className="w-4 h-4" />
+                  </a>
+                ))}
+              </div>
+            </div>
           </Reveal>
 
           {/* Links Column 1: Company */}
           <Reveal className="lg:col-span-2 space-y-3" delay={80} y={20}>
-            <h4 className="text-sm uppercase text-white">
+            <h4 className="text-xs uppercase tracking-widest text-slate-400">
               Company
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-400 tracking-tight">
@@ -64,7 +93,7 @@ export default function Footer() {
 
           {/* Links Column 2: Resources & Solutions */}
           <Reveal className="lg:col-span-3 space-y-3" delay={160} y={20}>
-            <h4 className="text-sm uppercase text-white">
+            <h4 className="text-xs uppercase tracking-widest text-slate-400">
               Resources &amp; Solutions
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-400 tracking-tight">
@@ -78,7 +107,7 @@ export default function Footer() {
 
           {/* Contact */}
           <Reveal className="lg:col-span-3 space-y-3" delay={240} y={20}>
-            <h4 className="text-sm uppercase text-white">
+            <h4 className="text-xs uppercase tracking-widest text-slate-400">
               Contact Us
             </h4>
             <div className="space-y-3 text-sm text-slate-400 tracking-tight">
