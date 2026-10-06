@@ -246,7 +246,7 @@ export const SERVICES_LIST = [
     id: "pre-installation",
     title: "Pre-Installation & Site Readiness",
     iconName: "Ruler",
-    description: "A free site assessment covering measurements, power, plumbing, air and suction — so the room is ready before the chair arrives."
+    description: "A free site assessment before you commit: measurements, access, power and earthing, water and drainage, compressed air and suction - plus an optional layout and Vastu consultation."
   },
   {
     id: "installation",
